@@ -1,2 +1,5 @@
 # CMake binary directory
 build
+
+# Visual Studio Code configuration files
+.vscode

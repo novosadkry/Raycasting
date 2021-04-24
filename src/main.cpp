@@ -1,20 +1,19 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+#include "Game/Game.hpp"
+
 int main()
 {
-	sf::RenderWindow rw(sf::VideoMode(800, 600), "SFML window");
+	auto rw = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
+	Game game(std::move(rw));
 
-	while (rw.isOpen())
+	while (game.IsRunning())
 	{
-		sf::Event e{};
-		
-		while (rw.pollEvent(e))
-		{
-			if (e.type == sf::Event::Closed)
-				rw.close();
-		}
+		game.PollEvents();
+		game.Update();
+		game.Render();
 	}
-	
+
     return EXIT_SUCCESS;
 }
