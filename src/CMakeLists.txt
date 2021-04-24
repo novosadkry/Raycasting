@@ -1,5 +1,3 @@
-add_executable(${TARGET} main.cpp)
-
 file(GLOB_RECURSE SOURCE
     *.h
     *.hpp
