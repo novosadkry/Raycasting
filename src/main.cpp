@@ -1,13 +1,13 @@
 #include <iostream>
-#include <SFML/Graphics.hpp>
+#include <SFML/Main.hpp>
 
 #include "Game/Game.hpp"
 
 int main()
 {
 	auto rw = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
-	Game game(std::move(rw));
 
+	Game game(std::move(rw));
 	while (game.IsRunning())
 	{
 		game.PollEvents();

@@ -12,8 +12,20 @@ public:
     void Update();
     void Render();
 
-    bool IsRunning();
-    void Exit();
+    inline bool Game::IsRunning() const
+    {
+        return m_Window->isOpen();
+    }
+
+    inline void Game::Exit()
+    {
+        m_Window->close();
+    }
+
+    inline std::unique_ptr<sf::RenderWindow>& Game::GetWindow()
+    {
+        return m_Window;
+    }
 
 private:
     std::unique_ptr<sf::RenderWindow> m_Window;

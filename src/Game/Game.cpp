@@ -1,16 +1,17 @@
 #include "Game.hpp"
+#include "../Input/Input.hpp"
 
 Game::Game(std::unique_ptr<sf::RenderWindow> window)
-    : m_Window(std::move(window)) { }
+    : m_Window(std::move(window))
+{
+    Input::Setup(*this);
+}
 
 void Game::PollEvents()
 {
     sf::Event event;
     while (m_Window->pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed)
-            Exit();
-    }
+        Input::HandleEvent(event);
 }
 
 void Game::Update()
@@ -21,14 +22,4 @@ void Game::Update()
 void Game::Render()
 {
 
-}
-
-bool Game::IsRunning()
-{
-    return m_Window->isOpen();
-}
-
-void Game::Exit()
-{
-    m_Window->close();
 }
