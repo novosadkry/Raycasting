@@ -8,6 +8,8 @@ int main()
 	auto rw = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
 
 	Game game(std::move(rw));
+	game.LoadLevel(std::make_shared<Level>(0, Grid(5, 5)));
+
 	while (game.IsRunning())
 	{
 		game.PollEvents();
