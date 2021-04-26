@@ -1,18 +1,12 @@
 #include "Input.hpp"
-
-static Game* s_Game;
-
-void Input::Setup(Game& game)
-{
-    s_Game = &game;
-}
+#include <Game/Game.hpp>
 
 void Input::HandleEvent(sf::Event& event)
 {
     switch (event.type)
     {
         case sf::Event::Closed:
-            s_Game->Exit();
+            Game::Get().Exit();
             break;
     }
 }
@@ -29,5 +23,5 @@ bool Input::GetMouseButton(sf::Mouse::Button button)
 
 sf::Vector2i Input::GetMousePosition()
 {
-    return sf::Mouse::getPosition(*s_Game->GetWindow());
+    return sf::Mouse::getPosition(Game::Get().GetWindow());
 }

@@ -1,53 +1,44 @@
 #include "Game.hpp"
-#include "../Input/Input.hpp"
+
+#include <Input/Input.hpp>
+
+static sf::Clock deltaClock;
+
+Game Game::s_Instance = 0;
 
 Game::Game(std::unique_ptr<sf::RenderWindow> window)
-    : m_Window(std::move(window))
-{
-    Input::Setup(*this);
-}
+    : m_Window(std::move(window)) { }
 
 void Game::PollEvents()
 {
     sf::Event event;
-    while (m_Window->pollEvent(event))
+    while (GetWindow().pollEvent(event))
         Input::HandleEvent(event);
 }
 
-void Game::Update()
+void Game::LoadLevel(const std::shared_ptr<Level>& level)
 {
-
+    m_CurrentLevel = level;
+    m_CurrentLevel->OnLoad();
 }
 
-static void RenderMinimap(sf::RenderWindow& window, Level& level, sf::Vector2i size, float spacing = 1.0f, sf::Vector2f origin = {0, 0})
+void Game::Tick()
 {
-    float cellWidth = (float) size.x / level.GetGrid().SizeX();
-    float cellHeight = (float) size.y / level.GetGrid().SizeY();
+    float dt = deltaClock.restart().asSeconds();
 
-    sf::RectangleShape rect(sf::Vector2f(cellWidth, cellHeight));
-
-    for (int x = 0; x < level.GetGrid().SizeX(); x++)
-    {
-        for (int y = 0; y < level.GetGrid().SizeY(); y++)
-        {
-            rect.setPosition(
-                x * (cellWidth + spacing) + origin.x,
-                y * (cellHeight + spacing) + origin.y
-            );
-
-            window.draw(rect);
-        }
-    }
+    PollEvents();
+    Update(dt);
+    Render(dt);
 }
 
-void Game::Render()
+void Game::Update(float dt)
 {
-    auto& window = *m_Window;
-    auto& level = *m_CurrentLevel;
+    m_CurrentLevel->Update(dt);
+}
 
-    window.clear(sf::Color::Black);
-
-    RenderMinimap(window, level, {100, 100});
-
-    window.display();
+void Game::Render(float dt)
+{
+    m_Window->clear(sf::Color::Black);
+    m_CurrentLevel->Render(dt);
+    m_Window->display();
 }

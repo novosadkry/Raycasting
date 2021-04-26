@@ -3,16 +3,35 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 
-#include "Level/Level.hpp"
+#include "Level.hpp"
+#include "Object/Player.hpp"
 
 class Game
 {
 public:
+    inline static Game& Get()
+    {
+        return s_Instance;
+    }
+
+    static Game& Init()
+    {
+        auto rw = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
+        s_Instance = Game(std::move(rw));
+
+        return s_Instance;
+    }
+
+private:
+    static Game s_Instance;
+
+public:
     Game(std::unique_ptr<sf::RenderWindow> window);
 
+    void Tick();
     void PollEvents();
-    void Update();
-    void Render();
+    void Update(float dt);
+    void Render(float dt);
 
     inline bool IsRunning() const
     {
@@ -24,15 +43,17 @@ public:
         m_Window->close();
     }
 
-    inline std::unique_ptr<sf::RenderWindow>& GetWindow()
+    inline sf::RenderWindow& GetWindow()
     {
-        return m_Window;
+        return *m_Window;
     }
 
-    inline void LoadLevel(const std::shared_ptr<Level>& level)
+    inline Level& GetCurrentLevel()
     {
-        m_CurrentLevel = level;
+        return *m_CurrentLevel;
     }
+
+    void LoadLevel(const std::shared_ptr<Level>& level);
 
 private:
     std::unique_ptr<sf::RenderWindow> m_Window;
