@@ -19,6 +19,27 @@ void Game::Update()
 
 }
 
+static void RenderMinimap(sf::RenderWindow& window, Level& level, sf::Vector2i size, float spacing = 1.0f, sf::Vector2f origin = {0, 0})
+{
+    float cellWidth = (float) size.x / level.GetGrid().SizeX();
+    float cellHeight = (float) size.y / level.GetGrid().SizeY();
+
+    sf::RectangleShape rect(sf::Vector2f(cellWidth, cellHeight));
+
+    for (int x = 0; x < level.GetGrid().SizeX(); x++)
+    {
+        for (int y = 0; y < level.GetGrid().SizeY(); y++)
+        {
+            rect.setPosition(
+                x * (cellWidth + spacing) + origin.x,
+                y * (cellHeight + spacing) + origin.y
+            );
+
+            window.draw(rect);
+        }
+    }
+}
+
 void Game::Render()
 {
     auto& window = *m_Window;
@@ -26,16 +47,7 @@ void Game::Render()
 
     window.clear(sf::Color::Black);
 
-    // sf::RectangleShape rect(sf::Vector2f(10.0f, 10.0f));
-
-    // for (int x = 0; x < level.GetGrid().SizeX(); x++)
-    // {
-    //     for (int y = 0; y < level.GetGrid().SizeY(); y++)
-    //     {
-    //         rect.setPosition(x * 11.0f, y * 11.0f);
-    //         window.draw(rect);
-    //     }
-    // }
+    RenderMinimap(window, level, {100, 100});
 
     window.display();
 }
