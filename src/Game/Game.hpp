@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Level.hpp"
-#include "Object/Player.hpp"
+#include "Render/Player.hpp"
 
 class Game
 {

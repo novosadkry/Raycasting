@@ -2,7 +2,7 @@
 
 #include <Game/Game.hpp>
 #include <Game/Level.hpp>
-#include <Game/Object/Player.hpp>
+#include "Player.hpp"
 
 static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player, sf::Vector2i size, float spacing = 1.0f, sf::Vector2f origin = {0, 0})
 {

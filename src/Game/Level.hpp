@@ -3,7 +3,7 @@
 #include <SFML/System/Vector2.hpp>
 
 #include <Game/Grid/Grid.hpp>
-#include <Game/Object/Object.hpp>
+#include <Game/Render/Object.hpp>
 
 #include <vector>
 #include <memory>

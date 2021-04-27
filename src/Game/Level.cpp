@@ -1,5 +1,5 @@
 #include "Level.hpp"
-#include <Game/Object/MiniMap.hpp>
+#include <Game/Render/MiniMap.hpp>
 
 void Level::Render(float dt)
 {
