@@ -32,6 +32,8 @@ public:
         return m_Size;
     }
 
+    sf::Vector2i GetGridCellFromPos(sf::Vector2f pos);
+
     void Update(float dt);
     void Render(float dt);
 

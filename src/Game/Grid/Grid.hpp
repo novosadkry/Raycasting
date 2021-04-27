@@ -1,6 +1,7 @@
 #pragma once
-
 #include "Cell.hpp"
+
+#include <SFML/System/Vector2.hpp>
 #include <vector>
 
 class Grid
@@ -25,7 +26,10 @@ public:
     }
 
     Cell& Get(int x, int y);
+    Cell& Get(sf::Vector2i pos);
+
     void Set(int x, int y, const Cell& cell);
+    void Set(sf::Vector2i pos, const Cell& cell);
 
     inline int SizeX()
     {

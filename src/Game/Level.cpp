@@ -2,6 +2,17 @@
 #include <Game/Render/MiniMap.hpp>
 #include <Game/Render/LevelView.hpp>
 
+sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
+{
+    float cellWidth = (float) m_Size.x / m_Grid.SizeX();
+    float cellHeight = (float) m_Size.y / m_Grid.SizeY();
+
+    int cellX = (int) floor(pos.x / cellWidth);
+    int cellY = (int) floor(pos.y / cellHeight);
+
+    return { cellX, cellY };
+}
+
 void Level::Render(float dt)
 {
     for (auto& obj : m_Objects)

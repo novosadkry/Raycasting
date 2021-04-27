@@ -38,6 +38,12 @@ static void CheckBounds(sf::Vector2f& pos, float radius, const sf::Vector2i& bou
         pos.y = radius;
 }
 
+// static bool CheckCollision(sf::Vector2f& pos, float radius, Level& level)
+// {
+//     sf::Vector2i cell = level.GetGridCellFromPos(pos);
+//     return level.GetGrid().Get(cell) != Empty;
+// }
+
 static void HandleInput(float dt, Player& player)
 {
     if (Input::GetKey(sf::Keyboard::W))
@@ -57,4 +63,5 @@ void Player::Update(float dt)
 {
     HandleInput(dt, *this);
     CheckBounds(m_Position, m_Radius, Game::Get().GetCurrentLevel().GetSize());
+    // CheckCollision(m_Position, m_Radius, Game::Get().GetCurrentLevel());
 }
