@@ -1,5 +1,6 @@
 #include "Level.hpp"
 #include <Game/Render/MiniMap.hpp>
+#include <Game/Render/LevelView.hpp>
 
 void Level::Render(float dt)
 {
@@ -19,4 +20,5 @@ void Level::OnLoad()
 
     m_Objects.push_back(player);
     m_Objects.push_back(std::make_shared<MiniMap>(player));
+    m_Objects.push_back(std::make_shared<LevelView>(player, 75.0f));
 }
