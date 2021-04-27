@@ -9,19 +9,35 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
     // Initialize cell shape
     float cellWidth = (float) size.x / level.GetGrid().SizeX();
     float cellHeight = (float) size.y / level.GetGrid().SizeY();
-    sf::RectangleShape cell(sf::Vector2f(cellWidth, cellHeight));
+    sf::RectangleShape cShape(sf::Vector2f(cellWidth, cellHeight));
 
     // Render individual cells
     for (int x = 0; x < level.GetGrid().SizeX(); x++)
     {
         for (int y = 0; y < level.GetGrid().SizeY(); y++)
         {
-            cell.setPosition(
-                x * (cellWidth + spacing) + origin.x,
-                y * (cellHeight + spacing) + origin.y
+            Cell& cell = level.GetGrid().Get(x, y);
+
+            switch (cell)
+            {
+                case Wall:
+                    cShape.setFillColor(sf::Color::Black);
+                    cShape.setOutlineColor(sf::Color::White);
+                    break;
+
+                case Empty:
+                    cShape.setFillColor(sf::Color::White);
+                    cShape.setOutlineColor(sf::Color::Black);
+                    break;
+            }
+
+            cShape.setOutlineThickness(spacing);
+            cShape.setPosition(
+                x * cellWidth + origin.x,
+                y * cellHeight + origin.y
             );
 
-            window.draw(cell);
+            window.draw(cShape);
         }
     }
 

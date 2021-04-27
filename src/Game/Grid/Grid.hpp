@@ -7,16 +7,16 @@ class Grid
 {
 public:
     Grid(int x, int y)
-        : m_X(x), m_Y(y)
-    {
-        m_Cells = std::vector<Cell>(x * y);
-    }
+        : m_X(x), m_Y(y), m_Cells(x * y) { }
+
+    Grid(int x, int y, Cell* array)
+        : m_X(x), m_Y(y), m_Cells(array, array + x * y) { }
+
+    Grid(int x, int y, std::vector<Cell> array)
+        : m_X(x), m_Y(y), m_Cells(std::move(array)) { }
 
     Grid(Grid&& other)
-        : m_X(other.m_X), m_Y(other.m_Y)
-    {
-        m_Cells = std::move(other.m_Cells);
-    }
+        : m_X(other.m_X), m_Y(other.m_Y), m_Cells(std::move(other.m_Cells)) { }
 
     Grid& operator=(Grid&& other)
     {

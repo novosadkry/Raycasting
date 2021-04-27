@@ -4,7 +4,20 @@
 int main()
 {
 	auto& game = Game::Init();
-	game.LoadLevel(std::make_shared<Level>(500, 500, Grid(5, 5)));
+	game.LoadLevel(std::make_shared<Level>(500, 500,
+		Grid(10, 10, {
+			Wall, Wall , Wall , Wall , Wall , Wall , Wall , Wall , Wall , Wall,
+			Wall, Empty, Empty, Empty, Wall , Empty, Empty, Empty, Empty, Wall,
+			Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall,
+			Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall,
+			Wall, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Wall,
+			Wall, Empty, Empty, Empty, Wall , Wall , Wall , Empty, Empty, Wall,
+			Wall, Empty, Empty, Empty, Wall , Empty, Empty, Empty, Empty, Wall,
+			Wall, Empty, Empty, Empty, Wall , Empty, Empty, Empty, Empty, Wall,
+			Wall, Empty, Empty, Empty, Wall , Empty, Empty, Empty, Empty, Wall,
+			Wall, Wall , Wall , Wall , Wall , Wall , Wall , Wall , Wall , Wall,
+		})
+	));
 
 	while (game.IsRunning())
 		game.Tick();
