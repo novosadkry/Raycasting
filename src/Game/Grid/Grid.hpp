@@ -25,8 +25,8 @@ public:
         m_Cells = std::move(other.m_Cells);
     }
 
-    Cell& Get(int x, int y);
-    Cell& Get(sf::Vector2i pos);
+    Cell Get(int x, int y);
+    Cell Get(sf::Vector2i pos);
 
     void Set(int x, int y, const Cell& cell);
     void Set(sf::Vector2i pos, const Cell& cell);

@@ -16,7 +16,7 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
     {
         for (int y = 0; y < level.GetGrid().SizeY(); y++)
         {
-            Cell& cell = level.GetGrid().Get(x, y);
+            Cell cell = level.GetGrid().Get(x, y);
 
             switch (cell)
             {
@@ -71,5 +71,5 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
 
 void MiniMap::Render(float dt)
 {
-    RenderMinimap(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, {100, 100});
+    RenderMinimap(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, {500, 500});
 }
