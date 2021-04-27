@@ -12,6 +12,18 @@ public:
         m_Cells = std::vector<Cell>(x * y);
     }
 
+    Grid(Grid&& other)
+        : m_X(other.m_X), m_Y(other.m_Y)
+    {
+        m_Cells = std::move(other.m_Cells);
+    }
+
+    Grid& operator=(Grid&& other)
+    {
+        m_X = other.m_X; m_Y = other.m_Y;
+        m_Cells = std::move(other.m_Cells);
+    }
+
     Cell& Get(int x, int y);
     void Set(int x, int y, const Cell& cell);
 

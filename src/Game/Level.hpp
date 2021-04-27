@@ -11,21 +11,18 @@
 class Level
 {
 public:
-    Level(sf::Vector2i size, std::unique_ptr<Grid> grid)
+    Level(sf::Vector2i size, Grid grid)
         : m_Size(size), m_Grid(std::move(grid)) { }
 
-    Level(int x, int y, std::unique_ptr<Grid> grid)
+    Level(int x, int y, Grid grid)
         : m_Size({x, y}), m_Grid(std::move(grid)) { }
-
-    Level(int x, int y)
-        : m_Size({x, y}) { }
 
     inline Grid& GetGrid()
     {
-        return *m_Grid;
+        return m_Grid;
     }
 
-    inline void SetGrid(std::unique_ptr<Grid> grid)
+    inline void SetGrid(Grid grid)
     {
         m_Grid = std::move(grid);
     }
@@ -41,7 +38,7 @@ public:
     void OnLoad();
 
 private:
+    Grid m_Grid;
     sf::Vector2i m_Size;
-    std::unique_ptr<Grid> m_Grid;
     std::vector<std::shared_ptr<Object>> m_Objects;
 };
