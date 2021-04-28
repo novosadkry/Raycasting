@@ -6,6 +6,7 @@
 #include <Utils/Math.hpp>
 
 #include "Player.hpp"
+#include "Ray.hpp"
 
 static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player, sf::Vector2i size, float spacing = 1.0f, sf::Vector2f origin = {0, 0})
 {
@@ -51,19 +52,16 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
         (player.GetPosition().y / level.GetSize().y) * size.y
     };
 
-    // Gets player direction as vector
-    float dirX = cos(player.GetDirection() / 180.0f * PI);
-    float dirY = sin(player.GetDirection() / 180.0f * PI);
-
-    float rayLength = LevelView::Trace(level, player, player.GetDirection());
+    Ray ray;
+    Ray::Cast(level, player, player.GetDirection(), ray);
 
     // Draw ray hit
     sf::CircleShape hitCircle(pShapeRadius / 2);
     hitCircle.setOrigin(pShapeRadius / 2, pShapeRadius / 2);
     hitCircle.setFillColor(sf::Color::Red);
     sf::Vector2f posHit = {
-        ((dirX * rayLength) / level.GetSize().x) * size.x,
-        ((dirY * rayLength) / level.GetSize().y) * size.y
+        ((ray.dir.x * ray.distance) / level.GetSize().x) * size.x,
+        ((ray.dir.y * ray.distance) / level.GetSize().y) * size.y
     };
     hitCircle.setPosition(pShapePos + posHit + origin);
 
