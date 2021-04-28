@@ -92,5 +92,5 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
 
 void MiniMap::Render(float dt)
 {
-    RenderMinimap(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, {500, 500});
+    RenderMinimap(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, m_Size);
 }

@@ -77,12 +77,32 @@ float LevelView::Trace(Level& level, Player& player, float angle)
     return 0;
 }
 
-static void RenderView(Level& level, Player& player, float fov)
+static void RenderView(sf::RenderWindow& window, Level& level, Player& player, float fov, float wallCoefficient)
 {
-    LevelView::Trace(level, player, player.GetDirection());
+    const float halfFov = fov / 2.0f;
+    const sf::Vector2f windowSize {
+        window.getView().getSize().x,
+        window.getView().getSize().y
+    };
+
+    sf::RectangleShape stripe(sf::Vector2f(1, 1));
+    stripe.setOrigin(0.5f, 0.5f);
+
+    for (unsigned int x = 0; x < windowSize.x; x++)
+    {
+        float angle = (player.GetDirection() - halfFov) + (x / windowSize.x) * fov;
+        float distance = LevelView::Trace(level, player, angle);
+
+        float height = (windowSize.y * wallCoefficient) / distance;
+
+        stripe.setPosition((float) x, (windowSize.y / 2) - (height / 2));
+        stripe.setSize({1, height});
+
+        window.draw(stripe);
+    }
 }
 
 void LevelView::Render(float dt)
 {
-    RenderView(Game::Get().GetCurrentLevel(), *m_Player, m_FOV);
+    RenderView(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, m_FOV, 50.0f);
 }

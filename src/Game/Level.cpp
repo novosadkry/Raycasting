@@ -30,6 +30,6 @@ void Level::OnLoad()
     auto player = std::make_shared<Player>(10.0f, 100.0f);
 
     m_Objects.push_back(player);
-    m_Objects.push_back(std::make_shared<MiniMap>(player));
     m_Objects.push_back(std::make_shared<LevelView>(player, 75.0f));
+    m_Objects.push_back(std::make_shared<MiniMap>(player, sf::Vector2i(200, 200)));
 }
