@@ -17,8 +17,9 @@ public:
     static Game& Init()
     {
         auto rw = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
-        s_Instance = Game(std::move(rw));
+        rw->setVerticalSyncEnabled(true);
 
+        s_Instance = Game(std::move(rw));
         return s_Instance;
     }
 

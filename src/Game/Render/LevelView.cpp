@@ -33,6 +33,28 @@ static void RenderView(sf::RenderWindow& window, Level& level, Player& player, f
         wallColor.g -= (sf::Uint8) (hit.distance / wallColor.g * depth);
         wallColor.b -= (sf::Uint8) (hit.distance / wallColor.b * depth);
 
+        // sf::Vertex sCeiling[] =
+        // {
+        //     sf::Vertex(sf::Vector2f((float) x, 0), wallColor),
+        //     sf::Vertex(sf::Vector2f((float) x, ceiling), sf::Color(50, 50, 50))
+        // };
+
+        // sf::Vertex sWall[] =
+        // {
+        //     sf::Vertex(sf::Vector2f((float) x, ceiling), wallColor),
+        //     sf::Vertex(sf::Vector2f((float) x, ceiling + wall), wallColor)
+        // };
+
+        // sf::Vertex sFloor[] =
+        // {
+        //     sf::Vertex(sf::Vector2f((float) x, ceiling + wall), sf::Color(50, 50, 50)),
+        //     sf::Vertex(sf::Vector2f((float) x, windowSize.y), wallColor)
+        // };
+
+        // window.draw(sCeiling, 2, sf::Lines);
+        // window.draw(sWall, 2, sf::Lines);
+        // window.draw(sFloor, 2, sf::Lines);
+
         stripe.setPosition((float) x, 0);
         stripe.setSize({1, ceiling});
         stripe.setFillColor(sf::Color::Yellow);
