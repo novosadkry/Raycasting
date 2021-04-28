@@ -5,71 +5,73 @@
 #include <Utils/Debug.hpp>
 
 // Traces for intersections
-static float Trace(Level& level, Player& player, float angle)
+float LevelView::Trace(Level& level, Player& player, float angle)
 {
-    sf::Vector2i cell = level.GetGridCellFromPos(player.GetPosition());
-
-    float cellWidth = (float) level.GetSize().x / level.GetGrid().SizeX();
-    float cellHeight = (float) level.GetSize().y / level.GetGrid().SizeY();
-
     angle = angle / 180.0f * PI;
 
-    float dirX = cos(angle);
-    float dirY = sin(angle);
+    sf::Vector2i cell = level.GetGridCellFromPos(player.GetPosition());
 
-    int stepX;
-    int stepY;
+    sf::Vector2f cellSize {
+        (float) level.GetSize().x / level.GetGrid().SizeX(),
+        (float) level.GetSize().y / level.GetGrid().SizeY()
+    };
 
-    float deltaX;
-    float deltaY;
+    sf::Vector2f dir {
+        cos(angle),
+        sin(angle)
+    };
 
-    float rayX;
-    float rayY;
+    sf::Vector2i step;
+    sf::Vector2f delta;
+    sf::Vector2f ray;
 
-    if (dirX < 0)
+    if (dir.x < 0)
     {
-        stepX = -1;
-        deltaX = -cellWidth / cos(angle);
-        rayX = player.GetPosition().x - cell.x * cellWidth;
+        step.x = -1;
+        delta.x = -cellSize.x / cos(angle);
+        ray.x = (player.GetPosition().x - cell.x * cellSize.x) / cellSize.x * delta.x;
     }
 
     else
     {
-        stepX = 1;
-        deltaX = cellWidth / cos(angle);
-        rayX = (cell.x + 1) * cellWidth - player.GetPosition().x;
+        step.x = 1;
+        delta.x = cellSize.x / cos(angle);
+        ray.x = ((cell.x + 1) * cellSize.x - player.GetPosition().x) / cellSize.x * delta.x;
     }
 
-    if (dirY < 0)
+    if (dir.y < 0)
     {
-        stepY = -1;
-        deltaY = -cellHeight / sin(angle);
-        rayY = player.GetPosition().y - cell.y * cellHeight;
+        step.y = -1;
+        delta.y = -cellSize.y / sin(angle);
+        ray.y = (player.GetPosition().y - cell.y * cellSize.y) / cellSize.y * delta.y;
     }
 
     else
     {
-        stepY = 1;
-        deltaY = cellHeight / sin(angle);
-        rayY = (cell.y + 1) * cellHeight - player.GetPosition().y;
+        step.y = 1;
+        delta.y = cellSize.y / sin(angle);
+        ray.y = ((cell.y + 1) * cellSize.y - player.GetPosition().y) / cellSize.y * delta.y;
     }
 
+    float distance = 0;
     for (int i = 0; i < 128; i++)
     {
-        if (rayX < rayY)
+        distance = std::min(ray.x, ray.y);
+
+        if (ray.x < ray.y)
         {
-            rayX += deltaX;
-            cell.x += stepX;
+            cell.x += step.x;
+            ray.x += delta.x;
         }
 
         else
         {
-            rayY += deltaY;
-            cell.y += stepY;
+            cell.y += step.y;
+            ray.y += delta.y;
         }
 
         if (level.GetGrid().Get(cell) == Wall)
-            return std::min(rayX, rayY);
+            return distance;
     }
 
     return 0;
@@ -77,7 +79,7 @@ static float Trace(Level& level, Player& player, float angle)
 
 static void RenderView(Level& level, Player& player, float fov)
 {
-    LOG(Trace(level, player, player.GetDirection()));
+    LevelView::Trace(level, player, player.GetDirection());
 }
 
 void LevelView::Render(float dt)

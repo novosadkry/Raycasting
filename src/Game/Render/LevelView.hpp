@@ -10,6 +10,8 @@ public:
     LevelView(std::shared_ptr<Player> player, float fov)
         : m_Player(player), m_FOV(fov) {}
 
+    static float Trace(Level& level, Player& player, float angle);
+
     void Render(float dt) override;
 
 private:
