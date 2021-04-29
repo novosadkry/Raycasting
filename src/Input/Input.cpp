@@ -8,6 +8,12 @@ void Input::HandleEvent(sf::Event& event)
         case sf::Event::Closed:
             Game::Get().Exit();
             break;
+
+        case sf::Event::Resized:
+            Game::Get().GetWindow().setView(
+                sf::View(sf::FloatRect(0, 0, (float) event.size.width, (float) event.size.height))
+            );
+            break;
     }
 }
 

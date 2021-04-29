@@ -42,20 +42,20 @@ static void RenderView(sf::RenderWindow& window, Level& level, Player& player, c
 
         sf::Vertex sCeiling[] =
         {
-            sf::Vertex(sf::Vector2f((float) screenX, 0), wallColor),
-            sf::Vertex(sf::Vector2f((float) screenX, ceiling), sf::Color(50, 50, 50))
+            sf::Vertex(sf::Vector2f(screenX + 0.5f, 0), wallColor),
+            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), sf::Color(50, 50, 50))
         };
 
         sf::Vertex sWall[] =
         {
-            sf::Vertex(sf::Vector2f((float) screenX, ceiling), wallColor),
-            sf::Vertex(sf::Vector2f((float) screenX, ceiling + wall), wallColor)
+            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), wallColor),
+            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), wallColor)
         };
 
         sf::Vertex sFloor[] =
         {
-            sf::Vertex(sf::Vector2f((float) screenX, ceiling + wall), sf::Color(50, 50, 50)),
-            sf::Vertex(sf::Vector2f((float) screenX, windowSize.y), wallColor)
+            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), sf::Color(50, 50, 50)),
+            sf::Vertex(sf::Vector2f(screenX + 0.5f, windowSize.y), wallColor)
         };
 
         window.draw(sCeiling, 2, sf::Lines);
