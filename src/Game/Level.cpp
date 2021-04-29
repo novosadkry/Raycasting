@@ -1,4 +1,6 @@
 #include "Level.hpp"
+
+#include <Utils/Math.hpp>
 #include <Game/Render/MiniMap.hpp>
 #include <Game/Render/LevelView.hpp>
 
@@ -28,8 +30,9 @@ void Level::Update(float dt)
 void Level::OnLoad()
 {
     auto player = std::make_shared<Player>(10.0f, 100.0f);
+    player->SetPosition({100, 100});
 
     m_Objects.push_back(player);
-    m_Objects.push_back(std::make_shared<LevelView>(player, 75.0f));
+    m_Objects.push_back(std::make_shared<LevelView>(player, 75.0f * Math::Deg2Rad));
     m_Objects.push_back(std::make_shared<MiniMap>(player, sf::Vector2i(200, 200)));
 }

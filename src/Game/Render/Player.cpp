@@ -3,24 +3,22 @@
 #include <Game/Game.hpp>
 #include <Input/Input.hpp>
 #include <Utils/Math.hpp>
+#include <Game/Ray.hpp>
 
-void Player::SetDirection(float newDir)
+void Player::SetRotation(float newDir)
 {
-    m_Direction = newDir - floor(newDir / 360.0f) * 360.0f;
+    m_Rotation = newDir - floor(newDir / Math::PI_2) * Math::PI_2;
 }
 
 void Player::Move(float amount)
 {
-    float x = cos(m_Direction / 180.0f * PI);
-    float y = sin(m_Direction / 180.0f * PI);
-
-    m_Position.x += x * amount;
-    m_Position.y += y * amount;
+    sf::Vector2f dir = Math::Angle2Vector(m_Rotation);
+    m_Position += dir * amount;
 }
 
 void Player::Rotate(float amount)
 {
-    SetDirection(GetDirection() + amount);
+    SetRotation(GetRotation() + amount);
 }
 
 static void CheckBounds(sf::Vector2f& pos, float radius, const sf::Vector2i& bounds)
@@ -38,11 +36,22 @@ static void CheckBounds(sf::Vector2f& pos, float radius, const sf::Vector2i& bou
         pos.y = radius;
 }
 
-// static bool CheckCollision(sf::Vector2f& pos, float radius, Level& level)
-// {
-//     sf::Vector2i cell = level.GetGridCellFromPos(pos);
-//     return level.GetGrid().Get(cell) != Empty;
-// }
+static void CheckCollision(Level& level, Player& player)
+{
+    sf::Vector2f pos = player.GetPosition();
+
+    for (int i = 0; i < 8; i++)
+    {
+        float angle = i * 0.25f * Math::PI;
+
+        Ray hit;
+        if (Ray::Cast(level, pos, angle, hit))
+        {
+            if (hit.distance < player.GetRadius())
+                player.SetPosition(pos - hit.dir * (player.GetRadius() - hit.distance));
+        }
+    }
+}
 
 static void HandleInput(float dt, Player& player)
 {
@@ -53,15 +62,15 @@ static void HandleInput(float dt, Player& player)
         player.Move(-player.GetSpeed() * dt);
 
     if (Input::GetKey(sf::Keyboard::A))
-        player.Rotate(-player.GetSpeed() * dt);
+        player.Rotate(-player.GetSpeed() * dt * Math::Deg2Rad);
 
     if (Input::GetKey(sf::Keyboard::D))
-        player.Rotate(player.GetSpeed() * dt);
+        player.Rotate(player.GetSpeed() * dt * Math::Deg2Rad);
 }
 
 void Player::Update(float dt)
 {
     HandleInput(dt, *this);
     CheckBounds(m_Position, m_Radius, Game::Get().GetCurrentLevel().GetSize());
-    // CheckCollision(m_Position, m_Radius, Game::Get().GetCurrentLevel());
+    CheckCollision(Game::Get().GetCurrentLevel(), *this);
 }

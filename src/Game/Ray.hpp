@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Game/Level.hpp>
-#include "Player.hpp"
+#include <Game/Render/Player.hpp>
 
 struct Ray
 {
 public:
-    static bool Cast(Level& level, Player& player, float angle, Ray& hit);
+    static bool Cast(Level& level, sf::Vector2f& position, float angle, Ray& hit);
 
 public:
     Ray()

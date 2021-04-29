@@ -25,12 +25,12 @@ public:
         m_Position = newPos;
     }
 
-    inline float GetDirection()
+    inline float GetRotation()
     {
-        return m_Direction;
+        return m_Rotation;
     }
 
-    void SetDirection(float newDir);
+    void SetRotation(float newDir);
 
     inline float GetSpeed()
     {
@@ -44,7 +44,7 @@ public:
 
 private:
     sf::Vector2f m_Position;
-    float m_Direction;
+    float m_Rotation;
     float m_Radius;
     float m_Speed;
 };

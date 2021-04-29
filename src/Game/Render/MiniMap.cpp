@@ -2,11 +2,11 @@
 
 #include <Game/Game.hpp>
 #include <Game/Level.hpp>
+#include <Game/Ray.hpp>
 #include <Game/Render/LevelView.hpp>
 #include <Utils/Math.hpp>
 
 #include "Player.hpp"
-#include "Ray.hpp"
 
 static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player, sf::Vector2i size, float spacing = 1.0f, sf::Vector2f origin = {0, 0})
 {
@@ -53,7 +53,7 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
     };
 
     Ray ray;
-    Ray::Cast(level, player, player.GetDirection(), ray);
+    Ray::Cast(level, player.GetPosition(), player.GetRotation(), ray);
 
     // Draw ray hit
     sf::CircleShape hitCircle(pShapeRadius / 2);
@@ -76,8 +76,8 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
     // Initialize player direction shape
     sf::RectangleShape pDirShape(sf::Vector2f(pShapeRadius * 2, pShapeRadius / 2));
     pDirShape.setFillColor(sf::Color::Blue);
-    pDirShape.rotate(player.GetDirection());
     pDirShape.setPosition(pShape.getPosition() + origin);
+    pDirShape.rotate(player.GetRotation() * Math::Rad2Deg);
 
     // Render player
     // - Sets shape position relative to minimap size and level size

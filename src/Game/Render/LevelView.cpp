@@ -1,8 +1,8 @@
 #include "LevelView.hpp"
 
 #include <Game/Game.hpp>
+#include <Game/Ray.hpp>
 #include <Utils/Math.hpp>
-#include "Ray.hpp"
 
 // https://lodev.org/cgtutor/raycasting.html
 // http://www.permadi.com/tutorial/raycast/rayc8.html
@@ -18,14 +18,14 @@ static void RenderView(sf::RenderWindow& window, Level& level, Player& player, f
 
     for (unsigned int x = 0; x < windowSize.x; x++)
     {
-        float angle = (player.GetDirection() - halfFov) + (x / windowSize.x) * fov;
+        float angle = (player.GetRotation() - halfFov) + (x / windowSize.x) * fov;
 
         Ray hit;
-        if (!Ray::Cast(level, player, angle, hit))
+        if (!Ray::Cast(level, player.GetPosition(), angle, hit))
             continue;
 
         // Correct the fishbowl effect
-        hit.distance *= cos((player.GetDirection() - angle) / 180.0f * PI);
+        hit.distance *= cos(player.GetRotation() - angle);
 
         float ceiling = (windowSize.y / 2.0f) - (windowSize.y * wallCoeff / hit.distance);
         float floor = windowSize.y - ceiling;
