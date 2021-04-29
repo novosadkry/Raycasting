@@ -33,6 +33,6 @@ void Level::OnLoad()
     player->SetPosition({100, 100});
 
     m_Objects.push_back(player);
-    m_Objects.push_back(std::make_shared<LevelView>(player, 75.0f * Math::Deg2Rad));
+    m_Objects.push_back(std::make_shared<LevelView>(player, Canvas::From(75.0f * Math::Deg2Rad)));
     m_Objects.push_back(std::make_shared<MiniMap>(player, sf::Vector2i(200, 200)));
 }
