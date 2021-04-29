@@ -3,7 +3,8 @@
 
 int main()
 {
-	auto& game = Game::Init();
+	auto& game = Game::Init(sf::VideoMode(1024, 720), "Raycaster");
+
 	game.LoadLevel(std::make_shared<Level>(500, 500,
 		Grid(10, 10, {
 			Wall, Wall , Wall , Wall , Wall , Wall , Wall , Wall , Wall , Wall,

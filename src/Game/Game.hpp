@@ -14,9 +14,10 @@ public:
         return s_Instance;
     }
 
-    static Game& Init()
+    template<typename ...Args>
+    static Game& Init(Args&& ...args)
     {
-        auto rw = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "SFML window");
+        auto rw = std::make_unique<sf::RenderWindow>(std::forward<Args>(args)...);
         rw->setVerticalSyncEnabled(true);
 
         s_Instance = Game(std::move(rw));
