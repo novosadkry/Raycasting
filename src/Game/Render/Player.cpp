@@ -36,13 +36,12 @@ static void CheckBounds(sf::Vector2f& pos, float radius, const sf::Vector2i& bou
         pos.y = radius;
 }
 
-static void CheckCollision(Level& level, Player& player)
+static void CheckCollision(Level& level, Player& player, int sides)
 {
-    sf::Vector2f pos = player.GetPosition();
-
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < sides; i++)
     {
-        float angle = i * 0.25f * Math::PI;
+        float angle = i * (2.0f / sides) * Math::PI;
+        sf::Vector2f pos = player.GetPosition();
 
         Ray hit;
         if (Ray::Cast(level, pos, angle, hit))
@@ -72,5 +71,5 @@ void Player::Update(float dt)
 {
     HandleInput(dt, *this);
     CheckBounds(m_Position, m_Radius, Game::Get().GetCurrentLevel().GetSize());
-    CheckCollision(Game::Get().GetCurrentLevel(), *this);
+    CheckCollision(Game::Get().GetCurrentLevel(), *this, 16);
 }
