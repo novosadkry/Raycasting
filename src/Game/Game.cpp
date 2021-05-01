@@ -16,7 +16,7 @@ void Game::PollEvents()
         Input::HandleEvent(event);
 }
 
-void Game::LoadLevel(const std::shared_ptr<Level>& level)
+void Game::LoadLevel(std::shared_ptr<Level> level)
 {
     m_CurrentLevel = level;
     m_CurrentLevel->OnLoad();
