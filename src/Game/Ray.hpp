@@ -12,10 +12,11 @@ public:
     Ray()
         { }
 
-    Ray(float distance, const sf::Vector2f& dir, const sf::Vector2i& hitSide)
-        : distance(distance), dir(dir), hitSide(hitSide) { }
+    Ray(float distance, const sf::Vector2f& dir, const sf::Vector2i& hitSide, const sf::Vector2f& hitPos)
+        : distance(distance), dir(dir), hitSide(hitSide), hitPos(hitPos) { }
 
     float distance;
     sf::Vector2f dir;
     sf::Vector2i hitSide;
+    sf::Vector2f hitPos;
 };

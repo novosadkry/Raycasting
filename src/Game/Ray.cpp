@@ -69,7 +69,7 @@ bool Ray::Cast(Level& level, sf::Vector2f& position, float angle, Ray& hit)
 
         if (level.GetGrid().Get(cell) == Wall)
         {
-            hit = Ray(distance, dir, hitSide);
+            hit = Ray(distance, dir, hitSide, distance * dir);
             return true;
         }
     }

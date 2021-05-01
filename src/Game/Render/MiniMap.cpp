@@ -59,11 +59,11 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
     sf::CircleShape hitCircle(pShapeRadius / 2);
     hitCircle.setOrigin(pShapeRadius / 2, pShapeRadius / 2);
     hitCircle.setFillColor(sf::Color::Red);
-    sf::Vector2f posHit = {
-        ((ray.dir.x * ray.distance) / level.GetSize().x) * size.x,
-        ((ray.dir.y * ray.distance) / level.GetSize().y) * size.y
+    sf::Vector2f hitPos = {
+        (ray.hitPos.x / level.GetSize().x) * size.x,
+        (ray.hitPos.y / level.GetSize().y) * size.y
     };
-    hitCircle.setPosition(pShapePos + posHit + origin);
+    hitCircle.setPosition(pShapePos + hitPos + origin);
 
     // Initialize player shape
     sf::CircleShape pShape(pShapeRadius);
