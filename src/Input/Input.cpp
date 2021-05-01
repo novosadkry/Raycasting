@@ -5,6 +5,16 @@ void Input::HandleEvent(sf::Event& event)
 {
     switch (event.type)
     {
+        case sf::Event::KeyPressed:
+        {
+            switch (event.key.code)
+            {
+                case sf::Keyboard::Escape:
+                    Game::Get().Exit();
+                    break;
+            }
+        } break;
+
         case sf::Event::Closed:
             Game::Get().Exit();
             break;
