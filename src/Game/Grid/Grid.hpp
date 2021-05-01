@@ -7,21 +7,21 @@
 class Grid
 {
 public:
-    Grid(int x, int y)
-        : m_X(x), m_Y(y), m_Cells(x * y) { }
+    Grid(sf::Vector2i size)
+        : m_Size(size), m_Cells(size.x * size.y) { }
 
-    Grid(int x, int y, Cell* array)
-        : m_X(x), m_Y(y), m_Cells(array, array + x * y) { }
+    Grid(sf::Vector2i size, Cell* array)
+        : m_Size(size), m_Cells(array, array + size.x * size.y) { }
 
-    Grid(int x, int y, std::vector<Cell> array)
-        : m_X(x), m_Y(y), m_Cells(std::move(array)) { }
+    Grid(sf::Vector2i size, std::vector<Cell> array)
+        : m_Size(size), m_Cells(std::move(array)) { }
 
     Grid(Grid&& other)
-        : m_X(other.m_X), m_Y(other.m_Y), m_Cells(std::move(other.m_Cells)) { }
+        : m_Size(other.m_Size), m_Cells(std::move(other.m_Cells)) { }
 
     Grid& operator=(Grid&& other)
     {
-        m_X = other.m_X; m_Y = other.m_Y;
+        m_Size = other.m_Size;
         m_Cells = std::move(other.m_Cells);
     }
 
@@ -31,14 +31,9 @@ public:
     void Set(int x, int y, const Cell& cell);
     void Set(sf::Vector2i pos, const Cell& cell);
 
-    inline int SizeX()
+    inline sf::Vector2i GetSize()
     {
-        return m_X;
-    }
-
-    inline int SizeY()
-    {
-        return m_Y;
+        return m_Size;
     }
 
     inline std::vector<Cell>::iterator begin()
@@ -51,7 +46,12 @@ public:
         return m_Cells.end();
     }
 
+    inline std::vector<Cell>& GetCells()
+    {
+        return m_Cells;
+    }
+
 private:
-    int m_X, m_Y;
+    sf::Vector2i m_Size;
     std::vector<Cell> m_Cells;
 };

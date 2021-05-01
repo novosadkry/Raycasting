@@ -6,8 +6,8 @@ bool Ray::Cast(Level& level, sf::Vector2f& position, float angle, Ray& hit)
     sf::Vector2i cell = level.GetGridCellFromPos(position);
 
     sf::Vector2f cellSize {
-        (float) level.GetSize().x / level.GetGrid().SizeX(),
-        (float) level.GetSize().y / level.GetGrid().SizeY()
+        (float) level.GetSize().x / level.GetGrid().GetSize().x,
+        (float) level.GetSize().y / level.GetGrid().GetSize().y
     };
 
     sf::Vector2f dir = Math::Angle2Vector(angle);

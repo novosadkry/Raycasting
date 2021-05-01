@@ -11,14 +11,14 @@
 static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player, sf::Vector2i size, float spacing = 1.0f, sf::Vector2f origin = {0, 0})
 {
     // Initialize cell shape
-    float cellWidth = (float) size.x / level.GetGrid().SizeX();
-    float cellHeight = (float) size.y / level.GetGrid().SizeY();
+    float cellWidth = (float) size.x / level.GetGrid().GetSize().x;
+    float cellHeight = (float) size.y / level.GetGrid().GetSize().y;
     sf::RectangleShape cShape(sf::Vector2f(cellWidth, cellHeight));
 
     // Render individual cells
-    for (int x = 0; x < level.GetGrid().SizeX(); x++)
+    for (int x = 0; x < level.GetGrid().GetSize().x; x++)
     {
-        for (int y = 0; y < level.GetGrid().SizeY(); y++)
+        for (int y = 0; y < level.GetGrid().GetSize().y; y++)
         {
             Cell cell = level.GetGrid().Get(x, y);
 

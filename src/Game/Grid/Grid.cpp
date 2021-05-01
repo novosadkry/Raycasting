@@ -2,9 +2,9 @@
 
 Cell Grid::Get(int x, int y)
 {
-    int i = y * m_X + x;
+    int i = y * m_Size.x + x;
 
-    if (x < 0 || x >= m_X || y < 0 || y >= m_Y)
+    if (x < 0 || x >= m_Size.x || y < 0 || y >= m_Size.y)
         return Empty;
 
     return m_Cells[i];
@@ -12,7 +12,7 @@ Cell Grid::Get(int x, int y)
 
 void Grid::Set(int x, int y, const Cell& cell)
 {
-    int i = y * m_X + x;
+    int i = y * m_Size.x + x;
     m_Cells[i] = cell;
 }
 
