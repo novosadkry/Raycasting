@@ -38,6 +38,7 @@ public:
     void Render(float dt);
 
     void OnLoad();
+    void OnUnload();
 
 private:
     Grid m_Grid;

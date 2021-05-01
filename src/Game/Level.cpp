@@ -37,3 +37,8 @@ void Level::OnLoad()
     m_Objects.push_back(std::make_shared<LevelView>(player, Canvas::From(75.0f * Math::Deg2Rad)));
     m_Objects.push_back(std::make_shared<MiniMap>(player, sf::Vector2i(200, 200)));
 }
+
+void Level::OnUnload()
+{
+    m_Objects.clear();
+}
