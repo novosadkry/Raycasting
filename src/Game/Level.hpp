@@ -11,8 +11,9 @@
 class Level
 {
 public:
-    static std::shared_ptr<Level> From(const char* path);
-    static void Save(std::shared_ptr<Level> level, const char* path);
+    static Level Empty;
+    static Level From(const char* path);
+    static void Save(Level& level, const char* path);
 
 public:
     Level(sf::Vector2i size, Grid grid)

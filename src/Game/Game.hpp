@@ -58,9 +58,9 @@ public:
         return *m_CurrentLevel;
     }
 
-    void LoadLevel(std::shared_ptr<Level> level);
+    void LoadLevel(Level level);
 
 private:
     std::unique_ptr<sf::RenderWindow> m_Window;
-    std::shared_ptr<Level> m_CurrentLevel;
+    std::unique_ptr<Level> m_CurrentLevel;
 };

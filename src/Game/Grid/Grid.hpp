@@ -16,16 +16,6 @@ public:
     Grid(sf::Vector2i size, std::vector<Cell> array)
         : m_Size(size), m_Cells(std::move(array)) { }
 
-    Grid(Grid&& other)
-        : m_Size(other.m_Size), m_Cells(std::move(other.m_Cells)) { }
-
-    Grid& operator=(Grid&& other)
-    {
-        m_Size = other.m_Size;
-        m_Cells = std::move(other.m_Cells);
-        return *this;
-    }
-
     Cell Get(int x, int y);
     Cell Get(sf::Vector2i pos);
 

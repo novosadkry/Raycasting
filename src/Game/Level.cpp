@@ -6,7 +6,9 @@
 
 #include <fstream>
 
-std::shared_ptr<Level> Level::From(const char* path)
+Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
+
+Level Level::From(const char* path)
 {
     std::ifstream file(path, std::ios_base::binary);
 
@@ -22,18 +24,19 @@ std::shared_ptr<Level> Level::From(const char* path)
     Grid grid(gridSize, cells);
     delete cells;
 
-    return std::make_shared<Level>(levelSize, std::move(grid));
+    return Level(levelSize, std::move(grid));
 }
 
-void Level::Save(std::shared_ptr<Level> level, const char* path)
+void Level::Save(Level& level, const char* path)
 {
     std::ofstream file(path, std::ios_base::binary);
 
-    sf::Vector2i gridSize = level->GetGrid().GetSize();
+    Grid& grid = level.GetGrid();
+    sf::Vector2i gridSize = grid.GetSize();
 
-    file.write(reinterpret_cast<char*>(&level->m_Size), sizeof(sf::Vector2i));
+    file.write(reinterpret_cast<char*>(&level.m_Size), sizeof(sf::Vector2i));
     file.write(reinterpret_cast<char*>(&gridSize), sizeof(sf::Vector2i));
-    file.write(reinterpret_cast<char*>(level->GetGrid().GetCells().data()), sizeof(Cell) * gridSize.x * gridSize.y);
+    file.write(reinterpret_cast<char*>(grid.GetCells().data()), sizeof(Cell) * gridSize.x * gridSize.y);
 }
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)

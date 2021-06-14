@@ -8,7 +8,12 @@ int main(int argc, char** argv)
 	if (argc > 1)
 	{
 		auto level = Level::From(argv[1]);
-		game.LoadLevel(level);
+		game.LoadLevel(std::move(level));
+	}
+
+	else
+	{
+		game.LoadLevel(Level::Empty);
 	}
 
 	while (game.IsRunning())
