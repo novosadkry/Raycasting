@@ -4,7 +4,7 @@
 
 static sf::Clock deltaClock;
 
-Game Game::s_Instance = 0;
+Game* Game::s_Instance = nullptr;
 
 Game::Game(std::unique_ptr<sf::RenderWindow> window)
     : m_Window(std::move(window)) { }

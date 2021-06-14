@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <Utils/Debug.hpp>
 #include <SFML/Graphics.hpp>
 
 #include "Level.hpp"
@@ -11,21 +12,23 @@ class Game
 public:
     inline static Game& Get()
     {
-        return s_Instance;
+        return *s_Instance;
     }
 
     template<typename ...Args>
     static Game& Init(Args&& ...args)
     {
+        ASSERT(!s_Instance);
+
         auto rw = std::make_unique<sf::RenderWindow>(std::forward<Args>(args)...);
         rw->setVerticalSyncEnabled(true);
 
-        s_Instance = Game(std::move(rw));
-        return s_Instance;
+        s_Instance = new Game(std::move(rw));
+        return *s_Instance;
     }
 
 private:
-    static Game s_Instance;
+    static Game* s_Instance;
 
 public:
     Game(std::unique_ptr<sf::RenderWindow> window);

@@ -32,7 +32,7 @@ void Level::Save(std::shared_ptr<Level> level, const char* path)
     sf::Vector2i gridSize = level->GetGrid().GetSize();
 
     file.write(reinterpret_cast<char*>(&level->m_Size), sizeof(sf::Vector2i));
-    file.write(reinterpret_cast<char*>(&level->GetGrid().GetSize()), sizeof(sf::Vector2i));
+    file.write(reinterpret_cast<char*>(&gridSize), sizeof(sf::Vector2i));
     file.write(reinterpret_cast<char*>(level->GetGrid().GetCells().data()), sizeof(Cell) * gridSize.x * gridSize.y);
 }
 

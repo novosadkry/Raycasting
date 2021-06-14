@@ -23,6 +23,7 @@ public:
     {
         m_Size = other.m_Size;
         m_Cells = std::move(other.m_Cells);
+        return *this;
     }
 
     Cell Get(int x, int y);

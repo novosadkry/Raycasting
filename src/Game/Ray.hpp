@@ -6,7 +6,7 @@
 struct Ray
 {
 public:
-    static bool Cast(Level& level, sf::Vector2f& position, float angle, Ray& hit);
+    static bool Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit);
 
 public:
     Ray()

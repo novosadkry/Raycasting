@@ -1,7 +1,7 @@
 #include "Ray.hpp"
 #include <Utils/Math.hpp>
 
-bool Ray::Cast(Level& level, sf::Vector2f& position, float angle, Ray& hit)
+bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit)
 {
     sf::Vector2i cell = level.GetGridCellFromPos(position);
 
