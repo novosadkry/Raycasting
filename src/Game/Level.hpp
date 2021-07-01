@@ -3,6 +3,7 @@
 #include <SFML/System/Vector2.hpp>
 
 #include <Game/Grid/Grid.hpp>
+#include <Game/Render/Light.hpp>
 #include <Game/Render/Object.hpp>
 
 #include <vector>
@@ -37,6 +38,11 @@ public:
         return m_Size;
     }
 
+    inline std::vector<Light>& GetLights()
+    {
+        return m_Lights;
+    }
+
     sf::Vector2i GetGridCellFromPos(sf::Vector2f pos);
 
     void Update(float dt);
@@ -48,5 +54,6 @@ public:
 private:
     Grid m_Grid;
     sf::Vector2i m_Size;
+    std::vector<Light> m_Lights;
     std::vector<std::shared_ptr<Object>> m_Objects;
 };

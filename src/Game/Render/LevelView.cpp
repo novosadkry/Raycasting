@@ -4,6 +4,38 @@
 #include <Game/Ray.hpp>
 #include <Utils/Math.hpp>
 
+static sf::Color CalculateLight(sf::RenderWindow& window, Level& level, Ray& hit, float depth)
+{
+    float r, g, b;
+    r = g = b = 0;
+
+    for (Light& light : level.GetLights())
+    {
+        Ray lightRay;
+        float distToHit = Math::DistanceSqr(hit.hitPos, light.position);
+        float angleToHit = Math::Vector2Angle(hit.hitPos - light.position);
+
+        if (Ray::Cast(level, light.position, angleToHit, lightRay))
+        {
+            // Squared distance to save computation time
+            if (abs(lightRay.distance * lightRay.distance - distToHit) < 0.5f)
+            {
+                float w = pow(fmax(1 - (lightRay.distance / depth), 0), 1 / light.intensity);
+
+                r += w * light.color.r;
+                g += w * light.color.g;
+                b += w * light.color.b;
+            }
+        }
+    }
+
+    r = fmin(r, 255);
+    g = fmin(g, 255);
+    b = fmin(b, 255);
+
+    return sf::Color(r, g, b);
+}
+
 // https://lodev.org/cgtutor/raycasting.html
 // http://www.permadi.com/tutorial/raycast/rayc8.html
 static void RenderView(sf::RenderWindow& window, Level& level, Player& player, sf::RenderTexture& buffer, Canvas& canvas, float wallCoeff, float depth)
@@ -27,20 +59,14 @@ static void RenderView(sf::RenderWindow& window, Level& level, Player& player, s
         if (!Ray::Cast(level, player.GetPosition(), angle, hit))
             continue;
 
+        sf::Color wallColor = CalculateLight(window, level, hit, depth);
+
         // Correct the fishbowl effect
         hit.distance *= cos(player.GetRotation() - angle);
 
         float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
         float floor = viewSize.y - ceiling;
         float wall = floor - ceiling;
-
-        sf::Color wallColor = hit.hitSide.x
-            ? sf::Color(220, 220, 220)
-            : sf::Color::White;
-
-        wallColor.r -= (sf::Uint8) (hit.distance / wallColor.r * depth);
-        wallColor.g -= (sf::Uint8) (hit.distance / wallColor.g * depth);
-        wallColor.b -= (sf::Uint8) (hit.distance / wallColor.b * depth);
 
         sf::Vertex sCeiling[] =
         {
@@ -73,5 +99,5 @@ static void RenderView(sf::RenderWindow& window, Level& level, Player& player, s
 
 void LevelView::Render(float dt)
 {
-    RenderView(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, *m_Buffer, m_Canvas, 50.0f, 50.0f);
+    RenderView(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, *m_Buffer, m_Canvas, 50.0f, 300.0f);
 }

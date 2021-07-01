@@ -68,6 +68,11 @@ void Level::OnLoad()
     player->SetPosition({100, 100});
     player->SetRotation(0);
 
+    m_Lights.push_back(Light({355, 400}, 1, sf::Color::Red));
+    m_Lights.push_back(Light({150, 420}, 1, sf::Color::Green));
+    m_Lights.push_back(Light({150, 120}, 1, sf::Color::Blue));
+    m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
+
     m_Objects.push_back(player);
     m_Objects.push_back(std::make_shared<LevelView>(player, sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
     m_Objects.push_back(std::make_shared<MiniMap>(player, sf::Vector2i(200, 200)));
