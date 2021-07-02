@@ -2,11 +2,15 @@
 
 #include <SFML/Window.hpp>
 
+using sf::Keyboard;
+using sf::Mouse;
+using sf::Event;
+
 namespace Input
 {
-    void HandleEvent(sf::Event& event);
+    void HandleEvent(Event& event);
 
-    bool GetKey(sf::Keyboard::Key key);
-    bool GetMouseButton(sf::Mouse::Button button);
+    bool GetKey(Keyboard::Key key);
+    bool GetMouseButton(Mouse::Button button);
     sf::Vector2i GetMousePosition();
 }

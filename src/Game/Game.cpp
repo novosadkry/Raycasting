@@ -11,7 +11,7 @@ Game::Game(std::unique_ptr<sf::RenderWindow> window)
 
 void Game::PollEvents()
 {
-    sf::Event event;
+    Event event;
     while (GetWindow().pollEvent(event))
         Input::HandleEvent(event);
 }

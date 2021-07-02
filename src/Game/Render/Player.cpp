@@ -63,22 +63,22 @@ void Player::CheckCollision(int sides)
 
 void Player::HandleInput(float dt)
 {
-    if (Input::GetKey(sf::Keyboard::W))
+    if (Input::GetKey(Keyboard::W))
         Move(m_Speed * dt);
 
-    if (Input::GetKey(sf::Keyboard::S))
+    if (Input::GetKey(Keyboard::S))
         Move(-m_Speed * dt);
 
-    if (Input::GetKey(sf::Keyboard::A))
+    if (Input::GetKey(Keyboard::A))
     {
-        Input::GetKey(sf::Keyboard::LShift)
+        Input::GetKey(Keyboard::LShift)
             ? Strafe(-m_Speed * dt)
             : Rotate(-m_Speed * dt * Math::Deg2Rad);
     }
 
-    if (Input::GetKey(sf::Keyboard::D))
+    if (Input::GetKey(Keyboard::D))
     {
-        Input::GetKey(sf::Keyboard::LShift)
+        Input::GetKey(Keyboard::LShift)
             ? Strafe(m_Speed * dt)
             : Rotate(m_Speed * dt * Math::Deg2Rad);
     }
