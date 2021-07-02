@@ -38,6 +38,7 @@ public:
     }
 
     void Move(float amount);
+    void Strafe(float amount);
     void Rotate(float amount);
 
     void Update(float dt) override;

@@ -16,6 +16,12 @@ void Player::Move(float amount)
     m_Position += dir * amount;
 }
 
+void Player::Strafe(float amount)
+{
+    sf::Vector2f dir = Math::Angle2Vector(m_Rotation + Math::PI / 2);
+    m_Position += dir * amount;
+}
+
 void Player::Rotate(float amount)
 {
     SetRotation(GetRotation() + amount);
@@ -64,10 +70,18 @@ void Player::HandleInput(float dt)
         Move(-m_Speed * dt);
 
     if (Input::GetKey(sf::Keyboard::A))
-        Rotate(-m_Speed * dt * Math::Deg2Rad);
+    {
+        Input::GetKey(sf::Keyboard::LShift)
+            ? Strafe(-m_Speed * dt)
+            : Rotate(-m_Speed * dt * Math::Deg2Rad);
+    }
 
     if (Input::GetKey(sf::Keyboard::D))
-        Rotate(m_Speed * dt * Math::Deg2Rad);
+    {
+        Input::GetKey(sf::Keyboard::LShift)
+            ? Strafe(m_Speed * dt)
+            : Rotate(m_Speed * dt * Math::Deg2Rad);
+    }
 }
 
 void Player::Update(float dt)
