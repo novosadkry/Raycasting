@@ -38,31 +38,37 @@ static sf::Color CalculateLight(sf::RenderWindow& window, Level& level, Ray& hit
 
 // https://lodev.org/cgtutor/raycasting.html
 // http://www.permadi.com/tutorial/raycast/rayc8.html
-static void RenderView(sf::RenderWindow& window, Level& level, Player& player, sf::RenderTexture& buffer, Canvas& canvas, float wallCoeff, float depth)
+void LevelView::RenderView()
 {
+    const float wallCoeff = 50.0f;
+    const float depth     = 300.0f;
+
+    auto& window = Game::Get().GetWindow();
+    auto& level  = Game::Get().GetCurrentLevel();
+
     // Keep original resolution before downscaling
     const auto originalView = window.getView();
 
     // Downscale to desired resolution
-    window.setView(sf::View(sf::FloatRect(0, 0, (float) buffer.getSize().x, (float) buffer.getSize().y)));
+    window.setView(sf::View(sf::FloatRect(0, 0, (float) m_Buffer->getSize().x, (float) m_Buffer->getSize().y)));
     const auto viewSize = window.getView().getSize();
 
     // Clear buffer before use
-    buffer.clear();
+    m_Buffer->clear();
 
     for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
     {
-        float canvasX = (screenX / viewSize.x) * canvas.size;
-        float angle = player.GetRotation() + atan((canvasX - canvas.size / 2) / canvas.distance);
+        float canvasX = (screenX / viewSize.x) * m_Canvas.size;
+        float angle = m_Player->GetRotation() + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
 
         Ray hit;
-        if (!Ray::Cast(level, player.GetPosition(), angle, hit))
+        if (!Ray::Cast(level, m_Player->GetPosition(), angle, hit))
             continue;
 
         sf::Color wallColor = CalculateLight(window, level, hit, depth);
 
         // Correct the fishbowl effect
-        hit.distance *= cos(player.GetRotation() - angle);
+        hit.distance *= cos(m_Player->GetRotation() - angle);
 
         float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
         float floor = viewSize.y - ceiling;
@@ -86,18 +92,18 @@ static void RenderView(sf::RenderWindow& window, Level& level, Player& player, s
             sf::Vertex(sf::Vector2f(screenX + 0.5f, viewSize.y), wallColor)
         };
 
-        buffer.draw(sCeiling, 2, sf::Lines);
-        buffer.draw(sWall, 2, sf::Lines);
-        buffer.draw(sFloor, 2, sf::Lines);
+        m_Buffer->draw(sCeiling, 2, sf::Lines);
+        m_Buffer->draw(sWall, 2, sf::Lines);
+        m_Buffer->draw(sFloor, 2, sf::Lines);
     }
 
-    buffer.display();
+    m_Buffer->display();
 
-    window.draw(sf::Sprite(buffer.getTexture()));
+    window.draw(sf::Sprite(m_Buffer->getTexture()));
     window.setView(originalView); // Upscale buffer to original resolution
 }
 
 void LevelView::Render(float dt)
 {
-    RenderView(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, *m_Buffer, m_Canvas, 50.0f, 300.0f);
+    RenderView();
 }

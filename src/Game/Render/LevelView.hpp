@@ -23,6 +23,7 @@ public:
     }
 
     void Render(float dt) override;
+    void RenderView();
 
 private:
     Canvas m_Canvas;
