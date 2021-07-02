@@ -21,55 +21,58 @@ void Player::Rotate(float amount)
     SetRotation(GetRotation() + amount);
 }
 
-static void CheckBounds(sf::Vector2f& pos, float radius, const sf::Vector2i& bounds)
+void Player::CheckBounds()
 {
-    if (pos.x > bounds.x - radius)
-        pos.x = bounds.x - radius;
+    auto bounds = Game::Get().GetCurrentLevel().GetSize();
 
-    if (pos.y > bounds.y - radius)
-        pos.y = bounds.y - radius;
+    if (m_Position.x > bounds.x - m_Radius)
+        m_Position.x = bounds.x - m_Radius;
 
-    if (pos.x < radius)
-        pos.x = radius;
+    if (m_Position.y > bounds.y - m_Radius)
+        m_Position.y = bounds.y - m_Radius;
 
-    if (pos.y < radius)
-        pos.y = radius;
+    if (m_Position.x < m_Radius)
+        m_Position.x = m_Radius;
+
+    if (m_Position.y < m_Radius)
+        m_Position.y = m_Radius;
 }
 
-static void CheckCollision(Level& level, Player& player, int sides)
+void Player::CheckCollision(int sides)
 {
+    auto& level = Game::Get().GetCurrentLevel();
+
     for (int i = 0; i < sides; i++)
     {
         float angle = i * (2.0f / sides) * Math::PI;
-        sf::Vector2f pos = player.GetPosition();
 
         Ray hit;
-        if (Ray::Cast(level, pos, angle, hit))
+        if (Ray::Cast(level, m_Position, angle, hit))
         {
-            if (hit.distance < player.GetRadius())
-                player.SetPosition(pos - hit.dir * (player.GetRadius() - hit.distance));
+            if (hit.distance < m_Radius)
+                m_Position -= hit.dir * (m_Radius - hit.distance);
         }
     }
 }
 
-static void HandleInput(float dt, Player& player)
+void Player::HandleInput(float dt)
 {
     if (Input::GetKey(sf::Keyboard::W))
-        player.Move(player.GetSpeed() * dt);
+        Move(m_Speed * dt);
 
     if (Input::GetKey(sf::Keyboard::S))
-        player.Move(-player.GetSpeed() * dt);
+        Move(-m_Speed * dt);
 
     if (Input::GetKey(sf::Keyboard::A))
-        player.Rotate(-player.GetSpeed() * dt * Math::Deg2Rad);
+        Rotate(-m_Speed * dt * Math::Deg2Rad);
 
     if (Input::GetKey(sf::Keyboard::D))
-        player.Rotate(player.GetSpeed() * dt * Math::Deg2Rad);
+        Rotate(m_Speed * dt * Math::Deg2Rad);
 }
 
 void Player::Update(float dt)
 {
-    HandleInput(dt, *this);
-    CheckBounds(m_Position, m_Radius, Game::Get().GetCurrentLevel().GetSize());
-    CheckCollision(Game::Get().GetCurrentLevel(), *this, 16);
+    HandleInput(dt);
+    CheckBounds();
+    CheckCollision(16);
 }

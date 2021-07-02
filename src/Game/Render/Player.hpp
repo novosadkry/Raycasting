@@ -43,6 +43,11 @@ public:
     void Update(float dt) override;
 
 private:
+    void HandleInput(float dt);
+
+    void CheckBounds();
+    void CheckCollision(int sides);
+
     sf::Vector2f m_Position;
     float m_Rotation;
     float m_Radius;
