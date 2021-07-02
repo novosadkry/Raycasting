@@ -8,11 +8,14 @@
 
 #include "Player.hpp"
 
-static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player, sf::Vector2i size, float spacing = 1.0f, sf::Vector2f origin = {0, 0})
+void MiniMap::RenderMiniMap()
 {
+    auto& window = Game::Get().GetWindow();
+    auto& level  = Game::Get().GetCurrentLevel();
+
     // Initialize cell shape
-    float cellWidth = (float) size.x / level.GetGrid().GetSize().x;
-    float cellHeight = (float) size.y / level.GetGrid().GetSize().y;
+    float cellWidth = (float) m_Size.x / level.GetGrid().GetSize().x;
+    float cellHeight = (float) m_Size.y / level.GetGrid().GetSize().y;
     sf::RectangleShape cShape(sf::Vector2f(cellWidth, cellHeight));
 
     // Render individual cells
@@ -35,10 +38,10 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
                     break;
             }
 
-            cShape.setOutlineThickness(spacing);
+            cShape.setOutlineThickness(m_Spacing);
             cShape.setPosition(
-                x * cellWidth + origin.x,
-                y * cellHeight + origin.y
+                x * cellWidth + m_Origin.x,
+                y * cellHeight + m_Origin.y
             );
 
             window.draw(cShape);
@@ -46,49 +49,120 @@ static void RenderMinimap(sf::RenderWindow& window, Level& level, Player& player
     }
 
     // Normalize player values
-    float pShapeRadius = (player.GetRadius() / level.GetSize().x) * size.x;
+    float pShapeRadius = (m_Player->GetRadius() / level.GetSize().x) * m_Size.x;
     sf::Vector2f pShapePos = {
-        (player.GetPosition().x / level.GetSize().x) * size.x,
-        (player.GetPosition().y / level.GetSize().y) * size.y
+        (m_Player->GetPosition().x / level.GetSize().x) * m_Size.x + m_Origin.x,
+        (m_Player->GetPosition().y / level.GetSize().y) * m_Size.y + m_Origin.y
     };
 
-    Ray ray;
-    Ray::Cast(level, player.GetPosition(), player.GetRotation(), ray);
+    if (m_Flags & SHOW_PLAYER)
+    {
+        // Draw player shape
+        sf::CircleShape pShape(pShapeRadius);
+        pShape.setOrigin(pShapeRadius, pShapeRadius);
+        pShape.setFillColor(sf::Color::Green);
+        pShape.setOutlineColor(sf::Color::Black);
+        pShape.setOutlineThickness(1);
+        pShape.setPosition(pShapePos);
+        window.draw(pShape);
 
-    // Draw ray hit
-    sf::CircleShape hitCircle(pShapeRadius / 2);
-    hitCircle.setOrigin(pShapeRadius / 2, pShapeRadius / 2);
-    hitCircle.setFillColor(sf::Color::Red);
-    sf::Vector2f hitPos = {
-        (ray.hitPos.x / level.GetSize().x) * size.x,
-        (ray.hitPos.y / level.GetSize().y) * size.y
-    };
-    hitCircle.setPosition(pShapePos + hitPos + origin);
+        const float dirWidth = 0.010f * m_Size.x;
+        const float dirLength = 0.030f * m_Size.x;
 
-    // Initialize player shape
-    sf::CircleShape pShape(pShapeRadius);
-    pShape.setOrigin(pShapeRadius, pShapeRadius);
-    pShape.setFillColor(sf::Color::Green);
-    pShape.setOutlineColor(sf::Color::Black);
-    pShape.setOutlineThickness(1);
-    pShape.setPosition(pShapePos + origin);
+        // Draw player look direction
+        sf::RectangleShape pDirShape({dirLength, dirWidth});
+        pDirShape.setFillColor(sf::Color::Blue);
+        pDirShape.setPosition(pShapePos);
+        pDirShape.rotate(m_Player->GetRotation() * Math::Rad2Deg);
+        window.draw(pDirShape);
+    }
 
-    // Initialize player direction shape
-    sf::RectangleShape pDirShape(sf::Vector2f(pShapeRadius * 2, pShapeRadius / 2));
-    pDirShape.setFillColor(sf::Color::Blue);
-    pDirShape.setPosition(pShape.getPosition() + origin);
-    pDirShape.rotate(player.GetRotation() * Math::Rad2Deg);
+    if (m_Flags & SHOW_LIGHTS)
+    {
+        const float lightWidth = 0.020f * m_Size.x;
 
-    // Render player
-    // - Sets shape position relative to minimap size and level size
-    // - Shows player forward direction
-    // - Renders ray hit
-    window.draw(pShape);
-    window.draw(pDirShape);
-    window.draw(hitCircle);
+        // Draw lights
+        for (Light& light : level.GetLights())
+        {
+            sf::RectangleShape lightShape({lightWidth, lightWidth});
+            lightShape.setFillColor(sf::Color::Yellow);
+            lightShape.setOutlineColor(sf::Color::Black);
+            lightShape.setOutlineThickness(1);
+            lightShape.rotate(45);
+            lightShape.setPosition({
+                (light.position.x / level.GetSize().x) * m_Size.x + m_Origin.x,
+                (light.position.y / level.GetSize().y) * m_Size.y + m_Origin.y
+            });
+
+            window.draw(lightShape);
+        }
+    }
+
+    // Draw rays
+    for (int i = -1; i <= 1; i++)
+    {
+        const float hitCircleRadius = 0.010f * m_Size.x;
+        const float rayWidth = 0.010f * m_Size.x;
+
+        Ray hitRay;
+
+        if (m_Flags & SHOW_WALL_RAYS)
+        {
+            float angle = m_Player->GetRotation() + (1 / Math::PI) * i;
+            Ray::Cast(level, m_Player->GetPosition(), angle, hitRay);
+
+            // Draw ray direction
+            sf::RectangleShape hitDirShape({(hitRay.distance / level.GetSize().x) * m_Size.x, rayWidth});
+            hitDirShape.setFillColor(sf::Color::Blue);
+            hitDirShape.setPosition(pShapePos);
+            hitDirShape.rotate(angle * Math::Rad2Deg);
+            window.draw(hitDirShape);
+
+            // Draw ray hit
+            sf::CircleShape hitCircle(hitCircleRadius);
+            hitCircle.setOrigin(hitCircleRadius / 2, hitCircleRadius / 2);
+            hitCircle.setFillColor(sf::Color::Red);
+            hitCircle.setPosition({
+                (hitRay.hitPos.x / level.GetSize().x) * m_Size.x + m_Origin.x,
+                (hitRay.hitPos.y / level.GetSize().y) * m_Size.y + m_Origin.y
+            });
+            window.draw(hitCircle);
+        }
+
+        if (m_Flags & SHOW_LIGHT_RAYS)
+        {
+            for (Light& light : level.GetLights())
+            {
+                Ray lightRay;
+                float angleToHit = Math::Vector2Angle(hitRay.hitPos - light.position);
+                Ray::Cast(level, light.position, angleToHit, lightRay);
+
+                // Draw light direction
+                sf::RectangleShape lightDirShape({(lightRay.distance / level.GetSize().x) * m_Size.x, rayWidth});
+                lightDirShape.setFillColor(sf::Color::Yellow);
+                lightDirShape.setPosition({
+                    (light.position.x / level.GetSize().x) * m_Size.x + m_Origin.x,
+                    (light.position.y / level.GetSize().y) * m_Size.y + m_Origin.y
+                });
+                lightDirShape.rotate(angleToHit * Math::Rad2Deg);
+                window.draw(lightDirShape);
+
+                // Draw light ray hit
+                sf::CircleShape lightHitCircle(hitCircleRadius);
+                lightHitCircle.setOrigin(hitCircleRadius / 2, hitCircleRadius / 2);
+                lightHitCircle.setFillColor(sf::Color::Red);
+                sf::Vector2f lightHitPos = {
+                    (lightRay.hitPos.x / level.GetSize().x) * m_Size.x,
+                    (lightRay.hitPos.y / level.GetSize().y) * m_Size.y
+                };
+                lightHitCircle.setPosition(lightHitPos + m_Origin);
+                window.draw(lightHitCircle);
+            }
+        }
+    }
 }
 
 void MiniMap::Render(float dt)
 {
-    RenderMinimap(Game::Get().GetWindow(), Game::Get().GetCurrentLevel(), *m_Player, m_Size);
+    RenderMiniMap();
 }
