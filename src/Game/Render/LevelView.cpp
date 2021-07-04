@@ -20,7 +20,7 @@ static sf::Color CalculateLight(sf::RenderWindow& window, Level& level, Ray& hit
             // Squared distance to save computation time
             if (abs(lightRay.distance * lightRay.distance - distToHit) < 0.5f)
             {
-                float w = pow(fmax(1 - (lightRay.distance / depth), 0), 1 / light.intensity);
+                float w = fmax(1 - (lightRay.distance / (depth * light.intensity)), 0);
 
                 r += w * light.color.r;
                 g += w * light.color.g;
