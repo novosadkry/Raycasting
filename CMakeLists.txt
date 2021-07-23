@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.10)
 
 project(Raycasting)
 
+macro(option_def label desc default)
+	option(RAY_${label} ${desc} ${default})
+	if(RAY_${label})
+		add_definitions(-D${label})
+	endif()
+endmacro(option_def)
+
+option_def("NDEBUG" "Disables internal debugging" OFF)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
 	${CMAKE_BINARY_DIR}/bin
 )
