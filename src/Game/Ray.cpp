@@ -45,7 +45,7 @@ bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit
     }
 
     float distance = 0;
-    sf::Vector2i hitSide{};
+    sf::Vector2f normal;
 
     for (int i = 0; i < 128; i++)
     {
@@ -56,7 +56,9 @@ bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit
             cell.x += step.x;
             ray.x += delta.x;
 
-            hitSide = { 1, 0 };
+            normal = dir.x < 0
+                ? sf::Vector2f(  1, 0 )
+                : sf::Vector2f( -1, 0 );
         }
 
         else
@@ -64,12 +66,14 @@ bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit
             cell.y += step.y;
             ray.y += delta.y;
 
-            hitSide = { 0, 1 };
+            normal = dir.y < 0
+                ? sf::Vector2f( 0,  1 )
+                : sf::Vector2f( 0, -1 );
         }
 
         if (level.GetGrid().Get(cell) == Wall)
         {
-            hit = Ray(distance, dir, hitSide, (distance * dir) + position);
+            hit = Ray(distance, dir, normal, (distance * dir) + position);
             return true;
         }
     }
