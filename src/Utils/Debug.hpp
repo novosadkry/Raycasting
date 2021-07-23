@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cassert>
 #include <iostream>
 
@@ -13,3 +15,33 @@
     #define LOG(x)
     #define ASSERT(x)
 #endif
+
+namespace sf
+{
+    template<typename T>
+    class Vector2;
+
+    template<typename T>
+    class Vector3;
+
+    template<typename T>
+    std::ostream& operator<<(std::ostream& os, const Vector2<T>& vector)
+    {
+        return os
+            << typeid(T).name()
+            << "{ " << vector.x
+            << ", " << vector.y
+            << " }";
+    }
+
+    template<typename T>
+    std::ostream& operator<<(std::ostream& os, const Vector3<T>& vector)
+    {
+        return os
+            << typeid(T).name()
+            << "{ " << vector.x
+            << ", " << vector.y
+            << ", " << vector.z
+            << " }";
+    }
+};
