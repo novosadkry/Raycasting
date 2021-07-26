@@ -1,6 +1,5 @@
 #pragma once
-
-#include <SFML/Window.hpp>
+#include <Rpch.hpp>
 
 using sf::Keyboard;
 using sf::Mouse;

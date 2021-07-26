@@ -1,8 +1,6 @@
 #pragma once
 
-#include <memory>
 #include <Utils/Debug.hpp>
-#include <SFML/Graphics.hpp>
 
 #include "Level.hpp"
 #include "Render/Player.hpp"

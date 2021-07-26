@@ -1,7 +1,7 @@
 #pragma once
+#include <Rpch.hpp>
 
 #include <Game/Game.hpp>
-#include <SFML/System/Vector2.hpp>
 #include "Object.hpp"
 
 class Player : public Object

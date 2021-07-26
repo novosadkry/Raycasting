@@ -29,4 +29,5 @@ set(LIBS
 )
 
 target_link_libraries(${TARGET} ${LIBS})
+target_precompile_headers(${TARGET} PRIVATE "src/Rpch.hpp")
 target_include_directories(${TARGET} PRIVATE "libs/SFML/include")

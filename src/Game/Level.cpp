@@ -4,8 +4,6 @@
 #include <Game/Render/MiniMap.hpp>
 #include <Game/Render/LevelView.hpp>
 
-#include <fstream>
-
 Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
 
 Level Level::From(const char* path)

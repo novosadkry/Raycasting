@@ -1,7 +1,5 @@
 #pragma once
-
-#include <cmath>
-#include <SFML/System/Vector2.hpp>
+#include <Rpch.hpp>
 
 namespace Math
 {
@@ -14,19 +12,19 @@ namespace Math
     inline sf::Vector2f Angle2Vector(float angle)
     {
         return sf::Vector2f(
-            cosf(angle),
-            sinf(angle)
+            cos(angle),
+            sin(angle)
         );
     }
 
     inline float Vector2Angle(sf::Vector2f vector)
     {
-        return atan2f(vector.y, vector.x);
+        return atan2(vector.y, vector.x);
     }
 
     inline float Length(const sf::Vector2f& vector)
     {
-        return sqrtf(vector.x * vector.x + vector.y * vector.y);
+        return sqrt(vector.x * vector.x + vector.y * vector.y);
     }
 
     inline float LengthSqr(const sf::Vector2f& vector)

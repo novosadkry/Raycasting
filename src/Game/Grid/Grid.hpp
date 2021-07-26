@@ -1,8 +1,7 @@
 #pragma once
-#include "Cell.hpp"
+#include <Rpch.hpp>
 
-#include <SFML/System/Vector2.hpp>
-#include <vector>
+#include "Cell.hpp"
 
 class Grid
 {

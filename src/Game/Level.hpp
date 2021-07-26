@@ -1,13 +1,9 @@
 #pragma once
-
-#include <SFML/System/Vector2.hpp>
+#include <Rpch.hpp>
 
 #include <Game/Grid/Grid.hpp>
 #include <Game/Render/Light.hpp>
 #include <Game/Render/Object.hpp>
-
-#include <vector>
-#include <memory>
 
 class Level
 {

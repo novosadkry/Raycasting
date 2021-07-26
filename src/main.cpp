@@ -1,4 +1,5 @@
-#include <SFML/Main.hpp>
+#include <Rpch.hpp>
+
 #include <Game/Game.hpp>
 
 int main(int argc, char** argv)
