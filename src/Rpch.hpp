@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <chrono>
 #include <fstream>
 #include <cstdint>
 #include <cassert>
