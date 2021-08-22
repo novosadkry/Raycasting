@@ -1,16 +1,18 @@
 #pragma once
 #include <Rpch.hpp>
 
+#include <Utils/Serialize.hpp>
 #include <Game/Grid/Grid.hpp>
 #include <Game/Render/Light.hpp>
 #include <Game/Render/Object.hpp>
 
-class Level
+class Level : Serializable<Level>
 {
 public:
     static Level Empty;
     static Level From(const char* path);
     static void Save(Level& level, const char* path);
+    static std::unique_ptr<Level> Deserialize(std::istream& stream);
 
 public:
     Level(sf::Vector2i size, Grid grid)
@@ -46,6 +48,8 @@ public:
 
     void OnLoad();
     void OnUnload();
+
+    void Serialize(std::ostream& stream) override;
 
 private:
     Grid m_Grid;

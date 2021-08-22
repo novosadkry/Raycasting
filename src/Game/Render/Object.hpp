@@ -4,7 +4,8 @@
 class Object
 {
 public:
-    Object() { }
+    Object() = default;
+    virtual ~Object() = default;
 
     virtual void Update(float dt) { }
     virtual void Render(float dt) { }

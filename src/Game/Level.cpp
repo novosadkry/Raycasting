@@ -9,32 +9,13 @@ Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
 Level Level::From(const char* path)
 {
     std::ifstream file(path, std::ios_base::binary);
-
-    sf::Vector2i levelSize;
-    file.read(reinterpret_cast<char*>(&levelSize), sizeof(levelSize));
-
-    sf::Vector2i gridSize;
-    file.read(reinterpret_cast<char*>(&gridSize), sizeof(gridSize));
-
-    Cell* cells = new Cell[gridSize.x * gridSize.y];
-    file.read(reinterpret_cast<char*>(cells), sizeof(Cell) * gridSize.x * gridSize.y);
-
-    Grid grid(gridSize, cells);
-    delete cells;
-
-    return Level(levelSize, std::move(grid));
+    return *Deserialize(file);
 }
 
 void Level::Save(Level& level, const char* path)
 {
     std::ofstream file(path, std::ios_base::binary);
-
-    Grid& grid = level.GetGrid();
-    sf::Vector2i gridSize = grid.GetSize();
-
-    file.write(reinterpret_cast<char*>(&level.m_Size), sizeof(sf::Vector2i));
-    file.write(reinterpret_cast<char*>(&gridSize), sizeof(sf::Vector2i));
-    file.write(reinterpret_cast<char*>(grid.GetCells().data()), sizeof(Cell) * gridSize.x * gridSize.y);
+    level.Serialize(file);
 }
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
@@ -79,4 +60,31 @@ void Level::OnLoad()
 void Level::OnUnload()
 {
     m_Objects.clear();
+}
+
+void Level::Serialize(std::ostream& stream)
+{
+    sf::Vector2i gridSize = m_Grid.GetSize();
+    Cell* gridData = m_Grid.GetCells().data();
+
+    stream.write(reinterpret_cast<char*>(&m_Size), sizeof(sf::Vector2i));
+    stream.write(reinterpret_cast<char*>(&gridSize), sizeof(sf::Vector2i));
+    stream.write(reinterpret_cast<char*>(gridData), sizeof(Cell) * gridSize.x * gridSize.y);
+}
+
+std::unique_ptr<Level> Level::Deserialize(std::istream& stream)
+{
+    sf::Vector2i levelSize;
+    stream.read(reinterpret_cast<char*>(&levelSize), sizeof(levelSize));
+
+    sf::Vector2i gridSize;
+    stream.read(reinterpret_cast<char*>(&gridSize), sizeof(gridSize));
+
+    Cell* cells = new Cell[gridSize.x * gridSize.y];
+    stream.read(reinterpret_cast<char*>(cells), sizeof(Cell) * gridSize.x * gridSize.y);
+
+    Grid grid(gridSize, cells);
+    delete cells;
+
+    return std::make_unique<Level>(levelSize, std::move(grid));
 }
