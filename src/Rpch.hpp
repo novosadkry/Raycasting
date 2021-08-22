@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <chrono>
+#include <sstream>
 #include <fstream>
 #include <cstdint>
 #include <cassert>

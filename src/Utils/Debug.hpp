@@ -1,14 +1,25 @@
 #pragma once
 #include <Rpch.hpp>
 
-#ifndef NDEBUG
+#ifdef DEBUG
     #define LOG(x) std::cout    \
         << "[" << __FILE__      \
         << ":" << __func__      \
         << ":" << __LINE__      \
-        << "] " << (x)          \
+        << "] " << x            \
         << std::endl;
+
     #define ASSERT(x) assert((x));
+
+    #ifdef TRACK_MEM_ALLOC
+        inline void* operator new(size_t size)
+        {
+            static int total = 0;
+            LOG("Allocating " << size << " bytes (total " << ++total << ")");
+            __debugbreak();
+            return malloc(size);
+        }
+    #endif
 #else
     #define LOG(x)
     #define ASSERT(x)

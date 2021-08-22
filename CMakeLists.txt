@@ -9,7 +9,8 @@ macro(option_def label desc default)
 	endif()
 endmacro(option_def)
 
-option_def("NDEBUG" "Disables internal debugging" OFF)
+option_def("DEBUG" "Enables internal debugging" ON)
+option_def("TRACK_MEM_ALLOC" "Enables memory tracking" OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
 	${CMAKE_BINARY_DIR}/bin
