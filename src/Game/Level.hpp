@@ -8,8 +8,8 @@
 class Level
 {
 public:
-    static Level Empty;
-    static Level From(const char* path);
+    static const Level Empty;
+    static std::unique_ptr<Level> From(const char* path);
     static void Save(Level& level, const char* path);
 
 public:

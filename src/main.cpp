@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 
 	auto level = argc > 1
 		? Level::From(argv[1])
-		: Level::Empty;
+		: std::make_unique<Level>(Level::Empty);
 
 	game.LoadLevel(std::move(level));
 

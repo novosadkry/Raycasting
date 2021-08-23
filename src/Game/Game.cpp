@@ -16,12 +16,12 @@ void Game::PollEvents()
         Input::HandleEvent(event);
 }
 
-void Game::LoadLevel(Level level)
+void Game::LoadLevel(std::unique_ptr<Level> level)
 {
     if (m_CurrentLevel)
         m_CurrentLevel->OnUnload();
 
-    m_CurrentLevel = std::make_unique<Level>(std::move(level));
+    m_CurrentLevel = std::move(level);
     m_CurrentLevel->OnLoad();
 }
 

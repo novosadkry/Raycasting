@@ -4,9 +4,9 @@
 #include <Game/Render/MiniMap.hpp>
 #include <Game/Render/LevelView.hpp>
 
-Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
+const Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
 
-Level Level::From(const char* path)
+std::unique_ptr<Level> Level::From(const char* path)
 {
     std::ifstream file(path, std::ios_base::binary);
 
@@ -22,7 +22,7 @@ Level Level::From(const char* path)
     Grid grid(gridSize, cells);
     delete cells;
 
-    return Level(levelSize, std::move(grid));
+    return std::make_unique<Level>(levelSize, std::move(grid));
 }
 
 void Level::Save(Level& level, const char* path)
