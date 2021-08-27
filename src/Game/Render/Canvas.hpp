@@ -1,7 +1,5 @@
 #pragma once
-#include <Rpch.hpp>
-
-#include <Utils/Math.hpp>
+#include <Core.hpp>
 
 struct Canvas
 {

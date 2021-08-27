@@ -1,12 +1,9 @@
 #pragma once
-#include <Rpch.hpp>
+#include <Core.hpp>
 
 #include "Object.hpp"
 #include "Player.hpp"
 #include "Canvas.hpp"
-
-#include <Utils/Math.hpp>
-#include <Utils/Debug.hpp>
 
 class LevelView : public Object
 {
