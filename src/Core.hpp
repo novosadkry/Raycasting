@@ -4,6 +4,7 @@
 
 #include <Utils/Math.hpp>
 #include <Utils/Debug.hpp>
+#include <Utils/Memory.hpp>
 #include <Utils/Serialize.hpp>
 
 #include <Input/Input.hpp>

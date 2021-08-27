@@ -8,7 +8,7 @@
 class LevelView : public Object
 {
 public:
-    LevelView(std::shared_ptr<Player> player, sf::Vector2u resolution, Canvas canvas)
+    LevelView(Shared<Player> player, sf::Vector2u resolution, Canvas canvas)
         : m_Player(player), m_Canvas(canvas)
     {
         auto buffer = new sf::RenderTexture();
@@ -16,7 +16,7 @@ public:
         if (!buffer->create(resolution.x, resolution.y))
             LOG("Unable to create RenderTexture!");
 
-        m_Buffer = std::unique_ptr<sf::RenderTexture>(buffer);
+        m_Buffer = Unique<sf::RenderTexture>(buffer);
     }
 
     void Render(float dt) override;
@@ -24,6 +24,6 @@ public:
 
 private:
     Canvas m_Canvas;
-    std::shared_ptr<Player> m_Player;
-    std::unique_ptr<sf::RenderTexture> m_Buffer;
+    Shared<Player> m_Player;
+    Unique<sf::RenderTexture> m_Buffer;
 };

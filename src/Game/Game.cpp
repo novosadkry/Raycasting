@@ -6,7 +6,7 @@ static sf::Clock deltaClock;
 
 Game* Game::s_Instance = nullptr;
 
-Game::Game(std::unique_ptr<sf::RenderWindow> window)
+Game::Game(Unique<sf::RenderWindow> window)
     : m_Window(std::move(window)) { }
 
 void Game::PollEvents()
@@ -16,7 +16,7 @@ void Game::PollEvents()
         Input::HandleEvent(event);
 }
 
-void Game::LoadLevel(std::unique_ptr<Level> level)
+void Game::LoadLevel(Unique<Level> level)
 {
     if (m_CurrentLevel)
         m_CurrentLevel->OnUnload();

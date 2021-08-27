@@ -18,7 +18,7 @@ public:
     {
         ASSERT(!s_Instance);
 
-        auto rw = std::make_unique<sf::RenderWindow>(std::forward<Args>(args)...);
+        auto rw = MakeUnique<sf::RenderWindow>(std::forward<Args>(args)...);
         rw->setVerticalSyncEnabled(true);
 
         s_Instance = new Game(std::move(rw));
@@ -29,7 +29,7 @@ private:
     static Game* s_Instance;
 
 public:
-    Game(std::unique_ptr<sf::RenderWindow> window);
+    Game(Unique<sf::RenderWindow> window);
 
     void Tick();
     void PollEvents();
@@ -56,9 +56,9 @@ public:
         return *m_CurrentLevel;
     }
 
-    void LoadLevel(std::unique_ptr<Level> level);
+    void LoadLevel(Unique<Level> level);
 
 private:
-    std::unique_ptr<sf::RenderWindow> m_Window;
-    std::unique_ptr<Level> m_CurrentLevel;
+    Unique<sf::RenderWindow> m_Window;
+    Unique<Level> m_CurrentLevel;
 };

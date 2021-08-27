@@ -6,5 +6,5 @@ class Serializable
 {
 public:
     virtual void Serialize(std::ostream& stream) = 0;
-    static std::unique_ptr<T> Deserialize(std::istream& stream);
+    static Unique<T> Deserialize(std::istream& stream);
 };

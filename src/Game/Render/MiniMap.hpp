@@ -23,13 +23,13 @@ inline MiniMapFlags operator|(const MiniMapFlags& lhs, const MiniMapFlags& rhs)
 class MiniMap : public Object
 {
 public:
-    MiniMap(std::shared_ptr<Player> player, sf::Vector2i size)
+    MiniMap(Shared<Player> player, sf::Vector2i size)
         : m_Spacing(1.0f), m_Size(size), m_Flags(SHOW_PLAYER | SHOW_LIGHTS), m_Origin({0, 0}), m_Player(player) { }
 
-    MiniMap(std::shared_ptr<Player> player, sf::Vector2i size, MiniMapFlags flags)
+    MiniMap(Shared<Player> player, sf::Vector2i size, MiniMapFlags flags)
         : m_Spacing(1.0f), m_Size(size), m_Flags(flags), m_Origin({0, 0}), m_Player(player) { }
 
-    MiniMap(std::shared_ptr<Player> player, sf::Vector2i size, float spacing, sf::Vector2f origin, MiniMapFlags flags)
+    MiniMap(Shared<Player> player, sf::Vector2i size, float spacing, sf::Vector2f origin, MiniMapFlags flags)
         : m_Spacing(spacing), m_Size(size), m_Flags(flags), m_Origin(origin), m_Player(player) { }
 
     inline sf::Vector2i GetSize()
@@ -56,5 +56,5 @@ private:
     MiniMapFlags m_Flags;
     sf::Vector2f m_Origin;
 
-    std::shared_ptr<Player> m_Player;
+    Shared<Player> m_Player;
 };

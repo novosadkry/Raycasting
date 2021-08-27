@@ -6,7 +6,7 @@
 
 const Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
 
-std::unique_ptr<Level> Level::From(const char* path)
+Unique<Level> Level::From(const char* path)
 {
     std::ifstream file(path, std::ios_base::binary);
 
@@ -22,7 +22,7 @@ std::unique_ptr<Level> Level::From(const char* path)
     Grid grid(gridSize, cells);
     delete cells;
 
-    return std::make_unique<Level>(levelSize, std::move(grid));
+    return MakeUnique<Level>(levelSize, std::move(grid));
 }
 
 void Level::Save(Level& level, const char* path)
@@ -62,7 +62,7 @@ void Level::Update(float dt)
 
 void Level::OnLoad()
 {
-    auto player = std::make_shared<Player>(10.0f, 100.0f);
+    auto player = MakeShared<Player>(10.0f, 100.0f);
     player->SetPosition({100, 100});
     player->SetRotation(0);
 
@@ -72,8 +72,8 @@ void Level::OnLoad()
     m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
 
     m_Objects.push_back(player);
-    m_Objects.push_back(std::make_shared<LevelView>(player, sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
-    m_Objects.push_back(std::make_shared<MiniMap>(player, sf::Vector2i(200, 200)));
+    m_Objects.push_back(MakeShared<LevelView>(player, sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
+    m_Objects.push_back(MakeShared<MiniMap>(player, sf::Vector2i(200, 200)));
 }
 
 void Level::OnUnload()

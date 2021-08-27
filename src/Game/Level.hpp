@@ -9,7 +9,7 @@ class Level
 {
 public:
     static const Level Empty;
-    static std::unique_ptr<Level> From(const char* path);
+    static Unique<Level> From(const char* path);
     static void Save(Level& level, const char* path);
 
 public:
@@ -51,5 +51,5 @@ private:
     Grid m_Grid;
     sf::Vector2i m_Size;
     std::vector<Light> m_Lights;
-    std::vector<std::shared_ptr<Object>> m_Objects;
+    std::vector<Shared<Object>> m_Objects;
 };
