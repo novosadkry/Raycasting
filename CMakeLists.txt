@@ -10,6 +10,7 @@ macro(option_def label desc default)
 endmacro(option_def)
 
 option_def("DEBUG" "Enables internal debugging" ON)
+option_def("BUILD_W_ALL" "Show all build warnings" OFF)
 option_def("TRACK_MEM_ALLOC" "Enables memory tracking" OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
@@ -28,6 +29,14 @@ set(LIBS
 	sfml-system
 	sfml-audio
 )
+
+if (RAY_BUILD_W_ALL)
+	if (MSVC)
+		target_compile_options(${TARGET} PRIVATE /W4 /Wall)
+	else()
+		target_compile_options(${TARGET} PRIVATE -Wall -Wextra -pedantic)
+	endif()
+endif()
 
 target_link_libraries(${TARGET} ${LIBS})
 target_precompile_headers(${TARGET} PRIVATE "src/Rpch.hpp")
