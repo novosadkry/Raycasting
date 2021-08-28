@@ -3,9 +3,11 @@
 
 #include "Cell.hpp"
 
-class Grid
+class Grid : public Serializable<Grid>
 {
 public:
+    SERIALIZE_BASE(Grid)
+
     Grid(sf::Vector2i size)
         : m_Size(size), m_Cells(size.x * size.y) { }
 

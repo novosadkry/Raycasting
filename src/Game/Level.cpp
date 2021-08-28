@@ -10,31 +10,15 @@ Unique<Level> Level::From(const char* path)
 {
     std::ifstream file(path, std::ios_base::binary);
 
-    sf::Vector2i levelSize;
-    file.read(reinterpret_cast<char*>(&levelSize), sizeof(levelSize));
-
-    sf::Vector2i gridSize;
-    file.read(reinterpret_cast<char*>(&gridSize), sizeof(gridSize));
-
-    Cell* cells = new Cell[gridSize.x * gridSize.y];
-    file.read(reinterpret_cast<char*>(cells), sizeof(Cell) * gridSize.x * gridSize.y);
-
-    Grid grid(gridSize, cells);
-    delete cells;
-
-    return MakeUnique<Level>(levelSize, std::move(grid));
+    auto level = ::Deserialize<Level>(file);
+    return MakeUnique<Level>(std::move(level));
 }
 
 void Level::Save(Level& level, const char* path)
 {
     std::ofstream file(path, std::ios_base::binary);
 
-    Grid& grid = level.GetGrid();
-    sf::Vector2i gridSize = grid.GetSize();
-
-    file.write(reinterpret_cast<char*>(&level.m_Size), sizeof(sf::Vector2i));
-    file.write(reinterpret_cast<char*>(&gridSize), sizeof(sf::Vector2i));
-    file.write(reinterpret_cast<char*>(grid.GetCells().data()), sizeof(Cell) * gridSize.x * gridSize.y);
+    ::Serialize<Level>(level, file);
 }
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
@@ -79,4 +63,18 @@ void Level::OnLoad()
 void Level::OnUnload()
 {
     m_Objects.clear();
+}
+
+void Level::Serialize(std::ostream &stream) const
+{
+    ::Serialize<sf::Vector2i>(m_Size, stream);
+    ::Serialize<Grid>(m_Grid, stream);
+}
+
+Level Level::Deserialize(std::istream &stream)
+{
+    sf::Vector2i levelSize = ::Deserialize<sf::Vector2i>(stream);
+    Grid grid = ::Deserialize<Grid>(stream);
+
+    return Level(levelSize, std::move(grid));
 }

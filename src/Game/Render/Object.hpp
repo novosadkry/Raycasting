@@ -1,7 +1,7 @@
 #pragma once
 #include <Core.hpp>
 
-class Object
+class Object : public Serializable<Object>
 {
 public:
     Object() = default;
@@ -9,4 +9,6 @@ public:
 
     virtual void Update(float dt) { }
     virtual void Render(float dt) { }
+
+    static Object Deserialize(std::istream &stream);
 };

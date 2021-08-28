@@ -7,6 +7,8 @@
 class Player : public Object
 {
 public:
+    SERIALIZE_HIERARCHY(Player, Object)
+
     Player(float radius, float speed)
         : m_Radius(radius), m_Speed(speed) { }
 

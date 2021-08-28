@@ -5,9 +5,11 @@
 #include <Game/Render/Light.hpp>
 #include <Game/Render/Object.hpp>
 
-class Level
+class Level : Serializable<Level>
 {
 public:
+    SERIALIZE_BASE(Level)
+
     static const Level Empty;
     static Unique<Level> From(const char* path);
     static void Save(Level& level, const char* path);

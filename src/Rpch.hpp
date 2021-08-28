@@ -15,3 +15,4 @@
 #include <cstdint>
 #include <cassert>
 #include <iostream>
+#include <functional>

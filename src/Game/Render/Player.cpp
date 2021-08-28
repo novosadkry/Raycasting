@@ -5,6 +5,8 @@
 #include <Utils/Math.hpp>
 #include <Game/Ray.hpp>
 
+SERIALIZE_HIERARCHY_REGISTER(Player)
+
 void Player::SetRotation(float newDir)
 {
     m_Rotation = newDir - floor(newDir / Math::PI_2) * Math::PI_2;
@@ -89,4 +91,14 @@ void Player::Update(float dt)
     HandleInput(dt);
     CheckBounds();
     CheckCollision(16);
+}
+
+void Player::Serialize(std::ostream &stream) const
+{
+
+}
+
+Player Player::Deserialize(std::istream &stream)
+{
+    throw std::logic_error("Function not yet implemented");
 }
