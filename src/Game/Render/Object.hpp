@@ -7,6 +7,7 @@ public:
     Object() = default;
     virtual ~Object() = default;
 
+    virtual void Init() { }
     virtual void Update(float dt) { }
     virtual void Render(float dt) { }
 

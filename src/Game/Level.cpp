@@ -56,8 +56,11 @@ void Level::OnLoad()
     m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
 
     m_Objects.push_back(player);
-    m_Objects.push_back(MakeShared<LevelView>(player, sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
-    m_Objects.push_back(MakeShared<MiniMap>(player, sf::Vector2i(200, 200)));
+    m_Objects.push_back(MakeShared<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
+    m_Objects.push_back(MakeShared<MiniMap>(sf::Vector2i(200, 200)));
+
+    for (auto& obj : m_Objects)
+        obj->Init();
 }
 
 void Level::OnUnload()

@@ -8,8 +8,8 @@
 class LevelView : public Object
 {
 public:
-    LevelView(Shared<Player> player, sf::Vector2u resolution, Canvas canvas)
-        : m_Player(player), m_Canvas(canvas)
+    LevelView(sf::Vector2u resolution, Canvas canvas)
+        : m_Canvas(canvas)
     {
         auto buffer = new sf::RenderTexture();
 
@@ -19,11 +19,13 @@ public:
         m_Buffer = Unique<sf::RenderTexture>(buffer);
     }
 
+    void Init() override;
     void Render(float dt) override;
     void RenderView();
 
 private:
     Canvas m_Canvas;
-    Shared<Player> m_Player;
     Unique<sf::RenderTexture> m_Buffer;
+
+    Weak<Player> m_Player;
 };

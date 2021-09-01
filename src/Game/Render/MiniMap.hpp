@@ -23,14 +23,14 @@ inline MiniMapFlags operator|(const MiniMapFlags& lhs, const MiniMapFlags& rhs)
 class MiniMap : public Object
 {
 public:
-    MiniMap(Shared<Player> player, sf::Vector2i size)
-        : m_Spacing(1.0f), m_Size(size), m_Flags(SHOW_PLAYER | SHOW_LIGHTS), m_Origin({0, 0}), m_Player(player) { }
+    MiniMap(sf::Vector2i size)
+        : m_Spacing(1.0f), m_Size(size), m_Flags(SHOW_PLAYER | SHOW_LIGHTS), m_Origin({0, 0}) { }
 
-    MiniMap(Shared<Player> player, sf::Vector2i size, MiniMapFlags flags)
-        : m_Spacing(1.0f), m_Size(size), m_Flags(flags), m_Origin({0, 0}), m_Player(player) { }
+    MiniMap(sf::Vector2i size, MiniMapFlags flags)
+        : m_Spacing(1.0f), m_Size(size), m_Flags(flags), m_Origin({0, 0}) { }
 
-    MiniMap(Shared<Player> player, sf::Vector2i size, float spacing, sf::Vector2f origin, MiniMapFlags flags)
-        : m_Spacing(spacing), m_Size(size), m_Flags(flags), m_Origin(origin), m_Player(player) { }
+    MiniMap(sf::Vector2i size, float spacing, sf::Vector2f origin, MiniMapFlags flags)
+        : m_Spacing(spacing), m_Size(size), m_Flags(flags), m_Origin(origin) { }
 
     inline sf::Vector2i GetSize()
     {
@@ -47,6 +47,7 @@ public:
         m_Flags = flags;
     }
 
+    void Init() override;
     void Render(float dt) override;
     void RenderMiniMap();
 
@@ -56,5 +57,5 @@ private:
     MiniMapFlags m_Flags;
     sf::Vector2f m_Origin;
 
-    Shared<Player> m_Player;
+    Weak<Player> m_Player;
 };
