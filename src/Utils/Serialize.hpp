@@ -81,7 +81,7 @@ class Serializable
 {
 private:
     using DeserializeFunc = std::function<T(std::istream&)>;
-    using HierarchyMap = std::map<std::string, DeserializeFunc>;
+    using HierarchyMap = std::unordered_map<std::string, DeserializeFunc>;
 
     static HierarchyMap& GetHierarchy()
     {
