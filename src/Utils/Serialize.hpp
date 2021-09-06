@@ -112,19 +112,19 @@ public:
 // ----------------------------------------------------------------------
 
 template<typename T, typename TBase = T>
-inline void Serialize(const std::enable_if_t<std::is_base_of<Serializable<TBase>, T>::value, T>& value, std::ostream& stream)
+inline void Serialize(const std::enable_if_t<std::is_base_of_v<Serializable<TBase>, T>, T>& value, std::ostream& stream)
 {
     value.Serialize(stream);
 }
 
 template<typename T, typename TBase = T>
-inline std::enable_if_t<std::is_base_of<Serializable<TBase>, T>::value, T> Deserialize(std::istream& stream)
+inline std::enable_if_t<std::is_base_of_v<Serializable<TBase>, T>, T> Deserialize(std::istream& stream)
 {
     return T::Deserialize(stream);
 }
 
 template<typename T>
-inline std::enable_if_t<std::is_base_of<Serializable<T>, T>::value, T> Deserialize(const std::string& name, std::istream& stream)
+inline std::enable_if_t<std::is_base_of_v<Serializable<T>, T>, T> Deserialize(const std::string& name, std::istream& stream)
 {
     return Serializable<T>::Deserialize(name, stream);
 }
@@ -132,13 +132,13 @@ inline std::enable_if_t<std::is_base_of<Serializable<T>, T>::value, T> Deseriali
 // ----------------------------------------------------------------------
 
 template<typename T>
-inline void Serialize(const std::enable_if_t<std::is_trivially_copyable<T>::value, T>& value, std::ostream& stream)
+inline void Serialize(const std::enable_if_t<std::is_trivially_copyable_v<T>, T>& value, std::ostream& stream)
 {
     stream.write(reinterpret_cast<const char*>(&value), sizeof(value));
 }
 
 template<typename T>
-inline std::enable_if_t<std::is_trivially_copyable<T>::value, T> Deserialize(std::istream& stream)
+inline std::enable_if_t<std::is_trivially_copyable_v<T>, T> Deserialize(std::istream& stream)
 {
     T value;
     stream.read(reinterpret_cast<char*>(&value), sizeof(value));
@@ -148,13 +148,13 @@ inline std::enable_if_t<std::is_trivially_copyable<T>::value, T> Deserialize(std
 // ----------------------------------------------------------------------
 
 template<typename T>
-inline void Serialize(const std::enable_if_t<std::is_trivially_copyable<T>::value, T>* value, int x, std::ostream& stream)
+inline void Serialize(const std::enable_if_t<std::is_trivially_copyable_v<T>, T>* value, int x, std::ostream& stream)
 {
     stream.write(reinterpret_cast<const char*>(value), sizeof(T) * x);
 }
 
 template<typename T>
-inline std::enable_if_t<std::is_trivially_copyable<T>::value, T>* Deserialize(int x, std::istream& stream)
+inline std::enable_if_t<std::is_trivially_copyable_v<T>, T>* Deserialize(int x, std::istream& stream)
 {
     T* value = new T[x];
     stream.read(reinterpret_cast<char*>(value), sizeof(T) * x);
