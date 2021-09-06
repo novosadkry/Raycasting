@@ -2,6 +2,7 @@
 #include <Core.hpp>
 
 #include <Game/Grid/Grid.hpp>
+#include <Game/Hierarchy.hpp>
 #include <Game/Render/Light.hpp>
 #include <Game/Render/Object.hpp>
 
@@ -36,35 +37,14 @@ public:
         return m_Size;
     }
 
+    inline Hierarchy& GetHierarchy()
+    {
+        return m_Hierarchy;
+    }
+
     inline std::vector<Light>& GetLights()
     {
         return m_Lights;
-    }
-
-    template<typename T>
-    Weak<T> GetObject()
-    {
-        for (auto& obj : m_Objects)
-        {
-            if (auto t = std::dynamic_pointer_cast<T>(obj))
-                return t;
-        }
-
-        return {};
-    }
-
-    template<typename T>
-    std::vector<Weak<T>> GetObjects()
-    {
-        std::vector<Weak<T>> refs;
-
-        for (auto& obj : m_Objects)
-        {
-            if (auto t = std::dynamic_pointer_cast<T>(obj))
-                refs.push_back(t);
-        }
-
-        return refs;
     }
 
     sf::Vector2i GetGridCellFromPos(sf::Vector2f pos);
@@ -78,6 +58,6 @@ public:
 private:
     Grid m_Grid;
     sf::Vector2i m_Size;
+    Hierarchy m_Hierarchy;
     std::vector<Light> m_Lights;
-    std::vector<Shared<Object>> m_Objects;
 };

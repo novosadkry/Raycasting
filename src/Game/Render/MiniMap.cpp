@@ -167,7 +167,9 @@ void MiniMap::RenderMiniMap()
 void MiniMap::Init()
 {
     auto& level = Game::Get().GetCurrentLevel();
-    m_Player = level.GetObject<Player>();
+
+    m_Player = level.GetHierarchy()
+                    .GetObject<Player>();
 }
 
 void MiniMap::Render(float dt)

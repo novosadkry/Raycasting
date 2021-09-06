@@ -108,7 +108,9 @@ void LevelView::RenderView()
 void LevelView::Init()
 {
     auto& level = Game::Get().GetCurrentLevel();
-    m_Player = level.GetObject<Player>();
+
+    m_Player = level.GetHierarchy()
+                    .GetObject<Player>();
 }
 
 void LevelView::Render(float dt)

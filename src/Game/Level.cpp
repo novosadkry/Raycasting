@@ -34,38 +34,38 @@ sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
 
 void Level::Render(float dt)
 {
-    for (auto& obj : m_Objects)
+    for (auto& [type, obj] : m_Hierarchy)
         obj->Render(dt);
 }
 
 void Level::Update(float dt)
 {
-    for (auto& obj : m_Objects)
+    for (auto& [type, obj] : m_Hierarchy)
         obj->Update(dt);
 }
 
 void Level::OnLoad()
 {
-    auto player = MakeShared<Player>(10.0f, 100.0f);
-    player->SetPosition({100, 100});
-    player->SetRotation(0);
+    Player player(10.0f, 100.0f);
+    player.SetPosition({100, 100});
+    player.SetRotation(0);
 
     m_Lights.push_back(Light({355, 400}, 1, sf::Color::Red));
     m_Lights.push_back(Light({150, 420}, 1, sf::Color::Green));
     m_Lights.push_back(Light({150, 120}, 1, sf::Color::Blue));
     m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
 
-    m_Objects.push_back(player);
-    m_Objects.push_back(MakeShared<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
-    m_Objects.push_back(MakeShared<MiniMap>(sf::Vector2i(200, 200)));
+    m_Hierarchy.AddObject<Player>(player);
+    m_Hierarchy.AddObject<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
+    m_Hierarchy.AddObject<MiniMap>(sf::Vector2i(200, 200));
 
-    for (auto& obj : m_Objects)
+    for (auto& [type, obj] : m_Hierarchy)
         obj->Init();
 }
 
 void Level::OnUnload()
 {
-    m_Objects.clear();
+    m_Hierarchy.Clear();
 }
 
 void Level::Serialize(std::ostream &stream) const

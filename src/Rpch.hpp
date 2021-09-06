@@ -15,5 +15,6 @@
 #include <cstdint>
 #include <cassert>
 #include <iostream>
+#include <typeindex>
 #include <functional>
 #include <unordered_map>
