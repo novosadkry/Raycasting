@@ -34,13 +34,13 @@ sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
 
 void Level::Render(float dt)
 {
-    for (auto& [type, obj] : m_Hierarchy)
+    for (auto&& [type, obj] : m_Hierarchy)
         obj->Render(dt);
 }
 
 void Level::Update(float dt)
 {
-    for (auto& [type, obj] : m_Hierarchy)
+    for (auto&& [type, obj] : m_Hierarchy)
         obj->Update(dt);
 }
 
@@ -59,7 +59,7 @@ void Level::OnLoad()
     m_Hierarchy.AddObject<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
     m_Hierarchy.AddObject<MiniMap>(sf::Vector2i(200, 200));
 
-    for (auto& [type, obj] : m_Hierarchy)
+    for (auto&& [type, obj] : m_Hierarchy)
         obj->Init();
 }
 

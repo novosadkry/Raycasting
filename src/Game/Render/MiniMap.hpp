@@ -57,5 +57,5 @@ private:
     MiniMapFlags m_Flags;
     sf::Vector2f m_Origin;
 
-    Weak<Player> m_Player;
+    Shared<Player> m_Player;
 };

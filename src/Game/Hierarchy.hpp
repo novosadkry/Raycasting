@@ -6,47 +6,104 @@
 class Hierarchy
 {
 public:
-    using ObjectMap = std::unordered_multimap<std::type_index, Shared<Object>>;
+    using Storage = std::vector<Shared<Object>>;
+    using ObjectMap = std::unordered_map<std::type_index, Storage>;
+
+    struct Iterator // This is like the worst code I've written so far
+    {
+        using Key = std::type_index;
+        using Value = Shared<Object>;
+
+        using ValueType = std::pair<const Key, Value&>;
+        using IteratorCategory = std::forward_iterator_tag;
+
+        explicit Iterator(
+            Hierarchy::ObjectMap::iterator begin,
+            Hierarchy::ObjectMap::iterator end
+        ) : mCurrent(begin), mEnd(end)
+        {
+            if (begin == end)
+                return;
+
+            auto& [key, value] = *mCurrent;
+            sCurrent = value.begin();
+            sEnd = value.end();
+        }
+
+        Iterator& operator++()
+        {
+            if (++sCurrent == sEnd)
+            {
+                if (++mCurrent != mEnd)
+                {
+                    auto& [key, value] = *mCurrent;
+                    sCurrent = value.begin();
+                    sEnd = value.end();
+                }
+            }
+
+            return *this;
+        }
+
+        Iterator operator++(int)
+        {
+            auto tmp = *this;
+            ++*this;
+            return tmp;
+        }
+
+        ValueType operator*()
+        {
+            return { mCurrent->first, *sCurrent };
+        }
+
+        bool operator==(const Iterator& other)
+        {
+            return mCurrent == other.mCurrent
+                || sCurrent == other.sCurrent;
+        };
+
+        bool operator!=(const Iterator& other)
+        {
+            return !(*this == other);
+        };
+
+        Hierarchy::ObjectMap::iterator mCurrent;
+        Hierarchy::ObjectMap::iterator mEnd;
+
+        Hierarchy::Storage::iterator sCurrent;
+        Hierarchy::Storage::iterator sEnd;
+    };
 
     template<typename T, typename... Args>
     void AddObject(Args&& ...args)
     {
-        m_Objects.emplace(typeid(T), MakeShared<T>(std::forward<Args>(args)...));
+        auto& storage = m_Objects[typeid(T)];
+        storage.emplace_back(MakeShared<T>(std::forward<Args>(args)...));
     }
 
     template<typename T>
-    Weak<T> GetObject()
+    Shared<T> GetObject()
     {
-        auto it = m_Objects.find(typeid(T));
+        auto& storage = m_Objects[typeid(T)];
 
-        for (; it != m_Objects.end(); ++it)
-        {
-            auto& obj = std::get<Shared<Object>>(*it);
-            return std::static_pointer_cast<T>(obj);
-        }
+        if (!storage.empty())
+            return std::static_pointer_cast<T>(storage[0]);
 
-        return {};
+        return nullptr;
     }
 
     template<typename T>
-    std::vector<Weak<T>> GetObjects()
+    Storage& GetObjects()
     {
-        std::vector<Weak<T>> refs;
-        auto it = m_Objects.find(typeid(T));
-
-        for (; it != m_Objects.end(); ++it)
-        {
-            auto& obj = std::get<Shared<Object>>(*it);
-            refs.push_back(std::static_pointer_cast<T>(obj));
-        }
-
-        return refs;
+        return m_Objects[typeid(T)];
     }
 
     template<typename T>
     void RemoveObject(T obj)
     {
-        m_Objects.erase(std::remove(m_Objects.begin(), m_Objects.end(), obj), m_Objects.end());
+        auto& storage = m_Objects[typeid(T)];
+        storage.erase(std::remove(storage.begin(), storage.end(), obj), storage.end());
     }
 
     template<typename T>
@@ -60,14 +117,14 @@ public:
         m_Objects.clear();
     }
 
-    ObjectMap::iterator begin()
+    Iterator begin()
     {
-        return m_Objects.begin();
+        return Iterator(m_Objects.begin(), m_Objects.end());
     }
 
-    ObjectMap::iterator end()
+    Iterator end()
     {
-        return m_Objects.end();
+        return Iterator(m_Objects.end(), m_Objects.end());
     }
 
 private:

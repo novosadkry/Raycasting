@@ -46,8 +46,6 @@ void LevelView::RenderView()
     auto& window = Game::Get().GetWindow();
     auto& level  = Game::Get().GetCurrentLevel();
 
-    auto player = m_Player.lock();
-
     // Keep original resolution before downscaling
     const auto originalView = window.getView();
 
@@ -61,16 +59,16 @@ void LevelView::RenderView()
     for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
     {
         float canvasX = (screenX / viewSize.x) * m_Canvas.size;
-        float angle = player->GetRotation() + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
+        float angle = m_Player->GetRotation() + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
 
         Ray hit;
-        if (!Ray::Cast(level, player->GetPosition(), angle, hit))
+        if (!Ray::Cast(level, m_Player->GetPosition(), angle, hit))
             continue;
 
         sf::Color wallColor = CalculateLight(window, level, hit, depth);
 
         // Correct the fishbowl effect
-        hit.distance *= cos(player->GetRotation() - angle);
+        hit.distance *= cos(m_Player->GetRotation() - angle);
 
         float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
         float floor = viewSize.y - ceiling;

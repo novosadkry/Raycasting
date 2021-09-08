@@ -13,8 +13,6 @@ void MiniMap::RenderMiniMap()
     auto& window = Game::Get().GetWindow();
     auto& level  = Game::Get().GetCurrentLevel();
 
-    auto player = m_Player.lock();
-
     // Initialize cell shape
     float cellWidth = (float) m_Size.x / level.GetGrid().GetSize().x;
     float cellHeight = (float) m_Size.y / level.GetGrid().GetSize().y;
@@ -51,10 +49,10 @@ void MiniMap::RenderMiniMap()
     }
 
     // Normalize player values
-    float pShapeRadius = (player->GetRadius() / level.GetSize().x) * m_Size.x;
+    float pShapeRadius = (m_Player->GetRadius() / level.GetSize().x) * m_Size.x;
     sf::Vector2f pShapePos = {
-        (player->GetPosition().x / level.GetSize().x) * m_Size.x + m_Origin.x,
-        (player->GetPosition().y / level.GetSize().y) * m_Size.y + m_Origin.y
+        (m_Player->GetPosition().x / level.GetSize().x) * m_Size.x + m_Origin.x,
+        (m_Player->GetPosition().y / level.GetSize().y) * m_Size.y + m_Origin.y
     };
 
     if (m_Flags & SHOW_PLAYER)
@@ -75,7 +73,7 @@ void MiniMap::RenderMiniMap()
         sf::RectangleShape pDirShape({dirLength, dirWidth});
         pDirShape.setFillColor(sf::Color::Blue);
         pDirShape.setPosition(pShapePos);
-        pDirShape.rotate(player->GetRotation() * Math::Rad2Deg);
+        pDirShape.rotate(m_Player->GetRotation() * Math::Rad2Deg);
         window.draw(pDirShape);
     }
 
@@ -110,8 +108,8 @@ void MiniMap::RenderMiniMap()
 
         if (m_Flags & SHOW_WALL_RAYS)
         {
-            float angle = player->GetRotation() + (1 / Math::PI) * i;
-            Ray::Cast(level, player->GetPosition(), angle, hitRay);
+            float angle = m_Player->GetRotation() + (1 / Math::PI) * i;
+            Ray::Cast(level, m_Player->GetPosition(), angle, hitRay);
 
             // Draw ray direction
             sf::RectangleShape hitDirShape({(hitRay.distance / level.GetSize().x) * m_Size.x, rayWidth});

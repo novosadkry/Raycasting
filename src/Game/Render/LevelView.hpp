@@ -27,5 +27,5 @@ private:
     Canvas m_Canvas;
     Unique<sf::RenderTexture> m_Buffer;
 
-    Weak<Player> m_Player;
+    Shared<Player> m_Player;
 };
