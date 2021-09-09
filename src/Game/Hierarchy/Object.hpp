@@ -9,7 +9,6 @@ public:
 
     virtual void Init() { }
     virtual void Update(float dt) { }
-    virtual void Render(float dt) { }
 
     static Object Deserialize(std::istream &stream);
 };

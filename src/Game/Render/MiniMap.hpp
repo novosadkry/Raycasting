@@ -1,6 +1,7 @@
 #pragma once
 #include <Core.hpp>
 
+#include <Game/Render/Layer.hpp>
 #include <Game/Hierarchy/Objects/Player.hpp>
 
 enum MiniMapFlags
@@ -19,7 +20,7 @@ inline MiniMapFlags operator|(const MiniMapFlags& lhs, const MiniMapFlags& rhs)
     return static_cast<MiniMapFlags>(static_cast<_Tu>(lhs) | static_cast<_Tu>(rhs));
 }
 
-class MiniMap : public Object
+class MiniMap : public Layer
 {
 public:
     MiniMap(sf::Vector2i size)

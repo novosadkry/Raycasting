@@ -2,6 +2,7 @@
 #include <Core.hpp>
 
 #include <Game/Grid/Grid.hpp>
+#include <Game/Render/Layer.hpp>
 #include <Game/Render/Light.hpp>
 #include <Game/Hierarchy/Object.hpp>
 #include <Game/Hierarchy/Hierarchy.hpp>
@@ -60,4 +61,5 @@ private:
     sf::Vector2i m_Size;
     Hierarchy m_Hierarchy;
     std::vector<Light> m_Lights;
+    std::vector<Shared<Layer>> m_Layers;
 };

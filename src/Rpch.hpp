@@ -5,6 +5,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
+#include <list>
 #include <cmath>
 #include <vector>
 #include <memory>

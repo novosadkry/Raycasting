@@ -1,10 +1,11 @@
 #pragma once
 #include <Core.hpp>
 
+#include <Game/Render/Layer.hpp>
 #include <Game/Render/Canvas.hpp>
 #include <Game/Hierarchy/Objects/Player.hpp>
 
-class LevelView : public Object
+class LevelView : public Layer
 {
 public:
     LevelView(sf::Vector2u resolution, Canvas canvas)

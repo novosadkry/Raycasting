@@ -34,8 +34,8 @@ sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
 
 void Level::Render(float dt)
 {
-    for (auto&& [type, obj] : m_Hierarchy)
-        obj->Render(dt);
+    for (auto&& layer : m_Layers)
+        layer->Render(dt);
 }
 
 void Level::Update(float dt)
@@ -55,9 +55,13 @@ void Level::OnLoad()
     m_Lights.push_back(Light({150, 120}, 1, sf::Color::Blue));
     m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
 
+    m_Layers.push_back(MakeShared<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
+    m_Layers.push_back(MakeShared<MiniMap>(sf::Vector2i(200, 200)));
+
     m_Hierarchy.AddObject<Player>(player);
-    m_Hierarchy.AddObject<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
-    m_Hierarchy.AddObject<MiniMap>(sf::Vector2i(200, 200));
+
+    for (auto&& layer : m_Layers)
+        layer->Init();
 
     for (auto&& [type, obj] : m_Hierarchy)
         obj->Init();
