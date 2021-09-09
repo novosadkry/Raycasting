@@ -2,9 +2,9 @@
 #include <Core.hpp>
 
 #include <Game/Grid/Grid.hpp>
-#include <Game/Hierarchy.hpp>
 #include <Game/Render/Light.hpp>
-#include <Game/Render/Object.hpp>
+#include <Game/Hierarchy/Object.hpp>
+#include <Game/Hierarchy/Hierarchy.hpp>
 
 class Level : Serializable<Level>
 {

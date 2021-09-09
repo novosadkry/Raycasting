@@ -2,7 +2,7 @@
 #include <Core.hpp>
 
 #include <Game/Game.hpp>
-#include "Object.hpp"
+#include <Game/Hierarchy/Object.hpp>
 
 class Player : public Object
 {

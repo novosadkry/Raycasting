@@ -1,8 +1,7 @@
 #pragma once
 #include <Core.hpp>
 
-#include "Object.hpp"
-#include "Player.hpp"
+#include <Game/Hierarchy/Objects/Player.hpp>
 
 enum MiniMapFlags
 {

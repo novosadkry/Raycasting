@@ -2,11 +2,9 @@
 
 #include <Game/Game.hpp>
 #include <Game/Level.hpp>
-#include <Game/Ray.hpp>
+#include <Game/Render/Ray.hpp>
 #include <Game/Render/LevelView.hpp>
-#include <Utils/Math.hpp>
-
-#include "Player.hpp"
+#include <Game/Hierarchy/Objects/Player.hpp>
 
 void MiniMap::RenderMiniMap()
 {

@@ -1,8 +1,7 @@
 #include "LevelView.hpp"
 
 #include <Game/Game.hpp>
-#include <Game/Ray.hpp>
-#include <Utils/Math.hpp>
+#include <Game/Render/Ray.hpp>
 
 static sf::Color CalculateLight(sf::RenderWindow& window, Level& level, Ray& hit, float depth)
 {

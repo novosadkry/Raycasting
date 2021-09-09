@@ -1,9 +1,8 @@
 #pragma once
 #include <Core.hpp>
 
-#include "Object.hpp"
-#include "Player.hpp"
-#include "Canvas.hpp"
+#include <Game/Render/Canvas.hpp>
+#include <Game/Hierarchy/Objects/Player.hpp>
 
 class LevelView : public Object
 {

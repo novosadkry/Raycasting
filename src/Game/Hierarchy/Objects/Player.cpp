@@ -1,9 +1,7 @@
 #include "Player.hpp"
 
 #include <Game/Game.hpp>
-#include <Input/Input.hpp>
-#include <Utils/Math.hpp>
-#include <Game/Ray.hpp>
+#include <Game/Render/Ray.hpp>
 
 SERIALIZE_HIERARCHY_REGISTER(Player)
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <Core.hpp>
 
-#include <Game/Render/Object.hpp>
+#include <Game/Hierarchy/Object.hpp>
 
 class Hierarchy
 {

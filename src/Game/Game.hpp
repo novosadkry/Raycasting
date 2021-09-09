@@ -1,9 +1,7 @@
 #pragma once
 
 #include <Utils/Debug.hpp>
-
-#include "Level.hpp"
-#include "Render/Player.hpp"
+#include <Game/Level.hpp>
 
 class Game
 {
