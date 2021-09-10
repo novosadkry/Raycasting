@@ -6,16 +6,22 @@
 #include <SFML/Graphics.hpp>
 
 #include <list>
-#include <cmath>
+#include <stack>
+#include <deque>
 #include <vector>
+#include <unordered_map>
+
 #include <memory>
 #include <string>
-#include <chrono>
 #include <sstream>
 #include <fstream>
+#include <iostream>
+
+#include <cmath>
 #include <cstdint>
 #include <cassert>
-#include <iostream>
+
+#include <chrono>
+
 #include <typeindex>
 #include <functional>
-#include <unordered_map>

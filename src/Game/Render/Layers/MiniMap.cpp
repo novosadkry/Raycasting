@@ -3,7 +3,7 @@
 #include <Game/Game.hpp>
 #include <Game/Level.hpp>
 #include <Game/Render/Ray.hpp>
-#include <Game/Render/LevelView.hpp>
+#include <Game/Render/Layers/LevelView.hpp>
 #include <Game/Hierarchy/Objects/Player.hpp>
 
 void MiniMap::RenderMiniMap()

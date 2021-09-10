@@ -1,8 +1,7 @@
 #include "Level.hpp"
 
-#include <Utils/Math.hpp>
-#include <Game/Render/MiniMap.hpp>
-#include <Game/Render/LevelView.hpp>
+#include <Game/Render/Layers/MiniMap.hpp>
+#include <Game/Render/Layers/LevelView.hpp>
 
 const Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
 
@@ -55,8 +54,8 @@ void Level::OnLoad()
     m_Lights.push_back(Light({150, 120}, 1, sf::Color::Blue));
     m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
 
-    m_Layers.push_back(MakeShared<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad)));
-    m_Layers.push_back(MakeShared<MiniMap>(sf::Vector2i(200, 200)));
+    m_Layers.Emplace<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
+    m_Layers.Emplace<MiniMap>(sf::Vector2i(200, 200));
 
     m_Hierarchy.AddObject<Player>(player);
 

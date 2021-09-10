@@ -38,6 +38,11 @@ public:
         return m_Size;
     }
 
+    inline LayerStack& GetLayers()
+    {
+        return m_Layers;
+    }
+
     inline Hierarchy& GetHierarchy()
     {
         return m_Hierarchy;
@@ -59,7 +64,8 @@ public:
 private:
     Grid m_Grid;
     sf::Vector2i m_Size;
+
+    LayerStack m_Layers;
     Hierarchy m_Hierarchy;
     std::vector<Light> m_Lights;
-    std::vector<Shared<Layer>> m_Layers;
 };
