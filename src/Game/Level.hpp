@@ -2,7 +2,6 @@
 #include <Core.hpp>
 
 #include <Game/Grid/Grid.hpp>
-#include <Game/Render/Layer.hpp>
 #include <Game/Render/Light.hpp>
 #include <Game/Hierarchy/Object.hpp>
 #include <Game/Hierarchy/Hierarchy.hpp>
@@ -38,11 +37,6 @@ public:
         return m_Size;
     }
 
-    inline LayerStack& GetLayers()
-    {
-        return m_Layers;
-    }
-
     inline Hierarchy& GetHierarchy()
     {
         return m_Hierarchy;
@@ -55,17 +49,15 @@ public:
 
     sf::Vector2i GetGridCellFromPos(sf::Vector2f pos);
 
-    void Update(float dt);
-    void Render(float dt);
-
     void OnLoad();
     void OnUnload();
+
+    void Update(float dt);
 
 private:
     Grid m_Grid;
     sf::Vector2i m_Size;
 
-    LayerStack m_Layers;
     Hierarchy m_Hierarchy;
     std::vector<Light> m_Lights;
 };

@@ -42,6 +42,9 @@ void Game::Update(float dt)
 void Game::Render(float dt)
 {
     m_Window->clear(sf::Color::Black);
-    m_CurrentLevel->Render(dt);
+
+    for (auto&& layer : m_Layers)
+        layer->Render(dt);
+
     m_Window->display();
 }

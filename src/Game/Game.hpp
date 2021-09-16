@@ -1,7 +1,8 @@
 #pragma once
+#include <Core.hpp>
 
-#include <Utils/Debug.hpp>
 #include <Game/Level.hpp>
+#include <Game/Render/Layer.hpp>
 
 class Game
 {
@@ -27,8 +28,6 @@ private:
     static Game* s_Instance;
 
 public:
-    Game(Unique<sf::RenderWindow> window);
-
     void Tick();
     void PollEvents();
     void Update(float dt);
@@ -44,6 +43,11 @@ public:
         m_Window->close();
     }
 
+    inline LayerStack& GetLayers()
+    {
+        return m_Layers;
+    }
+
     inline sf::RenderWindow& GetWindow()
     {
         return *m_Window;
@@ -57,6 +61,11 @@ public:
     void LoadLevel(Unique<Level> level);
 
 private:
+    Game(Unique<sf::RenderWindow> window);
+    Game(const Game&) = delete;
+
+    LayerStack m_Layers;
+
     Unique<sf::RenderWindow> m_Window;
     Unique<Level> m_CurrentLevel;
 };

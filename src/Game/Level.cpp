@@ -31,12 +31,6 @@ sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
     return { cellX, cellY };
 }
 
-void Level::Render(float dt)
-{
-    for (auto&& layer : m_Layers)
-        layer->Render(dt);
-}
-
 void Level::Update(float dt)
 {
     for (auto&& [type, obj] : m_Hierarchy)
@@ -54,21 +48,22 @@ void Level::OnLoad()
     m_Lights.push_back(Light({150, 120}, 1, sf::Color::Blue));
     m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
 
-    m_Layers.Emplace<LevelView>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
-    m_Layers.Emplace<MiniMap>(sf::Vector2i(200, 200));
-
     m_Hierarchy.AddObject<Player>(player);
-
-    for (auto&& layer : m_Layers)
-        layer->Init();
 
     for (auto&& [type, obj] : m_Hierarchy)
         obj->Init();
+
+    // ! Everything above will be removed when deserialization gets implemented
+
+    auto& layers = Game::Get().GetLayers();
+    layers.Emplace<LevelView, true>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
+    layers.Emplace<MiniMap,   true>(sf::Vector2i(200, 200));
 }
 
 void Level::OnUnload()
 {
-    m_Hierarchy.Clear();
+    auto& layers = Game::Get().GetLayers();
+    layers.Drop<LevelView, MiniMap>();
 }
 
 void Level::Serialize(std::ostream &stream) const
