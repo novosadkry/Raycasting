@@ -12,6 +12,14 @@ void Input::HandleEvent(Event& event)
                 case Keyboard::Escape:
                     Game::Get().Exit();
                     break;
+
+                case Keyboard::F5:
+                    Level::Save(Game::Get().GetCurrentLevel(), "SAVE.lvl");
+                    break;
+
+                case Keyboard::F6:
+                    Game::Get().LoadLevel(Level::From("SAVE.lvl"));
+                    break;
             }
         } break;
 
