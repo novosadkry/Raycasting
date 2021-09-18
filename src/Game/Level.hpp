@@ -19,8 +19,14 @@ public:
     Level(sf::Vector2i size, Grid grid)
         : m_Size(size), m_Grid(std::move(grid)) { }
 
+    Level(sf::Vector2i size, Grid grid, Hierarchy hierarchy)
+        : m_Size(size), m_Grid(std::move(grid)), m_Hierarchy(std::move(hierarchy)) { }
+
     Level(int x, int y, Grid grid)
         : m_Size({x, y}), m_Grid(std::move(grid)) { }
+
+    Level(int x, int y, Grid grid, Hierarchy hierarchy)
+        : m_Size({x, y}), m_Grid(std::move(grid)), m_Hierarchy(std::move(hierarchy)) { }
 
     inline Grid& GetGrid()
     {

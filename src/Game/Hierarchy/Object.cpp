@@ -2,5 +2,8 @@
 
 Unique<Object> Object::Deserialize(std::istream &stream)
 {
-    return ::Deserialize<Object>("Player", stream);
+    std::string type;
+    stream >> type;
+
+    return ::Deserialize<Object>(type, stream);
 }

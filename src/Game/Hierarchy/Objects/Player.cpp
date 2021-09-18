@@ -93,10 +93,23 @@ void Player::Update(float dt)
 
 void Player::Serialize(std::ostream &stream) const
 {
-
+    stream << "Player";
+    ::Serialize<sf::Vector2f>(m_Position, stream);
+    ::Serialize<float>(m_Rotation, stream);
+    ::Serialize<float>(m_Radius, stream);
+    ::Serialize<float>(m_Speed, stream);
 }
 
 Unique<Player> Player::Deserialize(std::istream &stream)
 {
-    throw std::logic_error("Function not yet implemented");
+    auto position = ::Deserialize<sf::Vector2f>(stream);
+    auto rotation = ::Deserialize<float>(stream);
+    auto radius = ::Deserialize<float>(stream);
+    auto speed = ::Deserialize<float>(stream);
+
+    auto player = MakeUnique<Player>(radius, speed);
+    player->m_Position = position;
+    player->m_Rotation = rotation;
+
+    return player;
 }

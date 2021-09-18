@@ -29,16 +29,15 @@ void Grid::Set(sf::Vector2i pos, const Cell& cell)
 void Grid::Serialize(std::ostream& stream) const
 {
     ::Serialize<sf::Vector2i>(m_Size, stream);
-    ::Serialize<Cell>(m_Cells.data(), m_Cells.size(), stream);
+    ::Serialize<Cell[]>(m_Cells.data(), m_Cells.size(), stream);
 }
 
 Unique<Grid> Grid::Deserialize(std::istream& stream)
 {
     sf::Vector2i gridSize = ::Deserialize<sf::Vector2i>(stream);
-    Cell* cells = ::Deserialize<Cell>(gridSize.x * gridSize.y, stream);
+    Unique<Cell[]> cells = ::Deserialize<Cell[]>(stream);
 
-    auto grid = MakeUnique<Grid>(gridSize, cells);
-    delete cells;
+    auto grid = MakeUnique<Grid>(gridSize, cells.get());
 
     return grid;
 }

@@ -137,7 +137,7 @@ inline void Serialize(const std::enable_if_t<std::is_trivially_copyable_v<T>, T>
     stream.write(reinterpret_cast<const char*>(&value), sizeof(value));
 }
 
-template<typename T>
+template<typename T, typename = std::enable_if_t<!std::is_array_v<T>>>
 inline std::enable_if_t<std::is_trivially_copyable_v<T>, T> Deserialize(std::istream& stream)
 {
     T value;
@@ -147,16 +147,26 @@ inline std::enable_if_t<std::is_trivially_copyable_v<T>, T> Deserialize(std::ist
 
 // ----------------------------------------------------------------------
 
-template<typename T>
-inline void Serialize(const std::enable_if_t<std::is_trivially_copyable_v<T>, T>* value, int x, std::ostream& stream)
+template<typename Array, typename T = std::remove_reference_t<decltype(std::declval<Array&>()[0])>>
+inline void Serialize(const std::enable_if_t<std::is_trivially_copyable_v<T>, T>* value, size_t n, std::ostream& stream)
 {
-    stream.write(reinterpret_cast<const char*>(value), sizeof(T) * x);
+    ::Serialize<size_t>(n, stream);
+    stream.write(reinterpret_cast<const char*>(value), sizeof(T) * n);
 }
 
-template<typename T>
-inline std::enable_if_t<std::is_trivially_copyable_v<T>, T>* Deserialize(int x, std::istream& stream)
+template<typename Array, typename T = std::remove_reference_t<decltype(std::declval<Array&>()[0])>>
+inline Unique<std::enable_if_t<std::is_trivially_copyable_v<T>, Array>> Deserialize(std::istream& stream, size_t& n)
 {
-    T* value = new T[x];
-    stream.read(reinterpret_cast<char*>(value), sizeof(T) * x);
+    n = ::Deserialize<size_t>(stream);
+    auto value = MakeUnique<Array>(n);
+
+    stream.read(reinterpret_cast<char*>(value.get()), sizeof(T) * n);
     return value;
+}
+
+template<typename Array, typename T = std::remove_reference_t<decltype(std::declval<Array&>()[0])>>
+inline Unique<std::enable_if_t<std::is_trivially_copyable_v<T>, Array>> Deserialize(std::istream& stream)
+{
+    size_t n;
+    return ::Deserialize<Array>(stream, n);
 }

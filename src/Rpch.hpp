@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <cstring>
 #include <sstream>
 #include <fstream>
 #include <iostream>
