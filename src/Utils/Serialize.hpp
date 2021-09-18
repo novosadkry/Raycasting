@@ -57,7 +57,7 @@
 
 #define SERIALIZE_HIERARCHY(DERIVED, BASE)                                  \
     void Serialize(std::ostream& stream) const override;                    \
-    static DERIVED Deserialize(std::istream& stream);                       \
+    static Unique<DERIVED> Deserialize(std::istream& stream);               \
     struct __SerializeConstructor                                           \
     {                                                                       \
         __SerializeConstructor()                                            \
@@ -69,7 +69,7 @@
 
 #define SERIALIZE_BASE(BASE)                                                \
     void Serialize(std::ostream& stream) const override;                    \
-    static BASE Deserialize(std::istream& stream);                          \
+    static Unique<BASE> Deserialize(std::istream& stream);                  \
 
 #define SERIALIZE_HIERARCHY_REGISTER(DERIVED)                               \
     DERIVED::__SerializeConstructor DERIVED::__m_SerializeConstructor = {}; \
@@ -80,7 +80,7 @@ template<typename T>
 class Serializable
 {
 private:
-    using DeserializeFunc = std::function<T(std::istream&)>;
+    using DeserializeFunc = std::function<Unique<T>(std::istream&)>;
     using HierarchyMap = std::unordered_map<std::string, DeserializeFunc>;
 
     static HierarchyMap& GetHierarchy()
@@ -98,12 +98,12 @@ public:
     virtual void Serialize(std::ostream& stream) const
     { };
 
-    static T Deserialize(std::istream& stream)
+    static Unique<T> Deserialize(std::istream& stream)
     {
         return T::Deserialize(stream);
     }
 
-    static T Deserialize(const std::string& name, std::istream& stream)
+    static Unique<T> Deserialize(const std::string& name, std::istream& stream)
     {
         return GetHierarchy()[name](stream);
     }
@@ -118,13 +118,13 @@ inline void Serialize(const std::enable_if_t<std::is_base_of_v<Serializable<TBas
 }
 
 template<typename T, typename TBase = T>
-inline std::enable_if_t<std::is_base_of_v<Serializable<TBase>, T>, T> Deserialize(std::istream& stream)
+inline Unique<std::enable_if_t<std::is_base_of_v<Serializable<TBase>, T>, T>> Deserialize(std::istream& stream)
 {
     return T::Deserialize(stream);
 }
 
 template<typename T>
-inline std::enable_if_t<std::is_base_of_v<Serializable<T>, T>, T> Deserialize(const std::string& name, std::istream& stream)
+inline Unique<std::enable_if_t<std::is_base_of_v<Serializable<T>, T>, T>> Deserialize(const std::string& name, std::istream& stream)
 {
     return Serializable<T>::Deserialize(name, stream);
 }

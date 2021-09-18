@@ -15,16 +15,16 @@ void Hierarchy::Serialize(std::ostream &stream) const
     }
 }
 
-Hierarchy Hierarchy::Deserialize(std::istream &stream)
+Unique<Hierarchy> Hierarchy::Deserialize(std::istream &stream)
 {
-    Hierarchy hierarchy;
+    auto hierarchy = MakeUnique<Hierarchy>();
 
     int count = ::Deserialize<int>(stream);
 
     for (int i = 0; i < count; i++)
     {
-        Object obj = ::Deserialize<Object>(stream);
-        hierarchy.AddObject(std::move(obj));
+        Unique<Object> obj = ::Deserialize<Object>(stream);
+        hierarchy->AddObject(std::move(obj));
     }
 
     return hierarchy;

@@ -32,12 +32,12 @@ void Grid::Serialize(std::ostream& stream) const
     ::Serialize<Cell>(m_Cells.data(), m_Cells.size(), stream);
 }
 
-Grid Grid::Deserialize(std::istream& stream)
+Unique<Grid> Grid::Deserialize(std::istream& stream)
 {
     sf::Vector2i gridSize = ::Deserialize<sf::Vector2i>(stream);
     Cell* cells = ::Deserialize<Cell>(gridSize.x * gridSize.y, stream);
 
-    Grid grid(gridSize, cells);
+    auto grid = MakeUnique<Grid>(gridSize, cells);
     delete cells;
 
     return grid;

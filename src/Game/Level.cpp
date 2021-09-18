@@ -8,15 +8,12 @@ const Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
 Unique<Level> Level::From(const char* path)
 {
     std::ifstream file(path, std::ios_base::binary);
-
-    auto level = ::Deserialize<Level>(file);
-    return MakeUnique<Level>(std::move(level));
+    return ::Deserialize<Level>(file);
 }
 
 void Level::Save(Level& level, const char* path)
 {
     std::ofstream file(path, std::ios_base::binary);
-
     ::Serialize<Level>(level, file);
 }
 
@@ -39,9 +36,9 @@ void Level::Update(float dt)
 
 void Level::OnLoad()
 {
-    Player player(10.0f, 100.0f);
-    player.SetPosition({100, 100});
-    player.SetRotation(0);
+    auto player = MakeShared<Player>(10.0f, 100.0f);
+    player->SetPosition({100, 100});
+    player->SetRotation(0);
 
     m_Lights.push_back(Light({355, 400}, 1, sf::Color::Red));
     m_Lights.push_back(Light({150, 420}, 1, sf::Color::Green));
@@ -73,10 +70,10 @@ void Level::Serialize(std::ostream &stream) const
     ::Serialize<Hierarchy>(m_Hierarchy, stream);
 }
 
-Level Level::Deserialize(std::istream &stream)
+Unique<Level> Level::Deserialize(std::istream &stream)
 {
     sf::Vector2i levelSize = ::Deserialize<sf::Vector2i>(stream);
-    Grid grid = ::Deserialize<Grid>(stream);
+    Unique<Grid> grid = ::Deserialize<Grid>(stream);
 
-    return Level(levelSize, std::move(grid));
+    return MakeUnique<Level>(levelSize, *grid);
 }

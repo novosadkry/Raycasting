@@ -96,7 +96,7 @@ void Player::Serialize(std::ostream &stream) const
 
 }
 
-Player Player::Deserialize(std::istream &stream)
+Unique<Player> Player::Deserialize(std::istream &stream)
 {
     throw std::logic_error("Function not yet implemented");
 }

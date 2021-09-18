@@ -10,5 +10,5 @@ public:
     virtual void Init() { }
     virtual void Update(float dt) { }
 
-    static Object Deserialize(std::istream &stream);
+    static Unique<Object> Deserialize(std::istream &stream);
 };
