@@ -55,7 +55,7 @@ void Level::Serialize(std::ostream &stream) const
     ::Serialize<sf::Vector2i>(m_Size, stream);
     ::Serialize<Grid>(m_Grid, stream);
     ::Serialize<Hierarchy>(m_Hierarchy, stream);
-    ::Serialize<Light[]>(m_Lights.data(), m_Lights.size(), stream);
+    ::Serialize<Light[], uint8_t>(m_Lights.data(), m_Lights.size(), stream);
 }
 
 Unique<Level> Level::Deserialize(std::istream &stream)
@@ -64,8 +64,8 @@ Unique<Level> Level::Deserialize(std::istream &stream)
     Unique<Grid> grid = ::Deserialize<Grid>(stream);
     Unique<Hierarchy> hierarchy = ::Deserialize<Hierarchy>(stream);
 
-    size_t nLights;
-    Unique<Light[]> lights = ::Deserialize<Light[]>(stream, nLights);
+    uint8_t nLights;
+    Unique<Light[]> lights = ::Deserialize<Light[], uint8_t>(stream, nLights);
 
     auto level = MakeUnique<Level>(levelSize, std::move(*grid), std::move(*hierarchy));
     level->m_Lights = std::vector<Light>(lights.get(), lights.get() + nLights);
