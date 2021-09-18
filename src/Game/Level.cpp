@@ -48,7 +48,7 @@ void Level::OnLoad()
     m_Lights.push_back(Light({150, 120}, 1, sf::Color::Blue));
     m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
 
-    m_Hierarchy.AddObject<Player>(player);
+    m_Hierarchy.AddObject(player);
 
     for (auto&& [type, obj] : m_Hierarchy)
         obj->Init();

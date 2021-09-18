@@ -75,11 +75,23 @@ public:
         Hierarchy::Storage::iterator sEnd;
     };
 
+    void AddObject(const Object& value)
+    {
+        auto& storage = m_Objects[typeid(value)];
+        storage.push_back(MakeShared<Object>(value));
+    }
+
+    void AddObject(Object&& value)
+    {
+        auto& storage = m_Objects[typeid(value)];
+        storage.push_back(MakeShared<Object>(std::move(value)));
+    }
+
     template<typename T, typename... Args>
-    void AddObject(Args&& ...args)
+    void EmplaceObject(Args&& ...args)
     {
         auto& storage = m_Objects[typeid(T)];
-        storage.emplace_back(MakeShared<T>(std::forward<Args>(args)...));
+        storage.push_back(MakeShared<T>(std::forward<Args>(args)...));
     }
 
     template<typename T>
