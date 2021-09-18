@@ -59,6 +59,7 @@ public:
     }
 
     void LoadLevel(Unique<Level> level);
+    void SaveLevel(const char* path);
 
 private:
     Game(Unique<sf::RenderWindow> window);

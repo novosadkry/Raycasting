@@ -25,6 +25,14 @@ void Game::LoadLevel(Unique<Level> level)
     m_CurrentLevel->OnLoad();
 }
 
+void Game::SaveLevel(const char* path)
+{
+    if (!m_CurrentLevel)
+        return;
+
+    Level::Save(*m_CurrentLevel, path);
+}
+
 void Game::Tick()
 {
     float dt = deltaClock.restart().asSeconds();

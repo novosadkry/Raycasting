@@ -3,3 +3,6 @@ build
 
 # Visual Studio Code configuration files
 .vscode
+
+# Save files
+/*.lvl

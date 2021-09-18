@@ -36,25 +36,12 @@ void Level::Update(float dt)
 
 void Level::OnLoad()
 {
-    auto player = MakeShared<Player>(10.0f, 100.0f);
-    player->SetPosition({100, 100});
-    player->SetRotation(0);
-
-    m_Lights.push_back(Light({355, 400}, 1, sf::Color::Red));
-    m_Lights.push_back(Light({150, 420}, 1, sf::Color::Green));
-    m_Lights.push_back(Light({150, 120}, 1, sf::Color::Blue));
-    m_Lights.push_back(Light({350, 150}, 1, sf::Color::Yellow));
-
-    m_Hierarchy.AddObject(player);
-
     for (auto&& [type, obj] : m_Hierarchy)
         obj->Init();
 
-    // ! Everything above will be removed when deserialization gets implemented
-
     auto& layers = Game::Get().GetLayers();
     layers.Emplace<LevelView, true>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
-    layers.Emplace<MiniMap,   true>(sf::Vector2i(200, 200));
+    layers.Emplace<MiniMap, true>(sf::Vector2i(200, 200));
 }
 
 void Level::OnUnload()

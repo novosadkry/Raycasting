@@ -93,7 +93,9 @@ void Player::Update(float dt)
 
 void Player::Serialize(std::ostream &stream) const
 {
-    stream << "Player";
+    const char* type = "Player";
+    ::Serialize<char[]>(type, std::strlen(type) + 1, stream);
+
     ::Serialize<sf::Vector2f>(m_Position, stream);
     ::Serialize<float>(m_Rotation, stream);
     ::Serialize<float>(m_Radius, stream);
