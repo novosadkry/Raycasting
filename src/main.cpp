@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	while (game.IsRunning())
 		game.Tick();
 
-	game.SaveLevel("SAVE.lvl");
+	Level::Save(game.GetCurrentLevel(), "SAVE.lvl");
 
     return EXIT_SUCCESS;
 }

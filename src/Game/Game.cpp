@@ -19,18 +19,19 @@ void Game::PollEvents()
 void Game::LoadLevel(Unique<Level> level)
 {
     if (m_CurrentLevel)
-        m_CurrentLevel->OnUnload();
+        UnloadLevel();
 
     m_CurrentLevel = std::move(level);
     m_CurrentLevel->OnLoad();
 }
 
-void Game::SaveLevel(const char* path)
+Unique<Level> Game::UnloadLevel()
 {
     if (!m_CurrentLevel)
-        return;
+        return nullptr;
 
-    Level::Save(*m_CurrentLevel, path);
+    m_CurrentLevel->OnUnload();
+    return std::move(m_CurrentLevel);
 }
 
 void Game::Tick()
