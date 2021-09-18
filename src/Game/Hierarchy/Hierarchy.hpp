@@ -3,9 +3,11 @@
 
 #include <Game/Hierarchy/Object.hpp>
 
-class Hierarchy
+class Hierarchy : public Serializable<Hierarchy>
 {
 public:
+    SERIALIZE_BASE(Hierarchy)
+
     using Storage = std::vector<Shared<Object>>;
     using ObjectMap = std::unordered_map<std::type_index, Storage>;
 

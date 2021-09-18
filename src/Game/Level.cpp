@@ -70,6 +70,7 @@ void Level::Serialize(std::ostream &stream) const
 {
     ::Serialize<sf::Vector2i>(m_Size, stream);
     ::Serialize<Grid>(m_Grid, stream);
+    ::Serialize<Hierarchy>(m_Hierarchy, stream);
 }
 
 Level Level::Deserialize(std::istream &stream)
