@@ -46,17 +46,30 @@ public:
     template<typename T>
     Shared<T> Drop()
     {
-        Shared<T> value;
         for (auto it = m_Layers.begin(); it != m_Layers.end(); it++)
         {
+            Shared<T> value;
             if (value = std::dynamic_pointer_cast<T>(*it))
             {
                 it = m_Layers.erase(it);
-                break;
+                return value;
             }
         }
 
-        return value;
+        return nullptr;
+    }
+
+    template<typename T>
+    Shared<T> Get()
+    {
+        for (auto& layer : m_Layers)
+        {
+            Shared<T> value;
+            if (value = std::dynamic_pointer_cast<T>(layer))
+                return value;
+        }
+
+        return nullptr;
     }
 
     Shared<Layer>& Top()
