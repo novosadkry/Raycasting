@@ -13,6 +13,7 @@ macro(option_def label desc default)
 	endif()
 endmacro(option_def)
 
+# Define build options
 option_def("DEBUG" "Enables internal debugging" ON)
 option_def("BUILD_W_ALL" "Show all build warnings" OFF)
 option_def("TRACK_MEM_ALLOC" "Enables memory tracking" OFF)
@@ -24,14 +25,39 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
 set(TARGET "RayExec")
 add_executable(${TARGET})
 
+# Compile source
 add_subdirectory("src")
-add_subdirectory("libs/SFML")
+
+# Compile SFML
+set(SFML_DIR "libs/SFML")
+set(SFML_INCLUDE "libs/SFML/include")
+set(SFML_COMPONENTS sfml-graphics sfml-system sfml-audio)
+add_subdirectory(${SFML_DIR})
+
+# Find OpenGL
+find_package(OpenGL REQUIRED)
+
+# Compile ImGui
+set(IMGUI_DIR "libs/imgui")
+file(GLOB IMGUI_SOURCE ${IMGUI_DIR}/*.cpp)
+add_library(imgui STATIC ${IMGUI_SOURCE})
+target_include_directories(imgui PRIVATE ${IMGUI_DIR})
+
+# Compile ImGui-SFML
+set(IMGUI_SFML_DIR "libs/imgui-sfml")
+file(GLOB IMGUI_SFML_SOURCE ${IMGUI_SFML_DIR}/*.cpp)
+add_library(imgui-sfml STATIC ${IMGUI_SFML_SOURCE})
+target_link_libraries(imgui-sfml imgui ${SFML_COMPONENTS})
+target_include_directories(imgui-sfml PRIVATE ${IMGUI_DIR})
+target_include_directories(imgui-sfml PRIVATE ${IMGUI_SFML_DIR})
+target_include_directories(imgui-sfml PRIVATE ${SFML_INCLUDE})
 
 set(LIBS
 	${LIBS}
-	sfml-graphics
-	sfml-system
-	sfml-audio
+	${SFML_COMPONENTS}
+	imgui
+	imgui-sfml
+	OpenGL::GL
 )
 
 if (RAY_BUILD_W_ALL)
@@ -44,4 +70,6 @@ endif()
 
 target_link_libraries(${TARGET} ${LIBS})
 target_precompile_headers(${TARGET} PRIVATE "src/Rpch.hpp")
-target_include_directories(${TARGET} PRIVATE "libs/SFML/include")
+target_include_directories(${TARGET} PRIVATE ${SFML_INCLUDE})
+target_include_directories(${TARGET} PRIVATE ${IMGUI_DIR})
+target_include_directories(${TARGET} PRIVATE ${IMGUI_SFML_DIR})

@@ -5,6 +5,9 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
+#include <imgui.h>
+#include <imgui-SFML.h>
+
 #include <list>
 #include <stack>
 #include <deque>

@@ -30,8 +30,8 @@ private:
 public:
     void Tick();
     void PollEvents();
-    void Update(float dt);
-    void Render(float dt);
+    void Update(sf::Time dt);
+    void Render(sf::Time dt);
 
     inline bool IsRunning() const
     {
@@ -41,6 +41,7 @@ public:
     inline void Exit()
     {
         m_Window->close();
+        ImGui::SFML::Shutdown();
     }
 
     inline LayerStack& GetLayers()

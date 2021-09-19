@@ -7,13 +7,19 @@ static sf::Clock deltaClock;
 Game* Game::s_Instance = nullptr;
 
 Game::Game(Unique<sf::RenderWindow> window)
-    : m_Window(std::move(window)) { }
+    : m_Window(std::move(window))
+{
+    ImGui::SFML::Init(*m_Window);
+}
 
 void Game::PollEvents()
 {
     Event event;
     while (GetWindow().pollEvent(event))
+    {
+        ImGui::SFML::ProcessEvent(event);
         Input::HandleEvent(event);
+    }
 }
 
 void Game::LoadLevel(Unique<Level> level)
@@ -36,24 +42,30 @@ Unique<Level> Game::UnloadLevel()
 
 void Game::Tick()
 {
-    float dt = deltaClock.restart().asSeconds();
+    sf::Time dt = deltaClock.restart();
 
     PollEvents();
-    Update(dt);
-    Render(dt);
+    if (IsRunning())
+    {
+        Update(dt);
+        Render(dt);
+    }
 }
 
-void Game::Update(float dt)
+void Game::Update(sf::Time dt)
 {
-    m_CurrentLevel->Update(dt);
+    ImGui::SFML::Update(*m_Window, dt);
+    m_CurrentLevel->Update(dt.asSeconds());
 }
 
-void Game::Render(float dt)
+void Game::Render(sf::Time dt)
 {
     m_Window->clear(sf::Color::Black);
 
     for (auto&& layer : m_Layers)
-        layer->Render(dt);
+        layer->Render(dt.asSeconds());
+
+    ImGui::SFML::Render(*m_Window);
 
     m_Window->display();
 }
