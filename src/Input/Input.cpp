@@ -1,5 +1,7 @@
 #include "Input.hpp"
+
 #include <Game/Game.hpp>
+#include <Game/Render/Layers/DebugMenu.hpp>
 
 void Input::HandleEvent(Event& event)
 {
@@ -11,6 +13,10 @@ void Input::HandleEvent(Event& event)
             {
                 case Keyboard::Escape:
                     Game::Get().Exit();
+                    break;
+
+                case Keyboard::F1:
+                    Game::Get().GetLayers().Get<DebugMenu>()->Toggle();
                     break;
 
                 case Keyboard::F5:

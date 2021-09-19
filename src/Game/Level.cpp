@@ -2,6 +2,7 @@
 
 #include <Game/Render/Layers/MiniMap.hpp>
 #include <Game/Render/Layers/LevelView.hpp>
+#include <Game/Render/Layers/DebugMenu.hpp>
 
 const Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
 
@@ -41,7 +42,8 @@ void Level::OnLoad()
 
     auto& layers = Game::Get().GetLayers();
     layers.Emplace<LevelView, true>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
-    layers.Emplace<MiniMap, true>(sf::Vector2i(200, 200));
+    layers.Emplace<MiniMap,   true>(sf::Vector2i(200, 200));
+    layers.Emplace<DebugMenu, true>();
 }
 
 void Level::OnUnload()
