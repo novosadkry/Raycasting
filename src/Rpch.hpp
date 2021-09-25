@@ -8,6 +8,8 @@
 #include <imgui.h>
 #include <imgui-SFML.h>
 
+#include <entt/entt.hpp>
+
 #include <list>
 #include <stack>
 #include <deque>

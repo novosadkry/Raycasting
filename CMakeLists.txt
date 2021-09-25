@@ -30,7 +30,7 @@ add_subdirectory("src")
 
 # Compile SFML
 set(SFML_DIR "libs/SFML")
-set(SFML_INCLUDE "libs/SFML/include")
+set(SFML_INCLUDE ${SFML_DIR}/include)
 set(SFML_COMPONENTS sfml-graphics sfml-system sfml-audio)
 add_subdirectory(${SFML_DIR})
 
@@ -51,6 +51,10 @@ target_link_libraries(imgui-sfml imgui ${SFML_COMPONENTS})
 target_include_directories(imgui-sfml PRIVATE ${IMGUI_DIR})
 target_include_directories(imgui-sfml PRIVATE ${IMGUI_SFML_DIR})
 target_include_directories(imgui-sfml PRIVATE ${SFML_INCLUDE})
+
+# Include entt
+set(ENTT_DIR "libs/entt")
+set(ENTT_INCLUDE ${ENTT_DIR}/src)
 
 set(LIBS
 	${LIBS}
@@ -73,3 +77,4 @@ target_precompile_headers(${TARGET} PRIVATE "src/Rpch.hpp")
 target_include_directories(${TARGET} PRIVATE ${SFML_INCLUDE})
 target_include_directories(${TARGET} PRIVATE ${IMGUI_DIR})
 target_include_directories(${TARGET} PRIVATE ${IMGUI_SFML_DIR})
+target_include_directories(${TARGET} PRIVATE ${ENTT_INCLUDE})
