@@ -7,3 +7,6 @@
 [submodule "libs/imgui-sfml"]
 	path = libs/imgui-sfml
 	url = https://github.com/eliasdaler/imgui-sfml
+[submodule "libs/entt"]
+	path = libs/entt
+	url = https://github.com/skypjack/entt
