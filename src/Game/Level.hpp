@@ -11,11 +11,13 @@ class Level : Serializable<Level>
 public:
     SERIALIZE_BASE(Level)
 
-    static const Level Empty;
+    static Unique<Level> Empty();
     static Unique<Level> From(const char* path);
     static void Save(Level& level, const char* path);
 
 public:
+    Level(const Level&) = delete;
+
     Level(sf::Vector2i size, Grid grid)
         : m_Size(size), m_Grid(std::move(grid)) { }
 

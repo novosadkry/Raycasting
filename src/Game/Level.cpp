@@ -4,7 +4,10 @@
 #include <Game/Render/Layers/LevelView.hpp>
 #include <Game/Render/Layers/DebugMenu.hpp>
 
-const Level Level::Empty = Level(0, 0, Grid({0, 0}, {}));
+Unique<Level> Level::Empty()
+{
+    return MakeUnique<Level>(0, 0, Grid({0, 0}, {}));
+}
 
 Unique<Level> Level::From(const char* path)
 {

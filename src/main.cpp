@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	{
 		level = argc > 1
 			? Level::From(argv[1])
-			: MakeUnique<Level>(Level::Empty);
+			: Level::Empty();
 	}
 
 	game.LoadLevel(std::move(level));
