@@ -2,6 +2,7 @@
 #include <Core.hpp>
 
 #include <Game/Game.hpp>
+#include <Game/ECS/Component.hpp>
 
 namespace ECS
 {
@@ -16,7 +17,7 @@ namespace ECS
         template<typename T, typename... Args>
         void Add(Args&&... args)
         {
-            m_Registry->emplace<T>(m_Handle, std::forward<Args>(args)...);
+            m_Registry->emplace<T>(m_Handle, Component{}, std::forward<Args>(args)...);
         }
 
         template<typename... T>

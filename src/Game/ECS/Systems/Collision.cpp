@@ -46,7 +46,9 @@ namespace ECS::Systems
 
     void Collision::Run(float dt)
     {
-        auto group = m_Registry->group<Collider>(entt::get<Transform>);
+        auto& reg = Game::Get().GetCurrentLevel().GetRegistry();
+        auto group = reg.group<Collider>(entt::get<Transform>);
+
         group.each([](Collider& collider, Transform& transform)
         {
             CheckBounds(transform, collider);

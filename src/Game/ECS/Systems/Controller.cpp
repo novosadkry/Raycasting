@@ -1,5 +1,7 @@
 #include "Controller.hpp"
 
+#include <Game/Game.hpp>
+
 #include <Game/ECS/Components/Player.hpp>
 #include <Game/ECS/Components/Transform.hpp>
 
@@ -54,7 +56,9 @@ namespace ECS::Systems
 
     void Controller::Run(float dt)
     {
-        auto group = m_Registry->group<Player>(entt::get<Transform>);
+        auto& reg = Game::Get().GetCurrentLevel().GetRegistry();
+        auto group = reg.group<Player>(entt::get<Transform>);
+
         group.each([dt](Player& player, Transform& transform)
         {
             HandleInput(player, transform, dt);
