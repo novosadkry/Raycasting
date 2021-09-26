@@ -5,9 +5,8 @@
 
 namespace ECS::Components
 {
-    struct Transform : public Component
+    struct Player : public Component
     {
-        sf::Vector2f position;
-        float rotation;
+        float speed;
     };
 }
