@@ -3,43 +3,46 @@
 
 #include <Game/Game.hpp>
 
-class Entity
+namespace ECS
 {
-public:
-    Entity() = default;
-
-    Entity(entt::entity handle, entt::registry* registry)
-        : m_Handle(handle), m_Registry(registry) { }
-
-    template<typename T, typename... Args>
-    void Add(Args&&... args)
+    class Entity
     {
-        m_Registry->emplace<T>(m_Handle, std::forward<Args>(args)...);
-    }
+    public:
+        Entity() = default;
 
-    template<typename... T>
-    auto& Get()
-    {
-        return m_Registry->get<T...>(m_Handle);
-    }
+        Entity(entt::entity handle, entt::registry* registry)
+            : m_Handle(handle), m_Registry(registry) { }
 
-    template<typename... T>
-    void Remove()
-    {
-        return m_Registry->remove<T...>(m_Handle);
-    }
+        template<typename T, typename... Args>
+        void Add(Args&&... args)
+        {
+            m_Registry->emplace<T>(m_Handle, std::forward<Args>(args)...);
+        }
 
-    inline operator bool() const
-    {
-        return m_Handle != entt::null;
-    }
+        template<typename... T>
+        auto& Get()
+        {
+            return m_Registry->get<T...>(m_Handle);
+        }
 
-    explicit inline operator entt::entity() const
-    {
-        return m_Handle;
-    }
+        template<typename... T>
+        void Remove()
+        {
+            return m_Registry->remove<T...>(m_Handle);
+        }
 
-private:
-    entt::entity m_Handle = entt::null;
-    entt::registry* m_Registry;
-};
+        inline operator bool() const
+        {
+            return m_Handle != entt::null;
+        }
+
+        explicit inline operator entt::entity() const
+        {
+            return m_Handle;
+        }
+
+    private:
+        entt::entity m_Handle = entt::null;
+        entt::registry* m_Registry;
+    };
+}

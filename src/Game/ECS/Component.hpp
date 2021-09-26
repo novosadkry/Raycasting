@@ -1,7 +1,10 @@
 #pragma once
 #include <Core.hpp>
 
-struct Component
+namespace ECS
 {
-    // TODO: Serializable
-};
+    struct Component
+    {
+        // TODO: Serializable
+    };
+}

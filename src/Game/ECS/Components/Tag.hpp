@@ -3,7 +3,10 @@
 
 #include <Game/ECS/Component.hpp>
 
-struct Tag : public Component
+namespace ECS::Components
 {
-    std::string name;
-};
+    struct Tag : public Component
+    {
+        std::string name;
+    };
+}

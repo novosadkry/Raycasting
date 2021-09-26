@@ -3,7 +3,10 @@
 
 #include <Game/ECS/Component.hpp>
 
-struct Transform : public Component
+namespace ECS::Components
 {
-    sf::Vector2f position;
-};
+    struct Transform : public Component
+    {
+        sf::Vector2f position;
+    };
+}
