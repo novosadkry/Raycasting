@@ -11,7 +11,7 @@ namespace ECS
 
         virtual void Run(float dt) = 0;
 
-    private:
+    protected:
         entt::registry* m_Registry;
     };
 }

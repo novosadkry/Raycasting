@@ -5,7 +5,7 @@
 
 namespace ECS::Systems
 {
-    class Player : public System
+    class Collision : public System
     {
     public:
         void Run(float dt) override;
