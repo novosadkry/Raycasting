@@ -1,7 +1,6 @@
 #pragma once
 #include <Core.hpp>
 
-#include <Game/Game.hpp>
 #include <Game/ECS/Component.hpp>
 
 namespace ECS
@@ -37,7 +36,7 @@ namespace ECS
             return m_Handle != entt::null;
         }
 
-        explicit inline operator entt::entity() const
+        inline operator entt::entity() const
         {
             return m_Handle;
         }

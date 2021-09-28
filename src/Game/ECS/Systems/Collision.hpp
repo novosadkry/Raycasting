@@ -8,6 +8,9 @@ namespace ECS::Systems
     class Collision : public System
     {
     public:
-        void Run(float dt) override;
+        Collision(entt::registry* registry)
+            : System(registry) { }
+
+        void Update(float dt) override;
     };
 }

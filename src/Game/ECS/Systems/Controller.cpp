@@ -54,11 +54,9 @@ namespace ECS::Systems
         }
     }
 
-    void Controller::Run(float dt)
+    void Controller::Update(float dt)
     {
-        auto& reg = Game::Get().GetCurrentLevel().GetRegistry();
-        auto group = reg.group<Player>(entt::get<Transform>);
-
+        auto group = m_Registry->group<Player>(entt::get<Transform>);
         group.each([dt](Player& player, Transform& transform)
         {
             HandleInput(player, transform, dt);

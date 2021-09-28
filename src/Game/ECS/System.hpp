@@ -5,6 +5,17 @@ namespace ECS
 {
     class System
     {
-        virtual void Run(float dt) = 0;
+    public:
+        System(entt::registry* registry)
+            : m_Registry(registry) { }
+
+        virtual ~System() = default;
+
+        virtual void OnLoad() { }
+        virtual void OnUnload() { }
+        virtual void Update(float dt) = 0;
+
+    protected:
+        entt::registry* m_Registry;
     };
 }
