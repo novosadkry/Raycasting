@@ -2,9 +2,8 @@
 #include <Core.hpp>
 
 #include <Game/Grid/Grid.hpp>
-#include <Game/Render/Light.hpp>
-#include <Game/Hierarchy/Object.hpp>
-#include <Game/Hierarchy/Hierarchy.hpp>
+#include <Game/ECS/System.hpp>
+#include <Game/ECS/Hierarchy.hpp>
 
 class Level : Serializable<Level>
 {
@@ -18,17 +17,19 @@ public:
 public:
     Level(const Level&) = delete;
 
-    Level(sf::Vector2i size, Grid grid)
-        : m_Size(size), m_Grid(std::move(grid)) { }
+    Level(sf::Vector2i size, Grid grid) :
+        m_Size(size),
+        m_Grid(std::move(grid)),
+        m_Hierarchy(),
+        m_Systems(&m_Hierarchy.GetRegistry())
+    { }
 
-    Level(sf::Vector2i size, Grid grid, Hierarchy hierarchy)
-        : m_Size(size), m_Grid(std::move(grid)), m_Hierarchy(std::move(hierarchy)) { }
-
-    Level(int x, int y, Grid grid)
-        : m_Size({x, y}), m_Grid(std::move(grid)) { }
-
-    Level(int x, int y, Grid grid, Hierarchy hierarchy)
-        : m_Size({x, y}), m_Grid(std::move(grid)), m_Hierarchy(std::move(hierarchy)) { }
+    Level(int x, int y, Grid grid) :
+        m_Size({x, y}),
+        m_Grid(std::move(grid)),
+        m_Hierarchy(),
+        m_Systems(&m_Hierarchy.GetRegistry())
+    { }
 
     inline Grid& GetGrid()
     {
@@ -45,14 +46,14 @@ public:
         return m_Size;
     }
 
-    inline Hierarchy& GetHierarchy()
+    inline ECS::Hierarchy& GetHierarchy()
     {
         return m_Hierarchy;
     }
 
-    inline std::vector<Light>& GetLights()
+    inline ECS::SystemGroup& GetSystems()
     {
-        return m_Lights;
+        return m_Systems;
     }
 
     sf::Vector2i GetGridCellFromPos(sf::Vector2f pos);
@@ -66,6 +67,6 @@ private:
     Grid m_Grid;
     sf::Vector2i m_Size;
 
-    Hierarchy m_Hierarchy;
-    std::vector<Light> m_Lights;
+    ECS::Hierarchy m_Hierarchy;
+    ECS::SystemGroup m_Systems;
 };

@@ -3,18 +3,29 @@
 #include <Game/Game.hpp>
 #include <Game/Render/Ray.hpp>
 
-static sf::Color CalculateLight(sf::RenderWindow& window, Level& level, Ray& hit, float depth)
+#include <Game/ECS/Components/Light.hpp>
+#include <Game/ECS/Components/Player.hpp>
+#include <Game/ECS/Components/Transform.hpp>
+
+static sf::Color CalculateLight(Ray& hit, float depth)
 {
+    auto& level = Game::Get().GetCurrentLevel();
+    auto lights = Game::Get()
+        .GetCurrentLevel()
+        .GetHierarchy()
+        .GetRegistry()
+        .group<ECS::Components::Light>(entt::get<ECS::Components::Transform>);
+
     float r, g, b;
     r = g = b = 0;
 
-    for (Light& light : level.GetLights())
+    lights.each([&](ECS::Components::Light& light, ECS::Components::Transform& transform)
     {
         Ray lightRay;
-        float distToHit = Math::DistanceSqr(hit.hitPos, light.position);
-        float angleToHit = Math::Vector2Angle(hit.hitPos - light.position);
+        float distToHit = Math::DistanceSqr(hit.hitPos, transform.position);
+        float angleToHit = Math::Vector2Angle(hit.hitPos - transform.position);
 
-        if (Ray::Cast(level, light.position, angleToHit, lightRay))
+        if (Ray::Cast(level, transform.position, angleToHit, lightRay))
         {
             // Squared distance to save computation time
             if (abs(lightRay.distance * lightRay.distance - distToHit) < 0.5f)
@@ -26,7 +37,7 @@ static sf::Color CalculateLight(sf::RenderWindow& window, Level& level, Ray& hit
                 b += w * light.color.b;
             }
         }
-    }
+    });
 
     r = fmin(r, 255);
     g = fmin(g, 255);
@@ -45,6 +56,8 @@ void LevelView::RenderView()
     auto& window = Game::Get().GetWindow();
     auto& level  = Game::Get().GetCurrentLevel();
 
+    auto player = m_Player.Get<ECS::Components::Transform>();
+
     // Keep original resolution before downscaling
     const auto originalView = window.getView();
 
@@ -58,16 +71,16 @@ void LevelView::RenderView()
     for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
     {
         float canvasX = (screenX / viewSize.x) * m_Canvas.size;
-        float angle = m_Player->GetRotation() + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
+        float angle = player.rotation + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
 
         Ray hit;
-        if (!Ray::Cast(level, m_Player->GetPosition(), angle, hit))
+        if (!Ray::Cast(level, player.position, angle, hit))
             continue;
 
-        sf::Color wallColor = CalculateLight(window, level, hit, depth);
+        sf::Color wallColor = CalculateLight(hit, depth);
 
         // Correct the fishbowl effect
-        hit.distance *= cos(m_Player->GetRotation() - angle);
+        hit.distance *= cos(player.rotation - angle);
 
         float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
         float floor = viewSize.y - ceiling;
@@ -104,10 +117,10 @@ void LevelView::RenderView()
 
 void LevelView::Init()
 {
-    auto& level = Game::Get().GetCurrentLevel();
-
-    m_Player = level.GetHierarchy()
-                    .GetObject<Player>();
+    m_Player = Game::Get()
+        .GetCurrentLevel()
+        .GetHierarchy()
+        .GetEntity<ECS::Components::Player>();
 }
 
 void LevelView::Render(float dt)

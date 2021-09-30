@@ -1,8 +1,8 @@
 #pragma once
 #include <Core.hpp>
 
+#include <Game/ECS/Entity.hpp>
 #include <Game/Render/Layer.hpp>
-#include <Game/Hierarchy/Objects/Player.hpp>
 
 enum MiniMapFlags
 {
@@ -57,5 +57,5 @@ private:
     MiniMapFlags m_Flags;
     sf::Vector2f m_Origin;
 
-    Shared<Player> m_Player;
+    ECS::Entity m_Player;
 };

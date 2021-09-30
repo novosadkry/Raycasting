@@ -1,9 +1,9 @@
 #pragma once
 #include <Core.hpp>
 
+#include <Game/ECS/Entity.hpp>
 #include <Game/Render/Layer.hpp>
 #include <Game/Render/Canvas.hpp>
-#include <Game/Hierarchy/Objects/Player.hpp>
 
 class LevelView : public Layer
 {
@@ -27,5 +27,5 @@ private:
     Canvas m_Canvas;
     Unique<sf::RenderTexture> m_Buffer;
 
-    Shared<Player> m_Player;
+    ECS::Entity m_Player;
 };

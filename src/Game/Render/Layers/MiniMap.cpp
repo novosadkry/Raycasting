@@ -3,13 +3,20 @@
 #include <Game/Game.hpp>
 #include <Game/Level.hpp>
 #include <Game/Render/Ray.hpp>
-#include <Game/Render/Layers/LevelView.hpp>
-#include <Game/Hierarchy/Objects/Player.hpp>
+
+#include <Game/ECS/Components/Light.hpp>
+#include <Game/ECS/Components/Player.hpp>
+#include <Game/ECS/Components/Collider.hpp>
+#include <Game/ECS/Components/Transform.hpp>
 
 void MiniMap::RenderMiniMap()
 {
     auto& window = Game::Get().GetWindow();
     auto& level  = Game::Get().GetCurrentLevel();
+
+    auto player          = m_Player.Get<ECS::Components::Player>();
+    auto playerCollider  = m_Player.Get<ECS::Components::Collider>();
+    auto playerTransform = m_Player.Get<ECS::Components::Transform>();
 
     // Initialize cell shape
     float cellWidth = (float) m_Size.x / level.GetGrid().GetSize().x;
@@ -47,10 +54,10 @@ void MiniMap::RenderMiniMap()
     }
 
     // Normalize player values
-    float pShapeRadius = (m_Player->GetRadius() / level.GetSize().x) * m_Size.x;
+    float pShapeRadius = (playerCollider.radius / level.GetSize().x) * m_Size.x;
     sf::Vector2f pShapePos = {
-        (m_Player->GetPosition().x / level.GetSize().x) * m_Size.x + m_Origin.x,
-        (m_Player->GetPosition().y / level.GetSize().y) * m_Size.y + m_Origin.y
+        (playerTransform.position.x / level.GetSize().x) * m_Size.x + m_Origin.x,
+        (playerTransform.position.y / level.GetSize().y) * m_Size.y + m_Origin.y
     };
 
     if (m_Flags & SHOW_PLAYER)
@@ -71,7 +78,7 @@ void MiniMap::RenderMiniMap()
         sf::RectangleShape pDirShape({dirLength, dirWidth});
         pDirShape.setFillColor(sf::Color::Blue);
         pDirShape.setPosition(pShapePos);
-        pDirShape.rotate(m_Player->GetRotation() * Math::Rad2Deg);
+        pDirShape.rotate(playerTransform.rotation * Math::Rad2Deg);
         window.draw(pDirShape);
     }
 
@@ -79,8 +86,13 @@ void MiniMap::RenderMiniMap()
     {
         const float lightWidth = 0.020f * m_Size.x;
 
-        // Draw lights
-        for (Light& light : level.GetLights())
+        auto view = Game::Get()
+            .GetCurrentLevel()
+            .GetHierarchy()
+            .GetRegistry()
+            .view<ECS::Components::Light, ECS::Components::Transform>();
+
+        view.each([&](ECS::Components::Light& light, ECS::Components::Transform& transform)
         {
             sf::RectangleShape lightShape({lightWidth, lightWidth});
             lightShape.setFillColor(sf::Color::Yellow);
@@ -88,12 +100,12 @@ void MiniMap::RenderMiniMap()
             lightShape.setOutlineThickness(1);
             lightShape.rotate(45);
             lightShape.setPosition({
-                (light.position.x / level.GetSize().x) * m_Size.x + m_Origin.x,
-                (light.position.y / level.GetSize().y) * m_Size.y + m_Origin.y
+                (transform.position.x / level.GetSize().x) * m_Size.x + m_Origin.x,
+                (transform.position.y / level.GetSize().y) * m_Size.y + m_Origin.y
             });
 
             window.draw(lightShape);
-        }
+        });
     }
 
     // Draw rays
@@ -106,8 +118,8 @@ void MiniMap::RenderMiniMap()
 
         if (m_Flags & SHOW_WALL_RAYS)
         {
-            float angle = m_Player->GetRotation() + (1 / Math::PI) * i;
-            Ray::Cast(level, m_Player->GetPosition(), angle, hitRay);
+            float angle = playerTransform.rotation + (1 / Math::PI) * i;
+            Ray::Cast(level, playerTransform.position, angle, hitRay);
 
             // Draw ray direction
             sf::RectangleShape hitDirShape({(hitRay.distance / level.GetSize().x) * m_Size.x, rayWidth});
@@ -129,18 +141,24 @@ void MiniMap::RenderMiniMap()
 
         if (m_Flags & SHOW_LIGHT_RAYS)
         {
-            for (Light& light : level.GetLights())
+            auto view = Game::Get()
+                .GetCurrentLevel()
+                .GetHierarchy()
+                .GetRegistry()
+                .view<ECS::Components::Light, ECS::Components::Transform>();
+
+            view.each([&](ECS::Components::Light& light, ECS::Components::Transform& transform)
             {
                 Ray lightRay;
-                float angleToHit = Math::Vector2Angle(hitRay.hitPos - light.position);
-                Ray::Cast(level, light.position, angleToHit, lightRay);
+                float angleToHit = Math::Vector2Angle(hitRay.hitPos - transform.position);
+                Ray::Cast(level, transform.position, angleToHit, lightRay);
 
                 // Draw light direction
                 sf::RectangleShape lightDirShape({(lightRay.distance / level.GetSize().x) * m_Size.x, rayWidth});
                 lightDirShape.setFillColor(sf::Color::Yellow);
                 lightDirShape.setPosition({
-                    (light.position.x / level.GetSize().x) * m_Size.x + m_Origin.x,
-                    (light.position.y / level.GetSize().y) * m_Size.y + m_Origin.y
+                    (transform.position.x / level.GetSize().x) * m_Size.x + m_Origin.x,
+                    (transform.position.y / level.GetSize().y) * m_Size.y + m_Origin.y
                 });
                 lightDirShape.rotate(angleToHit * Math::Rad2Deg);
                 window.draw(lightDirShape);
@@ -155,17 +173,17 @@ void MiniMap::RenderMiniMap()
                 };
                 lightHitCircle.setPosition(lightHitPos + m_Origin);
                 window.draw(lightHitCircle);
-            }
+            });
         }
     }
 }
 
 void MiniMap::Init()
 {
-    auto& level = Game::Get().GetCurrentLevel();
-
-    m_Player = level.GetHierarchy()
-                    .GetObject<Player>();
+    m_Player = Game::Get()
+        .GetCurrentLevel()
+        .GetHierarchy()
+        .GetEntity<ECS::Components::Player>();
 }
 
 void MiniMap::Render(float dt)
