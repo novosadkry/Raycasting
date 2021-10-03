@@ -5,11 +5,9 @@
 #include <Game/ECS/System.hpp>
 #include <Game/ECS/Hierarchy.hpp>
 
-class Level : Serializable<Level>
+class Level
 {
 public:
-    SERIALIZE_BASE(Level)
-
     static Unique<Level> Empty();
     static Unique<Level> From(const char* path);
     static void Save(Level& level, const char* path);
@@ -64,6 +62,8 @@ public:
     void Update(float dt);
 
 private:
+    SERIALIZE_PRIVATE(Level)
+
     Grid m_Grid;
     sf::Vector2i m_Size;
 

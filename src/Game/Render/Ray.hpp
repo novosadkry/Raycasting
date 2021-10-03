@@ -2,7 +2,6 @@
 #include <Core.hpp>
 
 #include <Game/Level.hpp>
-#include <Game/Hierarchy/Objects/Player.hpp>
 
 struct Ray
 {

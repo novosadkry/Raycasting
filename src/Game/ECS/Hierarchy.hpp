@@ -5,11 +5,9 @@
 
 namespace ECS
 {
-    class Hierarchy : public Serializable<Hierarchy>
+    class Hierarchy
     {
     public:
-        SERIALIZE_BASE(Hierarchy)
-
         template<typename... T>
         ECS::Entity GetEntity()
         {

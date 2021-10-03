@@ -14,6 +14,8 @@
 #include <Game/ECS/Systems/Collision.hpp>
 #include <Game/ECS/Systems/Controller.hpp>
 
+#include <Utils/Serialize.impl.hpp>
+
 Unique<Level> Level::Empty()
 {
     return MakeUnique<Level>(0, 0, Grid({0, 0}, {}));
@@ -22,13 +24,20 @@ Unique<Level> Level::Empty()
 Unique<Level> Level::From(const char* path)
 {
     std::ifstream file(path, std::ios_base::binary);
-    return ::Deserialize<Level>(file);
+    cereal::BinaryInputArchive archive(file);
+
+    auto level = Level::Empty();
+    archive(*level);
+
+    return level;
 }
 
 void Level::Save(Level& level, const char* path)
 {
     std::ofstream file(path, std::ios_base::binary);
-    ::Serialize<Level>(level, file);
+    cereal::BinaryOutputArchive archive(file);
+
+    archive(level);
 }
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
@@ -68,22 +77,4 @@ void Level::OnUnload()
 {
     auto& layers = Game::Get().GetLayers();
     layers.Drop<LevelView, MiniMap>();
-}
-
-void Level::Serialize(std::ostream &stream) const
-{
-    ::Serialize<sf::Vector2i>(m_Size, stream);
-    ::Serialize<Grid>(m_Grid, stream);
-    // ! ::Serialize<Hierarchy>(m_Hierarchy, stream);
-}
-
-Unique<Level> Level::Deserialize(std::istream &stream)
-{
-    sf::Vector2i size = ::Deserialize<sf::Vector2i>(stream);
-    Unique<Grid> grid = ::Deserialize<Grid>(stream);
-    // ! Unique<Hierarchy> hierarchy = ::Deserialize<Hierarchy>(stream);
-
-    auto level = MakeUnique<Level>(size, std::move(*grid));
-
-    return level;
 }
