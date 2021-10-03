@@ -10,4 +10,10 @@ namespace ECS::Components
         sf::Color color;
         float intensity;
     };
+
+    template<typename Archive>
+    void serialize(Archive& archive, Light& value)
+    {
+        archive(value.color, value.intensity);
+    }
 }

@@ -10,4 +10,10 @@ namespace ECS::Components
         sf::Vector2f position;
         float rotation;
     };
+
+    template<typename Archive>
+    void serialize(Archive& archive, Transform& value)
+    {
+        archive(value.position, value.rotation);
+    }
 }

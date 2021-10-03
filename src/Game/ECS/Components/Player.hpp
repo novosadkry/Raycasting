@@ -9,4 +9,10 @@ namespace ECS::Components
     {
         float speed;
     };
+
+    template<typename Archive>
+    void serialize(Archive& archive, Player& value)
+    {
+        archive(value.speed);
+    }
 }

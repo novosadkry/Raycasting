@@ -10,4 +10,10 @@ namespace ECS::Components
         int sides;
         float radius;
     };
+
+    template<typename Archive>
+    void serialize(Archive& archive, Collider& value)
+    {
+        archive(value.sides, value.radius);
+    }
 }

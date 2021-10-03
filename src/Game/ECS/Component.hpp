@@ -3,8 +3,5 @@
 
 namespace ECS
 {
-    struct Component
-    {
-        // TODO: Serializable
-    };
+    struct Component { };
 }

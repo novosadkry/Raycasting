@@ -9,4 +9,10 @@ namespace ECS::Components
     {
         std::string name;
     };
+
+    template<typename Archive>
+    void serialize(Archive& archive, Tag& value)
+    {
+        archive(value.name);
+    }
 }
