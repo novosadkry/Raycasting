@@ -56,6 +56,10 @@ target_include_directories(imgui-sfml PRIVATE ${SFML_INCLUDE})
 set(ENTT_DIR "libs/entt")
 set(ENTT_INCLUDE ${ENTT_DIR}/src)
 
+# Include cereal
+set(CEREAL_DIR "libs/cereal")
+set(CEREAL_INCLUDE ${CEREAL_DIR}/include)
+
 set(LIBS
 	${LIBS}
 	${SFML_COMPONENTS}
@@ -78,3 +82,4 @@ target_include_directories(${TARGET} PRIVATE ${SFML_INCLUDE})
 target_include_directories(${TARGET} PRIVATE ${IMGUI_DIR})
 target_include_directories(${TARGET} PRIVATE ${IMGUI_SFML_DIR})
 target_include_directories(${TARGET} PRIVATE ${ENTT_INCLUDE})
+target_include_directories(${TARGET} PRIVATE ${CEREAL_INCLUDE})
