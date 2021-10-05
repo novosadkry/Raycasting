@@ -44,7 +44,7 @@ namespace cereal
         construct(size, std::move(cells));
     }
 
-    // ---- Vector ----
+    // ---- SFML ----
 
     template<typename Archive, typename T>
     void serialize(Archive& archive, sf::Vector2<T>& value)
@@ -56,6 +56,12 @@ namespace cereal
     void serialize(Archive& archive, sf::Vector3<T>& value)
     {
         archive(value.x, value.y, value.z);
+    }
+
+    template<typename Archive, typename T>
+    void serialize(Archive& archive, sf::Color& value)
+    {
+        archive(value.r, value.g, value.b, value.a);
     }
 
     // ---- ECS ----

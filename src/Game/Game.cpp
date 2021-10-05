@@ -1,6 +1,7 @@
 #include "Game.hpp"
 
 #include <Input/Input.hpp>
+#include <Game/ECS/ECS.hpp>
 
 static sf::Clock deltaClock;
 
@@ -9,6 +10,7 @@ Game* Game::s_Instance = nullptr;
 Game::Game(Unique<sf::RenderWindow> window)
     : m_Window(std::move(window))
 {
+    ECS::Init();
     ImGui::SFML::Init(*m_Window);
 }
 

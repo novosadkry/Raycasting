@@ -42,6 +42,8 @@ namespace ECS
         }
 
     private:
+        SERIALIZE_PRIVATE_SPLIT(Hierarchy)
+
         entt::registry m_Registry;
     };
 }
