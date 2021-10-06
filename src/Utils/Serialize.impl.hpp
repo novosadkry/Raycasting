@@ -58,7 +58,7 @@ namespace cereal
         archive(value.x, value.y, value.z);
     }
 
-    template<typename Archive, typename T>
+    template<typename Archive>
     void serialize(Archive& archive, sf::Color& value)
     {
         archive(value.r, value.g, value.b, value.a);

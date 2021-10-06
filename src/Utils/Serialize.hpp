@@ -55,6 +55,9 @@ namespace cereal
     template<typename Archive, typename T>
     void serialize(Archive&, sf::Vector3<T>&);
 
+    template<typename Archive>
+    void serialize(Archive&, sf::Color&);
+
     // ---- ECS ----
 
     template<typename Archive>
