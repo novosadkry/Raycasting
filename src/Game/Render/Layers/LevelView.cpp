@@ -56,6 +56,7 @@ void LevelView::RenderView()
     auto& window = Game::Get().GetWindow();
     auto& level  = Game::Get().GetCurrentLevel();
 
+    if (!m_Player) return;
     auto player = m_Player.Get<ECS::Components::Transform>();
 
     // Keep original resolution before downscaling

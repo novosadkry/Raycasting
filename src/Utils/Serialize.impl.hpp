@@ -3,8 +3,8 @@
 #include "Serialize.hpp"
 
 #include <Game/Level.hpp>
+#include <Game/ECS/ECS.hpp>
 #include <Game/Grid/Grid.hpp>
-#include <Game/ECS/Hierarchy.hpp>
 
 namespace cereal
 {
@@ -69,12 +69,28 @@ namespace cereal
     template<typename Archive>
     void save(Archive& archive, const ECS::Hierarchy& value)
     {
-        // TODO
+        using namespace ECS::Components;
+
+        entt::snapshot(value.m_Registry)
+            .entities(archive)
+            .template component<Tag>(archive)
+            .template component<Light>(archive)
+            .template component<Player>(archive)
+            .template component<Collider>(archive)
+            .template component<Transform>(archive);
     }
 
     template<typename Archive>
     void load(Archive& archive, ECS::Hierarchy& value)
     {
-        // TODO
+        using namespace ECS::Components;
+
+        entt::snapshot_loader(value.m_Registry)
+            .entities(archive)
+            .template component<Tag>(archive)
+            .template component<Light>(archive)
+            .template component<Player>(archive)
+            .template component<Collider>(archive)
+            .template component<Transform>(archive);
     }
 }

@@ -58,12 +58,6 @@ void Level::Update(float dt)
 
 void Level::OnLoad()
 {
-    auto e = m_Hierarchy.CreateEntity();
-    e.Add<ECS::Components::Player>(100.0f);
-    e.Add<ECS::Components::Transform>(sf::Vector2f{100, 100}, 0);
-    e.Add<ECS::Components::Collider>(16, 10);
-    e.Add<ECS::Components::Light>(sf::Color::White, 1);
-
     m_Systems.Add<ECS::Systems::Controller>();
     m_Systems.Add<ECS::Systems::Collision>();
 
