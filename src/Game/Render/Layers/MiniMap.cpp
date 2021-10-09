@@ -2,12 +2,8 @@
 
 #include <Game/Game.hpp>
 #include <Game/Level.hpp>
+#include <Game/ECS/ECS.hpp>
 #include <Game/Render/Ray.hpp>
-
-#include <Game/ECS/Components/Light.hpp>
-#include <Game/ECS/Components/Player.hpp>
-#include <Game/ECS/Components/Collider.hpp>
-#include <Game/ECS/Components/Transform.hpp>
 
 void MiniMap::RenderMiniMap()
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include <Core.hpp>
 
-#include <Game/ECS/Component.hpp>
+#include "Component.hpp"
 
 namespace ECS
 {

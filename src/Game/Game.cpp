@@ -1,7 +1,9 @@
 #include "Game.hpp"
 
-#include <Input/Input.hpp>
 #include <Game/ECS/ECS.hpp>
+#include <Game/Render/Layers/DebugMenu.hpp>
+
+#include <Input/Input.hpp>
 
 static sf::Clock deltaClock;
 
@@ -11,6 +13,7 @@ Game::Game(Unique<sf::RenderWindow> window)
     : m_Window(std::move(window))
 {
     ImGui::SFML::Init(*m_Window);
+    m_Layers.Emplace<DebugMenu, true>();
 }
 
 void Game::PollEvents()

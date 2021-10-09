@@ -1,18 +1,10 @@
 #include "Level.hpp"
 
 #include <Game/Game.hpp>
-#include <Game/ECS/Entity.hpp>
+#include <Game/ECS/ECS.hpp>
 
 #include <Game/Render/Layers/MiniMap.hpp>
 #include <Game/Render/Layers/LevelView.hpp>
-#include <Game/Render/Layers/DebugMenu.hpp>
-
-#include <Game/ECS/Components/Player.hpp>
-#include <Game/ECS/Components/Collider.hpp>
-#include <Game/ECS/Components/Transform.hpp>
-#include <Game/ECS/Components/Light.hpp>
-#include <Game/ECS/Systems/Collision.hpp>
-#include <Game/ECS/Systems/Controller.hpp>
 
 #include <Utils/Serialize.impl.hpp>
 
@@ -64,7 +56,6 @@ void Level::OnLoad()
     auto& layers = Game::Get().GetLayers();
     layers.Emplace<LevelView, true>(sf::Vector2u(300, 200), Canvas::From(75.0f * Math::Deg2Rad));
     layers.Emplace<MiniMap,   true>(sf::Vector2i(200, 200));
-    layers.Emplace<DebugMenu, true>(); // ? Shouldn't this be somewhere else?
 }
 
 void Level::OnUnload()
