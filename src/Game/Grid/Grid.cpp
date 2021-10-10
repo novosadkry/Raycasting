@@ -5,7 +5,7 @@ Cell Grid::Get(int x, int y)
     int i = y * m_Size.x + x;
 
     if (x < 0 || x >= m_Size.x || y < 0 || y >= m_Size.y)
-        return Empty;
+        return Cell::Empty;
 
     return m_Cells[i];
 }

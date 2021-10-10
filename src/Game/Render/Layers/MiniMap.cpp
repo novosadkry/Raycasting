@@ -27,14 +27,14 @@ void MiniMap::RenderMiniMap()
         {
             Cell cell = level.GetGrid().Get(x, y);
 
-            switch (cell)
+            switch (cell.type)
             {
-                case Wall:
+                case Cell::Wall:
                     cShape.setFillColor(sf::Color::Black);
                     cShape.setOutlineColor(sf::Color::White);
                     break;
 
-                case Empty:
+                case Cell::Empty:
                     cShape.setFillColor(sf::Color::White);
                     cShape.setOutlineColor(sf::Color::Black);
                     break;

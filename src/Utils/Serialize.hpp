@@ -19,6 +19,7 @@
 
 class Level;
 class Grid;
+class Cell;
 namespace ECS { class Hierarchy; }
 
 namespace cereal
@@ -39,6 +40,12 @@ namespace cereal
 
     template<typename Archive>
     void serialize(Archive&, Grid&);
+
+    template<typename Archive> requires traits::is_text_archive<Archive>::value
+    void save(Archive&, const cereal::BinaryData<Cell*>&);
+
+    template<typename Archive> requires traits::is_text_archive<Archive>::value
+    void load(Archive&, cereal::BinaryData<Cell*>&);
 
     template<>
     struct LoadAndConstruct<Grid>

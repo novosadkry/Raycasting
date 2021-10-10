@@ -31,7 +31,24 @@ namespace cereal
     template<typename Archive>
     void serialize(Archive& archive, Grid& value)
     {
-        archive(value.m_Size, value.m_Cells);
+        archive(value.m_Size);
+        archive(
+            cereal::binary_data(
+                value.GetCells().data(),
+                value.m_Size.x * value.m_Size.y * sizeof(Cell)
+        ));
+    }
+
+    template<typename Archive> requires traits::is_text_archive<Archive>::value
+    void save(Archive& archive, const cereal::BinaryData<Cell*>& value)
+    {
+        archive.saveBinaryValue(value.data, value.size);
+    }
+
+    template<typename Archive> requires traits::is_text_archive<Archive>::value
+    void load(Archive& archive, cereal::BinaryData<Cell*>& value)
+    {
+        archive.loadBinaryValue(value.data, value.size);
     }
 
     template<typename Archive>
