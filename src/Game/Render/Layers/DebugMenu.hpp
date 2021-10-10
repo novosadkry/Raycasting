@@ -12,5 +12,14 @@ public:
     inline void Toggle() { m_Active = !m_Active; }
 
 private:
+    void InsertLastOpenFile(std::string path);
+    void RemoveLastOpenFile(std::string path);
+    void HandleOpenFile(std::string& path);
+    void HandleOpenMenu();
+
     bool m_Active;
+    bool m_ShowDebugWindow = true;
+    char m_OpenNameBuffer[255] = {0};
+    float m_ShowOpenFailTime = 0;
+    std::deque<std::string> m_LastOpenFiles;
 };
