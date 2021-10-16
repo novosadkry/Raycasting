@@ -5,10 +5,20 @@
 
 namespace ECS::Components
 {
-    struct Player : public Component
+    struct Player
     {
         float speed;
     };
+
+    template<>
+    inline void Register<Player>()
+    {
+       using namespace entt::literals;
+
+        entt::meta<Player>()
+            .data<&Player::speed>("speed"_hs)
+            .type();
+    }
 
     template<typename Archive>
     void serialize(Archive& archive, Player& value)

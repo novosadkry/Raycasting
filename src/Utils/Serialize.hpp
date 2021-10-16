@@ -71,5 +71,11 @@ namespace cereal
     void save(Archive&, const ECS::Hierarchy&);
 
     template<typename Archive>
+    void save(Archive&, const entt::registry&);
+
+    template<typename Archive>
     void load(Archive&, ECS::Hierarchy&);
+
+    template<typename Archive>
+    void load(Archive&, entt::registry&);
 }

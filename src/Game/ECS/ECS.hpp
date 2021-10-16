@@ -13,3 +13,24 @@
 #include "Components/Player.hpp"
 #include "Components/Collider.hpp"
 #include "Components/Transform.hpp"
+
+namespace ECS
+{
+    template<typename... Component>
+    using ComponentGroup = entt::type_list<Component...>;
+
+    using AllComponents = ComponentGroup
+    <
+        Components::Tag,
+        Components::Light,
+        Components::Player,
+        Components::Collider,
+        Components::Transform
+    >;
+
+    template<typename... Component>
+    void Init(ComponentGroup<Component...>)
+    {
+        (Components::Register<Component>(), ...);
+    }
+}

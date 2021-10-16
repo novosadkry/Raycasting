@@ -5,7 +5,7 @@
 int main(int argc, char** argv)
 {
 	auto& game = Game::Init(sf::VideoMode(1024, 720), "Raycaster");
-	Unique<Level> level = Level::Empty();
+	auto level = Level::Empty();
 
 	try
 	{

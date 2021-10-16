@@ -86,28 +86,40 @@ namespace cereal
     template<typename Archive>
     void save(Archive& archive, const ECS::Hierarchy& value)
     {
-        using namespace ECS::Components;
+        archive(value.m_Registry);
+    }
 
-        entt::snapshot(value.m_Registry)
+    template<typename Archive>
+    void save(Archive& archive, const entt::registry& value)
+    {
+        save(archive, value, ECS::AllComponents{});
+    }
+
+    template<typename Archive, typename... Component>
+    void save(Archive& archive, const entt::registry& value, ECS::ComponentGroup<Component...>)
+    {
+        entt::snapshot(value)
             .entities(archive)
-            .template component<Tag>(archive)
-            .template component<Light>(archive)
-            .template component<Player>(archive)
-            .template component<Collider>(archive)
-            .template component<Transform>(archive);
+            .template component<Component...>(archive);
     }
 
     template<typename Archive>
     void load(Archive& archive, ECS::Hierarchy& value)
     {
-        using namespace ECS::Components;
+        archive(value.m_Registry);
+    }
 
-        entt::snapshot_loader(value.m_Registry)
+    template<typename Archive>
+    void load(Archive& archive, entt::registry& value)
+    {
+        load(archive, value, ECS::AllComponents{});
+    }
+
+    template<typename Archive, typename... Component>
+    void load(Archive& archive, entt::registry& value, ECS::ComponentGroup<Component...>)
+    {
+        entt::snapshot_loader(value)
             .entities(archive)
-            .template component<Tag>(archive)
-            .template component<Light>(archive)
-            .template component<Player>(archive)
-            .template component<Collider>(archive)
-            .template component<Transform>(archive);
+            .template component<Component...>(archive);
     }
 }

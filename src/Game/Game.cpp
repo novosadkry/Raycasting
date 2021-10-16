@@ -13,6 +13,7 @@ Game::Game(Unique<sf::RenderWindow> window)
     : m_Window(std::move(window))
 {
     ImGui::SFML::Init(*m_Window);
+    ECS::Init(ECS::AllComponents{});
     m_Layers.Emplace<DebugMenu, true>();
 }
 

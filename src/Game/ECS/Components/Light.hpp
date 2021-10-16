@@ -5,11 +5,22 @@
 
 namespace ECS::Components
 {
-    struct Light : public Component
+    struct Light
     {
         sf::Color color;
         float intensity;
     };
+
+    template<>
+    inline void Register<Light>()
+    {
+        using namespace entt::literals;
+
+        entt::meta<Light>()
+            .data<&Light::color>("color"_hs)
+            .data<&Light::intensity>("intensity"_hs)
+            .type();
+    }
 
     template<typename Archive>
     void serialize(Archive& archive, Light& value)

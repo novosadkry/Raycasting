@@ -5,10 +5,20 @@
 
 namespace ECS::Components
 {
-    struct Tag : public Component
+    struct Tag
     {
         std::string name;
     };
+
+    template<>
+    inline void Register<Tag>()
+    {
+        using namespace entt::literals;
+
+        entt::meta<Tag>()
+            .data<&Tag::name>("name"_hs)
+            .type();
+    }
 
     template<typename Archive>
     void serialize(Archive& archive, Tag& value)

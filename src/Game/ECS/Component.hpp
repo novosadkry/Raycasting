@@ -1,7 +1,8 @@
 #pragma once
 #include <Core.hpp>
 
-namespace ECS
+namespace ECS::Components
 {
-    struct Component { };
+    template<typename>
+    void Register() = delete;
 }
