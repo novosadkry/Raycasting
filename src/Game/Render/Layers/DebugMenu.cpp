@@ -110,6 +110,29 @@ void DebugMenu::HandleNewPopup()
     }
 }
 
+void DebugMenu::HandleDebugMenu()
+{
+    if (ImGui::Begin("Debug Menu", &m_ShowDebugWindow))
+    {
+        auto& level = Game::Get().GetCurrentLevel();
+        auto levelSize = level.GetSize();
+        auto gridSize = level.GetGrid().GetSize();
+
+        if (ImGui::CollapsingHeader("Level Info"))
+        {
+            ImGui::Text("Name: Empty");
+            ImGui::Text("Size: %dx%d", levelSize.x, levelSize.y);
+        }
+
+        if (ImGui::CollapsingHeader("Grid Info"))
+        {
+            ImGui::Text("Size: %dx%d", gridSize.x, gridSize.y);
+        }
+
+        ImGui::End();
+    }
+}
+
 void DebugMenu::Render(float dt)
 {
     if (!m_Active)
@@ -118,13 +141,7 @@ void DebugMenu::Render(float dt)
     bool openNewPopup = false;
 
     if (m_ShowDebugWindow)
-    {
-        if (ImGui::Begin("Debug Menu", &m_ShowDebugWindow))
-        {
-
-            ImGui::End();
-        }
-    }
+        HandleDebugMenu();
 
     if (ImGui::BeginMainMenuBar())
     {
