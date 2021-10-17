@@ -77,10 +77,45 @@ void DebugMenu::HandleOpenMenu()
     }
 }
 
+void DebugMenu::HandleNewPopup()
+{
+    if (ImGui::BeginPopupModal("New Level"))
+    {
+        static char name[255] = {0};
+        static sf::Vector2i levelSize{500, 500};
+        static sf::Vector2i gridSize{10, 10};
+
+        auto avail = ImGui::GetContentRegionAvail();
+
+        ImGui::InputText("Name", name, sizeof(name));
+        ImGui::InputInt2("Level Size", &levelSize.x);
+        ImGui::InputInt2("Grid Size", &gridSize.x);
+
+        ImVec2 pos;
+
+        pos = ImVec2(10, avail.y);
+        ImGui::SetCursorPos(pos);
+        if (ImGui::Button("OK", ImVec2(avail.x / 2 - 10, 20)))
+        {
+            Game::Get().LoadLevel(MakeUnique<Level>(levelSize, Grid(gridSize)));
+            ImGui::CloseCurrentPopup();
+        }
+
+        pos = ImVec2(avail.x / 2 + 10, avail.y);
+        ImGui::SetCursorPos(pos);
+        if (ImGui::Button("Close", ImVec2(avail.x / 2, 20)))
+            ImGui::CloseCurrentPopup();
+
+        ImGui::EndPopup();
+    }
+}
+
 void DebugMenu::Render(float dt)
 {
     if (!m_Active)
         return;
+
+    bool openNewPopup = false;
 
     if (m_ShowDebugWindow)
     {
@@ -97,7 +132,7 @@ void DebugMenu::Render(float dt)
         {
             if (ImGui::MenuItem("New", "Ctrl+N"))
             {
-                Game::Get().LoadLevel(Level::Empty());
+                openNewPopup = true;
             }
 
             if (ImGui::BeginMenu("Open", "Ctrl+O"))
@@ -124,15 +159,20 @@ void DebugMenu::Render(float dt)
             ImGui::EndMenu();
         }
 
-        if (!m_ShowDebugWindow && ImGui::MenuItem("Debug"))
-            m_ShowDebugWindow = true;
-
-        if (m_ShowOpenFailTime > 0)
-            m_ShowOpenFailTime -= dt;
-
-        while (m_LastOpenFiles.size() > MAX_LAST_OPEN_FILES)
-            m_LastOpenFiles.pop_front();
-
         ImGui::EndMainMenuBar();
     }
+
+    if (!m_ShowDebugWindow && ImGui::MenuItem("Debug"))
+        m_ShowDebugWindow = true;
+
+    if (m_ShowOpenFailTime > 0)
+        m_ShowOpenFailTime -= dt;
+
+    while (m_LastOpenFiles.size() > MAX_LAST_OPEN_FILES)
+        m_LastOpenFiles.pop_front();
+
+    if (openNewPopup)
+        ImGui::OpenPopup("New Level");
+
+    HandleNewPopup();
 }

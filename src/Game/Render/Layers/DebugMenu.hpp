@@ -16,6 +16,7 @@ private:
     void RemoveLastOpenFile(std::string path);
     void HandleOpenFile(std::string& path);
     void HandleOpenMenu();
+    void HandleNewPopup();
 
     bool m_Active;
     bool m_ShowDebugWindow = true;
