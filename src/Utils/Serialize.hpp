@@ -29,13 +29,6 @@ namespace cereal
     template<typename Archive>
     void serialize(Archive&, Level&);
 
-    template<>
-    struct LoadAndConstruct<Level>
-    {
-        template<typename Archive>
-        static void load_and_construct(Archive&, cereal::construct<Level>&);
-    };
-
     // ---- Grid ----
 
     template<typename Archive>

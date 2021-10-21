@@ -9,20 +9,22 @@ class Level
 {
 public:
     static Unique<Level> Empty();
+    static Unique<Level> Empty(sf::Vector2i ls, sf::Vector2i gs);
+
     static Unique<Level> From(const char* path);
     static void Save(Level& level, const char* path);
 
 public:
     Level(const Level&) = delete;
 
-    Level(sf::Vector2i size, Grid grid) :
+    Level(sf::Vector2i size, Unique<Grid> grid) :
         m_Size(size),
         m_Grid(std::move(grid)),
         m_Hierarchy(),
         m_Systems(&m_Hierarchy.GetRegistry())
     { }
 
-    Level(int x, int y, Grid grid) :
+    Level(int x, int y, Unique<Grid> grid) :
         m_Size({x, y}),
         m_Grid(std::move(grid)),
         m_Hierarchy(),
@@ -31,10 +33,10 @@ public:
 
     inline Grid& GetGrid()
     {
-        return m_Grid;
+        return *m_Grid;
     }
 
-    inline void SetGrid(Grid grid)
+    inline void SetGrid(Unique<Grid> grid)
     {
         m_Grid = std::move(grid);
     }
@@ -64,7 +66,7 @@ public:
 private:
     SERIALIZE_PRIVATE(Level)
 
-    Grid m_Grid;
+    Unique<Grid> m_Grid;
     sf::Vector2i m_Size;
 
     ECS::Hierarchy m_Hierarchy;

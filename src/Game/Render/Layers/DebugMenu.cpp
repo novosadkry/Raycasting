@@ -97,7 +97,7 @@ void DebugMenu::HandleNewPopup()
         ImGui::SetCursorPos(pos);
         if (ImGui::Button("OK", ImVec2(avail.x / 2 - 10, 20)))
         {
-            Game::Get().LoadLevel(MakeUnique<Level>(levelSize, Grid(gridSize)));
+            Game::Get().LoadLevel(Level::Empty(levelSize, gridSize));
             ImGui::CloseCurrentPopup();
         }
 

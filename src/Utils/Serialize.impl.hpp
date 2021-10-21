@@ -16,16 +16,6 @@ namespace cereal
         archive(value.m_Size, value.m_Grid, value.m_Hierarchy);
     }
 
-    template<typename Archive>
-    void LoadAndConstruct<Level>::load_and_construct(Archive& archive, cereal::construct<Level>& construct)
-    {
-        sf::Vector2i size;
-        Unique<Grid> grid;
-
-        archive(size, grid);
-        construct(size, std::move(*grid));
-    }
-
     // ---- Grid ----
 
     template<typename Archive>
@@ -39,6 +29,22 @@ namespace cereal
         ));
     }
 
+    template<typename Archive>
+    void LoadAndConstruct<Grid>::load_and_construct(Archive& archive, cereal::construct<Grid>& construct)
+    {
+        sf::Vector2i size;
+        archive(size);
+
+        std::vector<Cell> cells(size.x * size.y);
+        archive(
+            cereal::binary_data(
+                cells.data(),
+                size.x * size.y * sizeof(Cell)
+        ));
+
+        construct(size, std::move(cells));
+    }
+
     template<typename Archive> requires traits::is_text_archive<Archive>::value
     void save(Archive& archive, const cereal::BinaryData<Cell*>& value)
     {
@@ -49,16 +55,6 @@ namespace cereal
     void load(Archive& archive, cereal::BinaryData<Cell*>& value)
     {
         archive.loadBinaryValue(value.data, value.size);
-    }
-
-    template<typename Archive>
-    void LoadAndConstruct<Grid>::load_and_construct(Archive& archive, cereal::construct<Grid>& construct)
-    {
-        sf::Vector2i size;
-        std::vector<Cell> cells;
-
-        archive(size, cells);
-        construct(size, std::move(cells));
     }
 
     // ---- SFML ----

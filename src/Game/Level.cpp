@@ -10,7 +10,12 @@
 
 Unique<Level> Level::Empty()
 {
-    return MakeUnique<Level>(0, 0, Grid({0, 0}, {}));
+    return Empty({0, 0}, {0, 0});
+}
+
+Unique<Level> Level::Empty(sf::Vector2i ls, sf::Vector2i gs)
+{
+    return MakeUnique<Level>(ls, MakeUnique<Grid>(gs));
 }
 
 Unique<Level> Level::From(const char* path)
@@ -34,8 +39,8 @@ void Level::Save(Level& level, const char* path)
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
 {
-    float cellWidth = (float) m_Size.x / m_Grid.GetSize().x;
-    float cellHeight = (float) m_Size.y / m_Grid.GetSize().y;
+    float cellWidth =  (float) m_Size.x / m_Grid->GetSize().x;
+    float cellHeight = (float) m_Size.y / m_Grid->GetSize().y;
 
     int cellX = (int) floor(pos.x / cellWidth);
     int cellY = (int) floor(pos.y / cellHeight);
