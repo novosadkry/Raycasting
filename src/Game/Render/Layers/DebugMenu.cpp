@@ -114,9 +114,11 @@ void DebugMenu::HandleDebugMenu()
 {
     if (ImGui::Begin("Debug Menu", &m_ShowDebugWindow))
     {
-        auto& level = Game::Get().GetCurrentLevel();
-        auto levelSize = level.GetSize();
-        auto gridSize = level.GetGrid().GetSize();
+        auto& level     = Game::Get().GetCurrentLevel();
+        auto  levelSize = level.GetSize();
+
+        auto& grid      = level.GetGrid();
+        auto  gridSize  = grid.GetSize();
 
         if (ImGui::CollapsingHeader("Level Info"))
         {
@@ -138,10 +140,13 @@ void DebugMenu::HandleDebugMenu()
 
                 ImVec2 p     = ImGui::GetCursorScreenPos();
                 ImVec2 avail = ImGui::GetContentRegionAvail();
+                ImVec2 mouse = ImGui::GetMousePos();
 
                 int s = 1;
                 int w = (avail.x / gridSize.x) - s;
                 int h = (avail.y / gridSize.y) - s;
+
+                ImGui::InvisibleButton("DisableMouseDrag", avail);
 
                 for (int y = 0; y < gridSize.y; y++)
                 {
@@ -150,11 +155,23 @@ void DebugMenu::HandleDebugMenu()
                         if ((x % gridSize.x) != 0)
                             ImGui::SameLine();
 
-                        drawList->AddRectFilled(
-                            ImVec2(p.x + x * (w + s),     p.y + y * (h + s)),
-                            ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h),
-                            ImColor(255, 255, 255)
-                        );
+                        ImVec2  min   = ImVec2(p.x + x * (w + s),     p.y + y * (h + s));
+                        ImVec2  max   = ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h);
+                        ImColor color = ImColor(255, 255, 255);
+
+                        if (grid.Get(x, y).type == Cell::Wall)
+                            drawList->AddRectFilled(min, max, color);
+                        else
+                            drawList->AddRect(min, max, color);
+
+                        bool isMouseHovering =
+                            mouse.x > min.x && mouse.x < max.x &&
+                            mouse.y > min.y && mouse.y < max.y;
+
+                        if (ImGui::GetIO().MouseDown[0] && isMouseHovering)
+                            grid.Set(x, y, Cell::Wall);
+                        else if (ImGui::GetIO().MouseDown[1] && isMouseHovering)
+                            grid.Set(x, y, Cell::Empty);
                     }
                 }
 
