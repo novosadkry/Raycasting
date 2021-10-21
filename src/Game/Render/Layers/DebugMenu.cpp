@@ -127,6 +127,41 @@ void DebugMenu::HandleDebugMenu()
         if (ImGui::CollapsingHeader("Grid Info"))
         {
             ImGui::Text("Size: %dx%d", gridSize.x, gridSize.y);
+            ImGui::Spacing(); ImGui::Separator();
+            ImGui::Text("Grid:");
+            ImGui::Spacing();
+
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+            {
+                ImGui::BeginGroup();
+
+                ImVec2 p     = ImGui::GetCursorScreenPos();
+                ImVec2 avail = ImGui::GetContentRegionAvail();
+
+                int s = 1;
+                int w = (avail.x / gridSize.x) - s;
+                int h = (avail.y / gridSize.y) - s;
+
+                for (int y = 0; y < gridSize.y; y++)
+                {
+                    for (int x = 0; x < gridSize.x; x++)
+                    {
+                        if ((x % gridSize.x) != 0)
+                            ImGui::SameLine();
+
+                        drawList->AddRectFilled(
+                            ImVec2(p.x + x * (w + s),     p.y + y * (h + s)),
+                            ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h),
+                            ImColor(255, 255, 255)
+                        );
+                    }
+                }
+
+                ImGui::EndGroup();
+                ImGui::SetCursorScreenPos(ImVec2(p.x + avail.x, p.y + avail.y));
+                ImGui::Spacing(); ImGui::Separator();
+            }
         }
 
         ImGui::End();
@@ -176,11 +211,11 @@ void DebugMenu::Render(float dt)
             ImGui::EndMenu();
         }
 
+        if (!m_ShowDebugWindow && ImGui::MenuItem("Debug"))
+            m_ShowDebugWindow = true;
+
         ImGui::EndMainMenuBar();
     }
-
-    if (!m_ShowDebugWindow && ImGui::MenuItem("Debug"))
-        m_ShowDebugWindow = true;
 
     if (m_ShowOpenFailTime > 0)
         m_ShowOpenFailTime -= dt;
