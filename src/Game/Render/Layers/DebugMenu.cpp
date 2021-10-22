@@ -129,24 +129,29 @@ void DebugMenu::HandleDebugMenu()
         if (ImGui::CollapsingHeader("Grid Info"))
         {
             ImGui::Text("Size: %dx%d", gridSize.x, gridSize.y);
-            ImGui::Spacing(); ImGui::Separator();
-            ImGui::Text("Grid:");
-            ImGui::Spacing();
+            ImGui::Separator(); ImGui::Spacing();
 
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            ImGui::Text("Mode:"); ImGui::SameLine();
+            ImGui::Combo("", &m_CurrentGridMode, "Select\0Edit\0");
+            ImGui::Spacing();
 
             {
                 ImGui::BeginGroup();
 
-                ImVec2 p     = ImGui::GetCursorScreenPos();
-                ImVec2 avail = ImGui::GetContentRegionAvail();
-                ImVec2 mouse = ImGui::GetMousePos();
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-                int s = 1;
-                int w = (avail.x / gridSize.x) - s;
-                int h = (avail.y / gridSize.y) - s;
+                const ImVec2 p     = ImGui::GetCursorScreenPos();
+                const ImVec2 avail = ImGui::GetContentRegionAvail();
+                const ImVec2 mouse = ImGui::GetMousePos();
+
+                const int s = 1;
+                const int w = (avail.x / gridSize.x) - s;
+                const int h = (avail.y / gridSize.y) - s;
+
+                static std::optional<sf::Vector2i> selectedCell;
 
                 ImGui::InvisibleButton("DisableMouseDrag", avail);
+                bool focused = ImGui::IsItemHovered();
 
                 for (int y = 0; y < gridSize.y; y++)
                 {
@@ -155,23 +160,60 @@ void DebugMenu::HandleDebugMenu()
                         if ((x % gridSize.x) != 0)
                             ImGui::SameLine();
 
-                        ImVec2  min   = ImVec2(p.x + x * (w + s),     p.y + y * (h + s));
-                        ImVec2  max   = ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h);
-                        ImColor color = ImColor(255, 255, 255);
+                        const ImVec2 min = ImVec2(p.x + x * (w + s),     p.y + y * (h + s));
+                        const ImVec2 max = ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h);
+
+                        const ImColor red   = ImColor(255,   0,   0);
+                        const ImColor white = ImColor(255, 255, 255);
 
                         if (grid.Get(x, y).type == Cell::Wall)
-                            drawList->AddRectFilled(min, max, color);
+                            drawList->AddRectFilled(min, max, white);
                         else
-                            drawList->AddRect(min, max, color);
+                            drawList->AddRect(min, max, white);
 
                         bool isMouseHovering =
                             mouse.x > min.x && mouse.x < max.x &&
                             mouse.y > min.y && mouse.y < max.y;
 
-                        if (ImGui::GetIO().MouseDown[0] && isMouseHovering)
-                            grid.Set(x, y, Cell::Wall);
-                        else if (ImGui::GetIO().MouseDown[1] && isMouseHovering)
-                            grid.Set(x, y, Cell::Empty);
+                        switch (m_CurrentGridMode)
+                        {
+                            case SELECT:
+                            {
+                                if (isMouseHovering && focused)
+                                {
+                                    if (ImGui::GetIO().MouseClicked[0])
+                                    {
+                                        if (selectedCell != sf::Vector2i{x, y})
+                                            selectedCell = {x, y};
+                                        else
+                                            selectedCell = {};
+                                    }
+
+                                    // else if (selected && ImGui::GetIO().MouseDown[0])
+                                    //     selected = {x, y};
+                                }
+
+                                if (selectedCell == sf::Vector2i{x, y})
+                                {
+                                    drawList->AddRect(
+                                        ImVec2(min.x - s / 2, min.y - s / 2),
+                                        ImVec2(max.x + s / 2, max.y + s / 2),
+                                        red, 0, 0, s
+                                    );
+                                }
+                            } break;
+
+                            case EDIT:
+                            {
+                                if (isMouseHovering && focused)
+                                {
+                                    if (ImGui::GetIO().MouseDown[0])
+                                        grid.Set(x, y, Cell::Wall);
+                                    else if (ImGui::GetIO().MouseDown[1])
+                                        grid.Set(x, y, Cell::Empty);
+                                }
+                            } break;
+                        }
                     }
                 }
 
