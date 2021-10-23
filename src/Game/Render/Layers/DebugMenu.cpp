@@ -222,9 +222,9 @@ void DebugMenu::HandleDebugMenu()
                 ImGui::Spacing(); ImGui::Separator();
             }
         }
-
-        ImGui::End();
     }
+
+    ImGui::End();
 }
 
 void DebugMenu::Render(float dt)
