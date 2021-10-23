@@ -136,9 +136,7 @@ void DebugMenu::HandleDebugMenu()
             ImGui::Spacing();
 
             {
-                ImGui::BeginGroup();
-
-                ImDrawList* drawList = ImGui::GetWindowDrawList();
+                ImGui::BeginChild("Grid Canvas", ImVec2(0, 0), 0, ImGuiWindowFlags_NoMove);
 
                 const ImVec2 p     = ImGui::GetCursorScreenPos();
                 const ImVec2 avail = ImGui::GetContentRegionAvail();
@@ -150,11 +148,22 @@ void DebugMenu::HandleDebugMenu()
 
                 static std::optional<sf::Vector2i> selectedCell;
 
-                ImGui::InvisibleButton("DisableMouseDrag", avail);
-                bool focused = ImGui::IsItemHovered();
+                bool isRowHovered = ImGui::IsWindowHovered(
+                    ImGuiHoveredFlags_ChildWindows |
+                    ImGuiHoveredFlags_AllowWhenBlockedByActiveItem
+                );
 
                 for (int y = 0; y < gridSize.y; y++)
                 {
+                    char rowName[255];
+                    std::sprintf(rowName, "Row%d", y);
+
+                    ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + y * (h + s)));
+                    ImGui::BeginChild(rowName, ImVec2(avail.x, h + s));
+                    ImGui::SetCursorScreenPos(p);
+
+                    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
                     for (int x = 0; x < gridSize.x; x++)
                     {
                         if ((x % gridSize.x) != 0)
@@ -171,7 +180,7 @@ void DebugMenu::HandleDebugMenu()
                         else
                             drawList->AddRect(min, max, white);
 
-                        bool isMouseHovering =
+                        bool isCellHovered =
                             mouse.x > min.x && mouse.x < max.x &&
                             mouse.y > min.y && mouse.y < max.y;
 
@@ -179,7 +188,7 @@ void DebugMenu::HandleDebugMenu()
                         {
                             case SELECT:
                             {
-                                if (isMouseHovering && focused)
+                                if (isCellHovered && isRowHovered)
                                 {
                                     if (ImGui::GetIO().MouseClicked[0])
                                     {
@@ -205,7 +214,7 @@ void DebugMenu::HandleDebugMenu()
 
                             case EDIT:
                             {
-                                if (isMouseHovering && focused)
+                                if (isCellHovered && isRowHovered)
                                 {
                                     if (ImGui::GetIO().MouseDown[0])
                                         grid.Set(x, y, Cell::Wall);
@@ -215,9 +224,11 @@ void DebugMenu::HandleDebugMenu()
                             } break;
                         }
                     }
+
+                    ImGui::EndChild();
                 }
 
-                ImGui::EndGroup();
+                ImGui::EndChild();
                 ImGui::SetCursorScreenPos(ImVec2(p.x + avail.x, p.y + avail.y));
                 ImGui::Spacing(); ImGui::Separator();
             }
