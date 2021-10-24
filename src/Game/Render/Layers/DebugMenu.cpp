@@ -114,124 +114,162 @@ void DebugMenu::HandleDebugMenu()
 {
     if (ImGui::Begin("Debug Menu", &m_ShowDebugWindow))
     {
+
+    }
+
+    ImGui::End();
+}
+
+void DebugMenu::HandleEditMenu()
+{
+    if (ImGui::Begin("Edit Menu", &m_ShowEditWindow))
+    {
         auto& level     = Game::Get().GetCurrentLevel();
         auto  levelSize = level.GetSize();
 
         auto& grid      = level.GetGrid();
         auto  gridSize  = grid.GetSize();
 
-        if (ImGui::CollapsingHeader("Level Info"))
+        if (ImGui::BeginTabBar("Tabs", ImGuiTabBarFlags_Reorderable))
         {
-            ImGui::Text("Name: Empty");
-            ImGui::Text("Size: %dx%d", levelSize.x, levelSize.y);
-        }
-
-        if (ImGui::CollapsingHeader("Grid Info"))
-        {
-            ImGui::Text("Size: %dx%d", gridSize.x, gridSize.y);
-            ImGui::Separator(); ImGui::Spacing();
-
-            ImGui::Text("Mode:"); ImGui::SameLine();
-            ImGui::Combo("", &m_CurrentGridMode, "Select\0Edit\0");
-            ImGui::Spacing();
-
+            if (ImGui::BeginTabItem("Level"))
             {
-                ImGui::BeginChild("Grid Canvas", ImVec2(0, 0), 0, ImGuiWindowFlags_NoMove);
+                ImGui::Text("Name: Empty");
+                ImGui::Text("Size: %dx%d", levelSize.x, levelSize.y);
 
-                const ImVec2 p     = ImGui::GetCursorScreenPos();
-                const ImVec2 avail = ImGui::GetContentRegionAvail();
-                const ImVec2 mouse = ImGui::GetMousePos();
+                ImGui::EndTabItem();
+            }
 
-                const int s = 1;
-                const int w = (avail.x / gridSize.x) - s;
-                const int h = (avail.y / gridSize.y) - s;
+            if (ImGui::BeginTabItem("Grid"))
+            {
+                ImGui::Text("Size: %dx%d", gridSize.x, gridSize.y);
+                ImGui::Separator(); ImGui::Spacing();
 
-                static std::optional<sf::Vector2i> selectedCell;
-
-                bool isRowHovered = ImGui::IsWindowHovered(
-                    ImGuiHoveredFlags_ChildWindows |
-                    ImGuiHoveredFlags_AllowWhenBlockedByActiveItem
-                );
-
-                for (int y = 0; y < gridSize.y; y++)
                 {
-                    char rowName[255];
-                    std::sprintf(rowName, "Row%d", y);
+                    const char* modes[] = { "Select", "Edit" };
 
-                    ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + y * (h + s)));
-                    ImGui::BeginChild(rowName, ImVec2(avail.x, h + s));
-                    ImGui::SetCursorScreenPos(p);
-
-                    ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-                    for (int x = 0; x < gridSize.x; x++)
+                    if (ImGui::BeginCombo("Modes", nullptr, ImGuiComboFlags_NoPreview))
                     {
-                        if ((x % gridSize.x) != 0)
-                            ImGui::SameLine();
-
-                        const ImVec2 min = ImVec2(p.x + x * (w + s),     p.y + y * (h + s));
-                        const ImVec2 max = ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h);
-
-                        const ImColor red   = ImColor(255,   0,   0);
-                        const ImColor white = ImColor(255, 255, 255);
-
-                        if (grid.Get(x, y).type == Cell::Wall)
-                            drawList->AddRectFilled(min, max, white);
-                        else
-                            drawList->AddRect(min, max, white);
-
-                        bool isCellHovered =
-                            mouse.x > min.x && mouse.x < max.x &&
-                            mouse.y > min.y && mouse.y < max.y;
-
-                        switch (m_CurrentGridMode)
+                        for (int i = 0; i < IM_ARRAYSIZE(modes); i++)
                         {
-                            case SELECT:
+                            bool selected = m_CurrentGridMode == i;
+                            selected = ImGui::Selectable(modes[i], selected);
+
+                            if (selected)
                             {
-                                if (isCellHovered && isRowHovered)
+                                m_CurrentGridMode = GridMode(i);
+                                ImGui::SetItemDefaultFocus();
+                            }
+                        }
+
+                        ImGui::EndCombo();
+                    }
+                }
+
+                ImGui::Spacing();
+
+                {
+                    ImGui::BeginChild("Grid Canvas", ImVec2(0, 0), 0, ImGuiWindowFlags_NoMove);
+
+                    const ImVec2 p     = ImGui::GetCursorScreenPos();
+                    const ImVec2 avail = ImGui::GetContentRegionAvail();
+                    const ImVec2 mouse = ImGui::GetMousePos();
+
+                    const int s = 1;
+                    const int w = (avail.x / gridSize.x) - s;
+                    const int h = (avail.y / gridSize.y) - s;
+
+                    static std::optional<sf::Vector2i> selectedCell;
+
+                    bool isRowHovered = ImGui::IsWindowHovered(
+                        ImGuiHoveredFlags_ChildWindows |
+                        ImGuiHoveredFlags_AllowWhenBlockedByActiveItem
+                    );
+
+                    for (int y = 0; y < gridSize.y; y++)
+                    {
+                        char rowName[255];
+                        std::sprintf(rowName, "Row%d", y);
+
+                        ImGui::SetCursorScreenPos(ImVec2(p.x, p.y + y * (h + s)));
+                        ImGui::BeginChild(rowName, ImVec2(avail.x, h + s));
+                        ImGui::SetCursorScreenPos(p);
+
+                        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+                        for (int x = 0; x < gridSize.x; x++)
+                        {
+                            if ((x % gridSize.x) != 0)
+                                ImGui::SameLine();
+
+                            const ImVec2 min = ImVec2(p.x + x * (w + s),     p.y + y * (h + s));
+                            const ImVec2 max = ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h);
+
+                            const ImColor red   = ImColor(255,   0,   0);
+                            const ImColor white = ImColor(255, 255, 255);
+
+                            if (grid.Get(x, y).type == Cell::Wall)
+                                drawList->AddRectFilled(min, max, white);
+                            else
+                                drawList->AddRect(min, max, white);
+
+                            bool isCellHovered =
+                                mouse.x > min.x && mouse.x < max.x &&
+                                mouse.y > min.y && mouse.y < max.y;
+
+                            switch (m_CurrentGridMode)
+                            {
+                                case SELECT:
                                 {
-                                    if (ImGui::GetIO().MouseClicked[0])
+                                    if (isCellHovered && isRowHovered)
                                     {
-                                        if (selectedCell != sf::Vector2i{x, y})
-                                            selectedCell = {x, y};
-                                        else
-                                            selectedCell = {};
+                                        if (ImGui::GetIO().MouseClicked[0])
+                                        {
+                                            if (selectedCell != sf::Vector2i{x, y})
+                                                selectedCell = {x, y};
+                                            else
+                                                selectedCell = {};
+                                        }
+
+                                        // else if (selected && ImGui::GetIO().MouseDown[0])
+                                        //     selected = {x, y};
                                     }
 
-                                    // else if (selected && ImGui::GetIO().MouseDown[0])
-                                    //     selected = {x, y};
-                                }
+                                    if (selectedCell == sf::Vector2i{x, y})
+                                    {
+                                        drawList->AddRect(
+                                            ImVec2(min.x - s / 2, min.y - s / 2),
+                                            ImVec2(max.x + s / 2, max.y + s / 2),
+                                            red, 0, 0, s
+                                        );
+                                    }
+                                } break;
 
-                                if (selectedCell == sf::Vector2i{x, y})
+                                case EDIT:
                                 {
-                                    drawList->AddRect(
-                                        ImVec2(min.x - s / 2, min.y - s / 2),
-                                        ImVec2(max.x + s / 2, max.y + s / 2),
-                                        red, 0, 0, s
-                                    );
-                                }
-                            } break;
-
-                            case EDIT:
-                            {
-                                if (isCellHovered && isRowHovered)
-                                {
-                                    if (ImGui::GetIO().MouseDown[0])
-                                        grid.Set(x, y, Cell::Wall);
-                                    else if (ImGui::GetIO().MouseDown[1])
-                                        grid.Set(x, y, Cell::Empty);
-                                }
-                            } break;
+                                    if (isCellHovered && isRowHovered)
+                                    {
+                                        if (ImGui::GetIO().MouseDown[0])
+                                            grid.Set(x, y, Cell::Wall);
+                                        else if (ImGui::GetIO().MouseDown[1])
+                                            grid.Set(x, y, Cell::Empty);
+                                    }
+                                } break;
+                            }
                         }
+
+                        ImGui::EndChild();
                     }
 
                     ImGui::EndChild();
+                    ImGui::SetCursorScreenPos(ImVec2(p.x + avail.x, p.y + avail.y));
+                    ImGui::Spacing(); ImGui::Separator();
                 }
 
-                ImGui::EndChild();
-                ImGui::SetCursorScreenPos(ImVec2(p.x + avail.x, p.y + avail.y));
-                ImGui::Spacing(); ImGui::Separator();
+                ImGui::EndTabItem();
             }
+
+            ImGui::EndTabBar();
         }
     }
 
@@ -244,6 +282,9 @@ void DebugMenu::Render(float dt)
         return;
 
     bool openNewPopup = false;
+
+    if (m_ShowEditWindow)
+        HandleEditMenu();
 
     if (m_ShowDebugWindow)
         HandleDebugMenu();
@@ -281,8 +322,11 @@ void DebugMenu::Render(float dt)
             ImGui::EndMenu();
         }
 
-        if (!m_ShowDebugWindow && ImGui::MenuItem("Debug"))
-            m_ShowDebugWindow = true;
+        if (ImGui::MenuItem("Edit", nullptr, m_ShowEditWindow))
+            m_ShowEditWindow = !m_ShowEditWindow;
+
+        if (ImGui::MenuItem("Debug", nullptr, m_ShowDebugWindow))
+            m_ShowDebugWindow = !m_ShowDebugWindow;
 
         ImGui::EndMainMenuBar();
     }
