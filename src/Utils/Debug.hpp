@@ -12,12 +12,29 @@
     #define ASSERT(x) assert((x));
 
     #ifdef TRACK_MEM_ALLOC
+        struct MemoryAlloc
+        {
+            size_t total;
+            size_t freed;
+
+            inline size_t CurrentUsage() { return total - freed; };
+            inline static MemoryAlloc& Get() { static MemoryAlloc m; return m; }
+        };
+
         inline void* operator new(size_t size)
         {
-            static int total = 0;
-            LOG("Allocating " << size << " bytes (total " << ++total << ")");
-            __debugbreak();
+            auto& memory = MemoryAlloc::Get();
+            memory.total += size;
+
             return malloc(size);
+        }
+
+        inline void operator delete(void* data, size_t size)
+        {
+            auto& memory = MemoryAlloc::Get();
+            memory.freed += size;
+
+            return free(data);
         }
     #endif
 #else

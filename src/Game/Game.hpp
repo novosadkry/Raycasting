@@ -40,7 +40,11 @@ public:
 
     inline void Exit()
     {
+        UnloadLevel();
+
+        m_Layers.Clear();
         m_Window->close();
+
         ImGui::SFML::Shutdown();
     }
 
