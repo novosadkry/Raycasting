@@ -32,7 +32,7 @@ void DebugMenu::HandleOpenFile(std::string& path)
         Game::Get().LoadLevel(Level::From(path.c_str()));
 }
 
-void DebugMenu::HandleOpenMenu()
+void DebugMenu::HandleOpenMenu(float dt)
 {
     for (auto& path : m_LastOpenFiles)
     {
@@ -77,7 +77,7 @@ void DebugMenu::HandleOpenMenu()
     }
 }
 
-void DebugMenu::HandleNewPopup()
+void DebugMenu::HandleNewPopup(float dt)
 {
     if (ImGui::BeginPopupModal("New Level"))
     {
@@ -110,17 +110,91 @@ void DebugMenu::HandleNewPopup()
     }
 }
 
-void DebugMenu::HandleDebugMenu()
+void DebugMenu::HandleDebugMenu(float dt)
 {
+    using namespace Debug;
+
     if (ImGui::Begin("Debug Menu", &m_ShowDebugWindow))
     {
+        if (ImGui::BeginTabBar("Tabs", ImGuiTabBarFlags_Reorderable))
+        {
+            if (ImGui::BeginTabItem("Memory"))
+            {
+                static float historyTick = 0.25f;
+                static float setTick = historyTick;
 
+                static size_t lowest;
+                static size_t highest;
+
+                static int historyMaxSize = 50;
+                static std::deque<size_t> history;
+
+            #ifndef TRACK_MEM_ALLOC
+                ImGui::TextColored(ImColor(255, 0, 0), "MEMORY ALLOCATION TRACKING DISABLED");
+                ImGui::BeginDisabled();
+            #endif
+
+                auto& memory = MemoryAlloc::Get();
+                ImGui::SliderInt("History Max Size", &historyMaxSize, 0, 100);
+
+            #ifdef TRACK_MEM_ALLOC
+                if ((historyTick -= dt) < 0)
+                {
+                    size_t current = memory.Allocated();
+
+                    if (current < lowest)
+                        lowest = current;
+                    else if (current > highest)
+                        highest = current;
+
+                    history.push_back(current);
+                    historyTick = setTick;
+                }
+            #endif
+
+                while (history.size() > historyMaxSize)
+                    history.pop_front();
+
+                auto getter = [](void* data, int i) {
+                    auto* h = (std::deque<size_t>*)data;
+                    return (i < h->size())
+                        ? (float)(h->at(i))
+                        : 0.0f;
+                };
+
+                if (ImGui::VSliderFloat("##History Tick", ImVec2(20, 100), &historyTick, 0, 5, "%.2f"))
+                    setTick = historyTick;
+
+                ImGui::SameLine();
+                ImGui::PlotHistogram(
+                    "##Memory Allocation",
+                    getter, &history,
+                    historyMaxSize, 0,
+                    "Memory Allocation", lowest, highest * 1.2f,
+                    ImVec2(ImGui::GetContentRegionAvailWidth(), 100)
+                );
+
+                ImGui::Spacing();
+                ImGui::Text("Metrics"); ImGui::Separator();
+                ImGui::Text("    Total: %zu bytes", memory.Total());
+                ImGui::Text("    Freed: %zu bytes", memory.Freed());
+                ImGui::Text("Allocated: %zu bytes", memory.Allocated());
+
+            #ifndef TRACK_MEM_ALLOC
+                ImGui::EndDisabled();
+            #endif
+
+                ImGui::EndTabItem();
+            }
+
+            ImGui::EndTabBar();
+        }
     }
 
     ImGui::End();
 }
 
-void DebugMenu::HandleEditMenu()
+void DebugMenu::HandleEditMenu(float dt)
 {
     if (ImGui::Begin("Edit Menu", &m_ShowEditWindow))
     {
@@ -284,10 +358,10 @@ void DebugMenu::Render(float dt)
     bool openNewPopup = false;
 
     if (m_ShowEditWindow)
-        HandleEditMenu();
+        HandleEditMenu(dt);
 
     if (m_ShowDebugWindow)
-        HandleDebugMenu();
+        HandleDebugMenu(dt);
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -300,7 +374,7 @@ void DebugMenu::Render(float dt)
 
             if (ImGui::BeginMenu("Open", "Ctrl+O"))
             {
-                HandleOpenMenu();
+                HandleOpenMenu(dt);
                 ImGui::EndMenu();
             }
 
@@ -340,5 +414,5 @@ void DebugMenu::Render(float dt)
     if (openNewPopup)
         ImGui::OpenPopup("New Level");
 
-    HandleNewPopup();
+    HandleNewPopup(dt);
 }

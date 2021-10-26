@@ -10,36 +10,61 @@
         << std::endl;
 
     #define ASSERT(x) assert((x));
+#else
+    #define LOG(x)
+    #define ASSERT(x)
+#endif
 
-    #ifdef TRACK_MEM_ALLOC
-        struct MemoryAlloc
+namespace Debug
+{
+    class MemoryAlloc
+    {
+    public:
+        inline static MemoryAlloc& Get()
         {
-            size_t total;
-            size_t freed;
+            static MemoryAlloc m;
+            return m;
+        }
 
-            inline size_t CurrentUsage() { return total - freed; };
-            inline static MemoryAlloc& Get() { static MemoryAlloc m; return m; }
+        inline size_t Total() { return m_Total; };
+        inline size_t Freed() { return m_Freed; };
+
+        inline size_t Allocated()
+        {
+            return m_Total - m_Freed;
         };
 
+        friend void* ::operator new(size_t);
+        friend void ::operator delete(void*, size_t);
+
+    private:
+        size_t m_Total;
+        size_t m_Freed;
+    };
+}
+
+#ifdef DEBUG
+    #ifdef TRACK_MEM_ALLOC
         inline void* operator new(size_t size)
         {
-            auto& memory = MemoryAlloc::Get();
-            memory.total += size;
+            using namespace Debug;
 
-            return malloc(size);
+            auto& memory = MemoryAlloc::Get();
+            memory.m_Total += size;
+
+            return std::malloc(size);
         }
 
         inline void operator delete(void* data, size_t size)
         {
-            auto& memory = MemoryAlloc::Get();
-            memory.freed += size;
+            using namespace Debug;
 
-            return free(data);
+            auto& memory = MemoryAlloc::Get();
+            memory.m_Freed += size;
+
+            return std::free(data);
         }
     #endif
-#else
-    #define LOG(x)
-    #define ASSERT(x)
 #endif
 
 namespace Debug

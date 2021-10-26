@@ -15,10 +15,10 @@ private:
     void InsertLastOpenFile(std::string path);
     void RemoveLastOpenFile(std::string path);
     void HandleOpenFile(std::string& path);
-    void HandleOpenMenu();
-    void HandleNewPopup();
-    void HandleEditMenu();
-    void HandleDebugMenu();
+    void HandleOpenMenu(float dt);
+    void HandleNewPopup(float dt);
+    void HandleEditMenu(float dt);
+    void HandleDebugMenu(float dt);
 
     bool m_Active;
     bool m_ShowEditWindow;
