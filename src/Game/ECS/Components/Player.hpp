@@ -16,8 +16,8 @@ namespace ECS::Components
        using namespace entt::literals;
 
         entt::meta<Player>()
-            .data<&Player::speed>("speed"_hs)
-            .type();
+            .COMP_DATA(&Player::speed, "speed")
+            .COMP_TYPE(Player);
     }
 
     template<typename Archive>

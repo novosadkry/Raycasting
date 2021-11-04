@@ -1,9 +1,20 @@
 #include "DebugMenu.hpp"
 
 #include <Game/Game.hpp>
+#include <Game/ECS/ECS.hpp>
 
 #define MAX_LAST_OPEN_FILES 5
 namespace fs = std::filesystem;
+
+static uint32_t FlipRGBA(uint32_t value)
+{
+    return (
+        ((value >> 24) & 0x000000FF) |
+        ((value >>  8) & 0x0000FF00) |
+        ((value <<  8) & 0x00FF0000) |
+        ((value << 24) & 0xFF000000)
+    );
+}
 
 void DebugMenu::InsertLastOpenFile(std::string path)
 {
@@ -204,12 +215,73 @@ void DebugMenu::HandleEditMenu(float dt)
         auto& grid      = level.GetGrid();
         auto  gridSize  = grid.GetSize();
 
+        auto& registry  = level.GetHierarchy().GetRegistry();
+
         if (ImGui::BeginTabBar("Tabs", ImGuiTabBarFlags_Reorderable))
         {
             if (ImGui::BeginTabItem("Level"))
             {
                 ImGui::Text("Name: Empty");
                 ImGui::Text("Size: %dx%d", levelSize.x, levelSize.y);
+
+                registry.each([&](auto e) {
+                    using namespace ECS::Components;
+                    using namespace entt::literals;
+
+                    ECS::Entity entity(e, &registry);
+
+                    Tag tag = entity.Get<Tag>();
+                    if (ImGui::TreeNode((void*)e, "%s", tag.name.c_str()))
+                    {
+                        entity.Each([&](auto type, auto& any)
+                        {
+                            const char* cName = type.prop("name"_hs)
+                                .value()
+                                .template cast<const char*>();
+
+                            if (ImGui::TreeNode(cName))
+                            {
+                                for (auto data : type.data())
+                                {
+                                    entt::meta_any dValue = data.get(any);
+                                    const char* dName = data.prop("name"_hs)
+                                        .value()
+                                        .template cast<const char*>();
+
+                                    if (auto* str = dValue.try_cast<std::string>())
+                                        ImGui::InputText(dName, str);
+
+                                    else if (auto* i = dValue.try_cast<int>())
+                                        ImGui::DragInt(dName, i);
+
+                                    else if (auto* flt = dValue.try_cast<float>())
+                                        ImGui::DragFloat(dName, flt, .15f);
+
+                                    else if (auto* vec2f = dValue.try_cast<sf::Vector2f>())
+                                        ImGui::DragFloat2(dName, &vec2f->x, .15f);
+
+                                    else if (auto* clr = dValue.try_cast<sf::Color>())
+                                    {
+                                        ImU32 hex = clr->toInteger();
+                                        hex = FlipRGBA(hex);
+
+                                        ImVec4 rgba = ImGui::ColorConvertU32ToFloat4(hex);
+                                        ImGui::ColorEdit4(dName, &rgba.x);
+
+                                        hex = ImGui::ColorConvertFloat4ToU32(rgba);
+                                        hex = FlipRGBA(hex);
+
+                                        *clr = sf::Color(hex);
+                                    }
+                                }
+
+                                ImGui::TreePop();
+                            }
+                        });
+
+                        ImGui::TreePop();
+                    }
+                });
 
                 ImGui::EndTabItem();
             }

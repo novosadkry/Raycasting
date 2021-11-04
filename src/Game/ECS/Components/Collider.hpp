@@ -17,9 +17,9 @@ namespace ECS::Components
         using namespace entt::literals;
 
         entt::meta<Collider>()
-            .data<&Collider::sides>("sides"_hs)
-            .data<&Collider::radius>("radius"_hs)
-            .type();
+            .COMP_DATA(&Collider::sides, "sides")
+            .COMP_DATA(&Collider::radius, "radius")
+            .COMP_TYPE(Collider);
     }
 
     template<typename Archive>

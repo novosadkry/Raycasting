@@ -17,9 +17,9 @@ namespace ECS::Components
         using namespace entt::literals;
 
         entt::meta<Transform>()
-            .data<&Transform::position>("position"_hs)
-            .data<&Transform::rotation>("rotation"_hs)
-            .type();
+            .COMP_DATA(&Transform::position, "position")
+            .COMP_DATA(&Transform::rotation, "rotation")
+            .COMP_TYPE(Transform);
     }
 
     template<typename Archive>

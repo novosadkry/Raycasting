@@ -31,6 +31,12 @@ namespace ECS
             return m_Registry->remove<T...>(m_Handle);
         }
 
+        template<typename Func>
+        void Each(Func func)
+        {
+            Components::Each(*m_Registry, *this, func);
+        }
+
         inline operator bool() const
         {
             return m_Handle != entt::null;

@@ -17,9 +17,9 @@ namespace ECS::Components
         using namespace entt::literals;
 
         entt::meta<Light>()
-            .data<&Light::color>("color"_hs)
-            .data<&Light::intensity>("intensity"_hs)
-            .type();
+            .COMP_DATA(&Light::color, "color")
+            .COMP_DATA(&Light::intensity, "intensity")
+            .COMP_TYPE(Light);
     }
 
     template<typename Archive>

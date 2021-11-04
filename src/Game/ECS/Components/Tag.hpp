@@ -16,8 +16,8 @@ namespace ECS::Components
         using namespace entt::literals;
 
         entt::meta<Tag>()
-            .data<&Tag::name>("name"_hs)
-            .type();
+            .COMP_DATA(&Tag::name, "name")
+            .COMP_TYPE(Tag);
     }
 
     template<typename Archive>
