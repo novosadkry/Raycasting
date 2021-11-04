@@ -7,6 +7,7 @@
 
 #include <imgui.h>
 #include <imgui-SFML.h>
+#include <imgui_stdlib.h>
 
 #include <entt/entt.hpp>
 
@@ -40,6 +41,7 @@
 #include <cassert>
 
 #include <chrono>
+#include <optional>
 
 #include <typeindex>
 #include <functional>

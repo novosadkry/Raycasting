@@ -39,9 +39,16 @@ find_package(OpenGL REQUIRED)
 
 # Compile ImGui
 set(IMGUI_DIR "libs/imgui")
-file(GLOB IMGUI_SOURCE ${IMGUI_DIR}/*.cpp)
+set(IMGUI_INCLUDE
+	${IMGUI_DIR}
+	${IMGUI_DIR}/misc/cpp
+)
+file(GLOB IMGUI_SOURCE
+	${IMGUI_DIR}/*.cpp
+	${IMGUI_DIR}/misc/cpp/*.cpp
+)
 add_library(imgui STATIC ${IMGUI_SOURCE})
-target_include_directories(imgui PRIVATE ${IMGUI_DIR})
+target_include_directories(imgui PRIVATE ${IMGUI_INCLUDE})
 
 # Compile ImGui-SFML
 set(IMGUI_SFML_DIR "libs/imgui-sfml")
@@ -79,7 +86,7 @@ endif()
 target_link_libraries(${TARGET} ${LIBS})
 target_precompile_headers(${TARGET} PRIVATE "src/Rpch.hpp")
 target_include_directories(${TARGET} PRIVATE ${SFML_INCLUDE})
-target_include_directories(${TARGET} PRIVATE ${IMGUI_DIR})
+target_include_directories(${TARGET} PRIVATE ${IMGUI_INCLUDE})
 target_include_directories(${TARGET} PRIVATE ${IMGUI_SFML_DIR})
 target_include_directories(${TARGET} PRIVATE ${ENTT_INCLUDE})
 target_include_directories(${TARGET} PRIVATE ${CEREAL_INCLUDE})
