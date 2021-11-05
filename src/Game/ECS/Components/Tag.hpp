@@ -7,7 +7,7 @@ namespace ECS::Components
 {
     struct Tag
     {
-        std::string name;
+        std::string name{"Untitled"};
     };
 
     template<>
