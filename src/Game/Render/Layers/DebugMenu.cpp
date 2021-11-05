@@ -230,8 +230,44 @@ void DebugMenu::HandleEditMenu(float dt)
 
                     ECS::Entity entity(e, &registry);
 
-                    Tag tag = entity.Get<Tag>();
-                    if (ImGui::TreeNode((void*)e, "%s", tag.name.c_str()))
+                    Tag tag{"Untitled (No Tag)"};
+                    if (entity.Has<Tag>())
+                        tag = entity.Get<Tag>();
+
+                    bool eTreeOpen = ImGui::TreeNodeEx(
+                        (void*)e,
+                        ImGuiTreeNodeFlags_AllowItemOverlap,
+                        "%s", tag.name.c_str()
+                    );
+
+                    if (!eTreeOpen) // ID gets pushed only when opened
+                        ImGui::PushID((void*)e);
+
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("+"))
+                        ImGui::OpenPopup("Components");
+
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetTooltip("New Component");
+
+                    if (ImGui::BeginPopup("Components"))
+                    {
+                        ECS::Components::Types([&](entt::meta_type type) {
+                            const char* name = type.prop("name"_hs)
+                                .value()
+                                .template cast<const char*>();
+
+                            if (ImGui::MenuItem(name))
+                                type.func("emplace"_hs).invoke({}, entt::forward_as_meta(registry), e);
+                        });
+
+                        ImGui::EndPopup();
+                    }
+
+                    if (!eTreeOpen)
+                        ImGui::PopID();
+
+                    if (eTreeOpen)
                     {
                         entity.Each([&](auto type, auto& any)
                         {
@@ -239,7 +275,33 @@ void DebugMenu::HandleEditMenu(float dt)
                                 .value()
                                 .template cast<const char*>();
 
-                            if (ImGui::TreeNode(cName))
+                            bool cTreeOpen = ImGui::TreeNodeEx(
+                                cName,
+                                ImGuiTreeNodeFlags_DefaultOpen
+                            );
+
+                            if (!cTreeOpen)
+                                ImGui::PushID(cName);
+
+                            if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                                ImGui::OpenPopup("Delete");
+
+                            if (ImGui::BeginPopup("Delete"))
+                            {
+                                const ImVec4 red = ImVec4(1.0, 0.0, 0.0, 1.0);
+                                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, red);
+
+                                if (ImGui::MenuItem("Delete?"))
+                                    type.func("remove"_hs).invoke({}, entt::forward_as_meta(registry), e);
+
+                                ImGui::PopStyleColor();
+                                ImGui::EndPopup();
+                            }
+
+                            if (!cTreeOpen)
+                                ImGui::PopID();
+
+                            if (cTreeOpen)
                             {
                                 for (auto data : type.data())
                                 {

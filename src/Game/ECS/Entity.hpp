@@ -25,6 +25,18 @@ namespace ECS
             return m_Registry->get<T...>(m_Handle);
         }
 
+        template<typename T>
+        auto TryGet()
+        {
+            return m_Registry->try_get<T>(m_Handle);
+        }
+
+        template<typename T>
+        auto Has()
+        {
+            return !!m_Registry->try_get<T>(m_Handle);
+        }
+
         template<typename... T>
         void Remove()
         {
