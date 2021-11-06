@@ -19,6 +19,7 @@ private:
     void HandleNewPopup(float dt);
     void HandleEditMenu(float dt);
     void HandleDebugMenu(float dt);
+    void RenderEntityTree(float dt);
 
     bool m_Active;
     bool m_ShowEditWindow;

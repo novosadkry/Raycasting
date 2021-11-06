@@ -205,6 +205,179 @@ void DebugMenu::HandleDebugMenu(float dt)
     ImGui::End();
 }
 
+void DebugMenu::RenderEntityTree(float dt)
+{
+    auto& level     = Game::Get().GetCurrentLevel();
+    auto& hierarchy = level.GetHierarchy();
+    auto& registry  = hierarchy.GetRegistry();
+
+    bool rTreeOpen = ImGui::TreeNodeEx(
+        "Empty",
+        ImGuiTreeNodeFlags_DefaultOpen |
+        ImGuiTreeNodeFlags_AllowItemOverlap
+    );
+
+    ImGui::SameLine();
+    if (ImGui::SmallButton("+"))
+        hierarchy.CreateEntity();
+
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("New Entity");
+
+    if (rTreeOpen)
+    {
+        registry.each([&](auto e) {
+            using namespace ECS::Components;
+            using namespace entt::literals;
+
+            ECS::Entity entity(e, &registry);
+
+            Tag tag{"Untitled (No Tag)"};
+            if (entity.Has<Tag>())
+                tag = entity.Get<Tag>();
+
+            static auto eTreeOpenForce
+                = entt::entity(entt::null);
+
+            if (eTreeOpenForce == e)
+            {
+                ImGui::SetNextItemOpen(true);
+                eTreeOpenForce = entt::null;
+            }
+
+            bool eTreeOpen = ImGui::TreeNodeEx(
+                (void*)e,
+                ImGuiTreeNodeFlags_AllowItemOverlap,
+                "%s", tag.name.c_str()
+            );
+
+            if (!eTreeOpen) // ID gets pushed only when opened
+                ImGui::PushID((void*)e);
+
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                ImGui::OpenPopup("Delete");
+
+            if (ImGui::BeginPopup("Delete"))
+            {
+                const ImVec4 red = ImVec4(1.0, 0.0, 0.0, 1.0);
+                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, red);
+
+                if (ImGui::MenuItem("Delete?"))
+                    hierarchy.DestroyEntity(entity);
+
+                ImGui::PopStyleColor();
+                ImGui::EndPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::SmallButton("+"))
+                ImGui::OpenPopup("Components");
+
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("New Component");
+
+            if (ImGui::BeginPopup("Components"))
+            {
+                ECS::Components::Types([&](entt::meta_type type) {
+                    const char* name = type.prop("name"_hs)
+                        .value()
+                        .template cast<const char*>();
+
+                    if (ImGui::MenuItem(name))
+                    {
+                        type.func("emplace"_hs).invoke({}, entt::forward_as_meta(registry), e);
+                        eTreeOpenForce = e;
+                    }
+                });
+
+                ImGui::EndPopup();
+            }
+
+            if (!eTreeOpen)
+                ImGui::PopID();
+
+            if (eTreeOpen)
+            {
+                entity.Each([&](auto type, auto& any)
+                {
+                    const char* cName = type.prop("name"_hs)
+                        .value()
+                        .template cast<const char*>();
+
+                    bool cTreeOpen = ImGui::TreeNodeEx(
+                        cName,
+                        ImGuiTreeNodeFlags_DefaultOpen
+                    );
+
+                    if (!cTreeOpen)
+                        ImGui::PushID(cName);
+
+                    if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                        ImGui::OpenPopup("Delete");
+
+                    if (ImGui::BeginPopup("Delete"))
+                    {
+                        const ImVec4 red = ImVec4(1.0, 0.0, 0.0, 1.0);
+                        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, red);
+
+                        if (ImGui::MenuItem("Delete?"))
+                            type.func("remove"_hs).invoke({}, entt::forward_as_meta(registry), e);
+
+                        ImGui::PopStyleColor();
+                        ImGui::EndPopup();
+                    }
+
+                    if (!cTreeOpen)
+                        ImGui::PopID();
+
+                    if (cTreeOpen)
+                    {
+                        for (auto data : type.data())
+                        {
+                            entt::meta_any dValue = data.get(any);
+                            const char* dName = data.prop("name"_hs)
+                                .value()
+                                .template cast<const char*>();
+
+                            if (auto* str = dValue.try_cast<std::string>())
+                                ImGui::InputText(dName, str);
+
+                            else if (auto* i = dValue.try_cast<int>())
+                                ImGui::DragInt(dName, i);
+
+                            else if (auto* flt = dValue.try_cast<float>())
+                                ImGui::DragFloat(dName, flt, .15f);
+
+                            else if (auto* vec2f = dValue.try_cast<sf::Vector2f>())
+                                ImGui::DragFloat2(dName, &vec2f->x, .15f);
+
+                            else if (auto* clr = dValue.try_cast<sf::Color>())
+                            {
+                                ImU32 hex = clr->toInteger();
+                                hex = FlipRGBA(hex);
+
+                                ImVec4 rgba = ImGui::ColorConvertU32ToFloat4(hex);
+                                ImGui::ColorEdit4(dName, &rgba.x);
+
+                                hex = ImGui::ColorConvertFloat4ToU32(rgba);
+                                hex = FlipRGBA(hex);
+
+                                *clr = sf::Color(hex);
+                            }
+                        }
+
+                        ImGui::TreePop();
+                    }
+                });
+
+                ImGui::TreePop();
+            }
+        });
+
+        ImGui::TreePop();
+    }
+}
+
 void DebugMenu::HandleEditMenu(float dt)
 {
     if (ImGui::Begin("Edit Menu", &m_ShowEditWindow))
@@ -215,8 +388,6 @@ void DebugMenu::HandleEditMenu(float dt)
         auto& grid      = level.GetGrid();
         auto  gridSize  = grid.GetSize();
 
-        auto& registry  = level.GetHierarchy().GetRegistry();
-
         if (ImGui::BeginTabBar("Tabs", ImGuiTabBarFlags_Reorderable))
         {
             if (ImGui::BeginTabItem("Level"))
@@ -224,126 +395,7 @@ void DebugMenu::HandleEditMenu(float dt)
                 ImGui::Text("Name: Empty");
                 ImGui::Text("Size: %dx%d", levelSize.x, levelSize.y);
 
-                registry.each([&](auto e) {
-                    using namespace ECS::Components;
-                    using namespace entt::literals;
-
-                    ECS::Entity entity(e, &registry);
-
-                    Tag tag{"Untitled (No Tag)"};
-                    if (entity.Has<Tag>())
-                        tag = entity.Get<Tag>();
-
-                    bool eTreeOpen = ImGui::TreeNodeEx(
-                        (void*)e,
-                        ImGuiTreeNodeFlags_AllowItemOverlap,
-                        "%s", tag.name.c_str()
-                    );
-
-                    if (!eTreeOpen) // ID gets pushed only when opened
-                        ImGui::PushID((void*)e);
-
-                    ImGui::SameLine();
-                    if (ImGui::SmallButton("+"))
-                        ImGui::OpenPopup("Components");
-
-                    if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip("New Component");
-
-                    if (ImGui::BeginPopup("Components"))
-                    {
-                        ECS::Components::Types([&](entt::meta_type type) {
-                            const char* name = type.prop("name"_hs)
-                                .value()
-                                .template cast<const char*>();
-
-                            if (ImGui::MenuItem(name))
-                                type.func("emplace"_hs).invoke({}, entt::forward_as_meta(registry), e);
-                        });
-
-                        ImGui::EndPopup();
-                    }
-
-                    if (!eTreeOpen)
-                        ImGui::PopID();
-
-                    if (eTreeOpen)
-                    {
-                        entity.Each([&](auto type, auto& any)
-                        {
-                            const char* cName = type.prop("name"_hs)
-                                .value()
-                                .template cast<const char*>();
-
-                            bool cTreeOpen = ImGui::TreeNodeEx(
-                                cName,
-                                ImGuiTreeNodeFlags_DefaultOpen
-                            );
-
-                            if (!cTreeOpen)
-                                ImGui::PushID(cName);
-
-                            if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-                                ImGui::OpenPopup("Delete");
-
-                            if (ImGui::BeginPopup("Delete"))
-                            {
-                                const ImVec4 red = ImVec4(1.0, 0.0, 0.0, 1.0);
-                                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, red);
-
-                                if (ImGui::MenuItem("Delete?"))
-                                    type.func("remove"_hs).invoke({}, entt::forward_as_meta(registry), e);
-
-                                ImGui::PopStyleColor();
-                                ImGui::EndPopup();
-                            }
-
-                            if (!cTreeOpen)
-                                ImGui::PopID();
-
-                            if (cTreeOpen)
-                            {
-                                for (auto data : type.data())
-                                {
-                                    entt::meta_any dValue = data.get(any);
-                                    const char* dName = data.prop("name"_hs)
-                                        .value()
-                                        .template cast<const char*>();
-
-                                    if (auto* str = dValue.try_cast<std::string>())
-                                        ImGui::InputText(dName, str);
-
-                                    else if (auto* i = dValue.try_cast<int>())
-                                        ImGui::DragInt(dName, i);
-
-                                    else if (auto* flt = dValue.try_cast<float>())
-                                        ImGui::DragFloat(dName, flt, .15f);
-
-                                    else if (auto* vec2f = dValue.try_cast<sf::Vector2f>())
-                                        ImGui::DragFloat2(dName, &vec2f->x, .15f);
-
-                                    else if (auto* clr = dValue.try_cast<sf::Color>())
-                                    {
-                                        ImU32 hex = clr->toInteger();
-                                        hex = FlipRGBA(hex);
-
-                                        ImVec4 rgba = ImGui::ColorConvertU32ToFloat4(hex);
-                                        ImGui::ColorEdit4(dName, &rgba.x);
-
-                                        hex = ImGui::ColorConvertFloat4ToU32(rgba);
-                                        hex = FlipRGBA(hex);
-
-                                        *clr = sf::Color(hex);
-                                    }
-                                }
-
-                                ImGui::TreePop();
-                            }
-                        });
-
-                        ImGui::TreePop();
-                    }
-                });
+                RenderEntityTree(dt);
 
                 ImGui::EndTabItem();
             }
