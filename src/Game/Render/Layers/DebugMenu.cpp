@@ -254,6 +254,12 @@ void DebugMenu::RenderEntityTree(float dt)
             if (!eTreeOpen) // ID gets pushed only when opened
                 ImGui::PushID((void*)e);
 
+            if (ImGui::IsItemHovered())
+            {
+                if (Input::GetKey(sf::Keyboard::Delete))
+                    hierarchy.DestroyEntity(entity);
+            }
+
             if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
                 ImGui::OpenPopup("Delete");
 
@@ -285,7 +291,9 @@ void DebugMenu::RenderEntityTree(float dt)
 
                     if (ImGui::MenuItem(name))
                     {
-                        type.func("emplace"_hs).invoke({}, entt::forward_as_meta(registry), e);
+                        type.func("emplace"_hs)
+                            .invoke({}, entt::forward_as_meta(registry), e);
+
                         eTreeOpenForce = e;
                     }
                 });
@@ -312,6 +320,15 @@ void DebugMenu::RenderEntityTree(float dt)
                     if (!cTreeOpen)
                         ImGui::PushID(cName);
 
+                    if (ImGui::IsItemHovered())
+                    {
+                        if (Input::GetKey(sf::Keyboard::Delete))
+                        {
+                            type.func("remove"_hs)
+                                .invoke({}, entt::forward_as_meta(registry), e);
+                        }
+                    }
+
                     if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
                         ImGui::OpenPopup("Delete");
 
@@ -321,7 +338,10 @@ void DebugMenu::RenderEntityTree(float dt)
                         ImGui::PushStyleColor(ImGuiCol_HeaderHovered, red);
 
                         if (ImGui::MenuItem("Delete?"))
-                            type.func("remove"_hs).invoke({}, entt::forward_as_meta(registry), e);
+                        {
+                            type.func("remove"_hs)
+                                .invoke({}, entt::forward_as_meta(registry), e);
+                        }
 
                         ImGui::PopStyleColor();
                         ImGui::EndPopup();
