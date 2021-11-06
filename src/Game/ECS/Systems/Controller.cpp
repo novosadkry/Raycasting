@@ -33,22 +33,22 @@ namespace ECS::Systems
 
     static void HandleInput(Player& player, Transform& transform, float dt)
     {
-        if (Input::GetKey(Keyboard::W))
+        if (Input::GetKeyDown(Keyboard::W))
             Move(transform, player.speed * dt);
 
-        if (Input::GetKey(Keyboard::S))
+        if (Input::GetKeyDown(Keyboard::S))
             Move(transform, -player.speed * dt);
 
-        if (Input::GetKey(Keyboard::A))
+        if (Input::GetKeyDown(Keyboard::A))
         {
-            Input::GetKey(Keyboard::LShift)
+            Input::GetKeyDown(Keyboard::LShift)
                 ? Strafe(transform, -player.speed * dt)
                 : Rotate(transform, -player.speed * dt * Math::Deg2Rad);
         }
 
-        if (Input::GetKey(Keyboard::D))
+        if (Input::GetKeyDown(Keyboard::D))
         {
-            Input::GetKey(Keyboard::LShift)
+            Input::GetKeyDown(Keyboard::LShift)
                 ? Strafe(transform, player.speed * dt)
                 : Rotate(transform, player.speed * dt * Math::Deg2Rad);
         }

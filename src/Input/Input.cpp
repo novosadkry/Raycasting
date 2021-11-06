@@ -27,7 +27,13 @@ void Input::HandleEvent(Event& event)
                     Game::Get().LoadLevel(Level::From("SAVE.lvl"));
                     break;
             }
+
+            KeysHeld[event.key.code] = true;
         } break;
+
+        case Event::KeyReleased:
+            KeysHeld[event.key.code] = false;
+            break;
 
         case Event::Closed:
             Game::Get().Exit();
@@ -41,9 +47,16 @@ void Input::HandleEvent(Event& event)
     }
 }
 
-bool Input::GetKey(Keyboard::Key key)
+bool Input::GetKeyDown(Keyboard::Key key)
 {
     return Keyboard::isKeyPressed(key);
+}
+
+bool Input::GetKey(Keyboard::Key key)
+{
+    bool tmp = KeysHeld[key];
+    KeysHeld[key] = false;
+    return tmp;
 }
 
 bool Input::GetMouseButton(Mouse::Button button)

@@ -19,6 +19,7 @@ public:
 
         auto rw = MakeUnique<sf::RenderWindow>(std::forward<Args>(args)...);
         rw->setVerticalSyncEnabled(true);
+        rw->setKeyRepeatEnabled(false);
 
         s_Instance = new Game(std::move(rw));
         return *s_Instance;
