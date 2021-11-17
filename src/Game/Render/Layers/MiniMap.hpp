@@ -56,6 +56,4 @@ private:
     sf::Vector2i m_Size;
     MiniMapFlags m_Flags;
     sf::Vector2f m_Origin;
-
-    ECS::Entity m_Player;
 };

@@ -6,17 +6,19 @@
 
 static sf::Color CalculateLight(Ray& hit, float depth)
 {
+    using namespace ECS::Components;
+
     auto& level = Game::Get().GetCurrentLevel();
     auto lights = Game::Get()
         .GetCurrentLevel()
         .GetHierarchy()
         .GetRegistry()
-        .group<ECS::Components::Light>(entt::get<ECS::Components::Transform>);
+        .group<Light>(entt::get<Transform>);
 
     float r, g, b;
     r = g = b = 0;
 
-    lights.each([&](ECS::Components::Light& light, ECS::Components::Transform& transform)
+    lights.each([&](Light& light, Transform& transform)
     {
         Ray lightRay;
         float distToHit = Math::DistanceSqr(hit.hitPos, transform.position);
@@ -47,78 +49,84 @@ static sf::Color CalculateLight(Ray& hit, float depth)
 // http://www.permadi.com/tutorial/raycast/rayc8.html
 void LevelView::RenderView()
 {
+    using namespace ECS::Components;
+
     const float wallCoeff = 50.0f;
     const float depth     = 300.0f;
 
     auto& window = Game::Get().GetWindow();
     auto& level  = Game::Get().GetCurrentLevel();
 
-    if (!m_Player) return;
-    auto player = m_Player.Get<ECS::Components::Transform>();
+    auto view = level
+        .GetHierarchy()
+        .GetRegistry()
+        .view<Player, Transform>();
 
-    // Keep original resolution before downscaling
-    const auto originalView = window.getView();
-
-    // Downscale to desired resolution
-    window.setView(sf::View(sf::FloatRect(0, 0, (float) m_Buffer->getSize().x, (float) m_Buffer->getSize().y)));
-    const auto viewSize = window.getView().getSize();
-
-    // Clear buffer before use
-    m_Buffer->clear();
-
-    for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
+    for (auto e : view)
     {
-        float canvasX = (screenX / viewSize.x) * m_Canvas.size;
-        float angle = player.rotation + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
+        auto& player = view.get<Transform>(e);
 
-        Ray hit;
-        if (!Ray::Cast(level, player.position, angle, hit))
-            continue;
+        // Keep original resolution before downscaling
+        const auto originalView = window.getView();
 
-        sf::Color wallColor = CalculateLight(hit, depth);
+        // Downscale to desired resolution
+        window.setView(sf::View(sf::FloatRect(0, 0, (float) m_Buffer->getSize().x, (float) m_Buffer->getSize().y)));
+        const auto viewSize = window.getView().getSize();
 
-        // Correct the fishbowl effect
-        hit.distance *= cos(player.rotation - angle);
+        // Clear buffer before use
+        m_Buffer->clear();
 
-        float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
-        float floor = viewSize.y - ceiling;
-        float wall = floor - ceiling;
-
-        sf::Vertex sCeiling[] =
+        for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
         {
-            sf::Vertex(sf::Vector2f(screenX + 0.5f, 0), wallColor),
-            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), sf::Color(50, 50, 50))
-        };
+            float canvasX = (screenX / viewSize.x) * m_Canvas.size;
+            float angle = player.rotation + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
 
-        sf::Vertex sWall[] =
-        {
-            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), wallColor),
-            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), wallColor)
-        };
+            Ray hit;
+            if (!Ray::Cast(level, player.position, angle, hit))
+                continue;
 
-        sf::Vertex sFloor[] =
-        {
-            sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), sf::Color(50, 50, 50)),
-            sf::Vertex(sf::Vector2f(screenX + 0.5f, viewSize.y), wallColor)
-        };
+            sf::Color wallColor = CalculateLight(hit, depth);
 
-        m_Buffer->draw(sCeiling, 2, sf::Lines);
-        m_Buffer->draw(sWall, 2, sf::Lines);
-        m_Buffer->draw(sFloor, 2, sf::Lines);
+            // Correct the fishbowl effect
+            hit.distance *= cos(player.rotation - angle);
+
+            float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
+            float floor = viewSize.y - ceiling;
+            float wall = floor - ceiling;
+
+            sf::Vertex sCeiling[] =
+            {
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, 0), wallColor),
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), sf::Color(50, 50, 50))
+            };
+
+            sf::Vertex sWall[] =
+            {
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), wallColor),
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), wallColor)
+            };
+
+            sf::Vertex sFloor[] =
+            {
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), sf::Color(50, 50, 50)),
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, viewSize.y), wallColor)
+            };
+
+            m_Buffer->draw(sCeiling, 2, sf::Lines);
+            m_Buffer->draw(sWall, 2, sf::Lines);
+            m_Buffer->draw(sFloor, 2, sf::Lines);
+        }
+
+        m_Buffer->display();
+
+        window.draw(sf::Sprite(m_Buffer->getTexture()));
+        window.setView(originalView); // Upscale buffer to original resolution
     }
-
-    m_Buffer->display();
-
-    window.draw(sf::Sprite(m_Buffer->getTexture()));
-    window.setView(originalView); // Upscale buffer to original resolution
 }
 
 void LevelView::Init()
 {
-    m_Player = Game::Get()
-        .GetCurrentLevel()
-        .GetHierarchy()
-        .GetEntity<ECS::Components::Player>();
+
 }
 
 void LevelView::Render(float dt)

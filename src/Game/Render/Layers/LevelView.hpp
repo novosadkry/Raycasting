@@ -26,6 +26,4 @@ public:
 private:
     Canvas m_Canvas;
     Unique<sf::RenderTexture> m_Buffer;
-
-    ECS::Entity m_Player;
 };
