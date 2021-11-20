@@ -8,6 +8,20 @@
 
 namespace cereal
 {
+    // ---- Generic ----
+
+    template<typename T, typename Archive> requires traits::is_text_archive<Archive>::value
+    void save(Archive& archive, const cereal::BinaryData<T*>& value)
+    {
+        archive.saveBinaryValue(value.data, value.size);
+    }
+
+    template<typename T, typename Archive> requires traits::is_text_archive<Archive>::value
+    void load(Archive& archive, cereal::BinaryData<T*>& value)
+    {
+        archive.loadBinaryValue(value.data, value.size);
+    }
+
     // ---- Level ----
 
     template<typename Archive>
@@ -43,18 +57,6 @@ namespace cereal
         ));
 
         construct(size, std::move(cells));
-    }
-
-    template<typename Archive> requires traits::is_text_archive<Archive>::value
-    void save(Archive& archive, const cereal::BinaryData<Cell*>& value)
-    {
-        archive.saveBinaryValue(value.data, value.size);
-    }
-
-    template<typename Archive> requires traits::is_text_archive<Archive>::value
-    void load(Archive& archive, cereal::BinaryData<Cell*>& value)
-    {
-        archive.loadBinaryValue(value.data, value.size);
     }
 
     // ---- SFML ----
