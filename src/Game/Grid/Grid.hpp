@@ -21,7 +21,7 @@ public:
     void Set(int x, int y, const Cell& cell);
     void Set(sf::Vector2i pos, const Cell& cell);
 
-    inline sf::Vector2f GetCellSize(class Level& level);
+    sf::Vector2f GetCellSize(class Level& level);
 
     inline sf::Vector2i GetSize()
     {

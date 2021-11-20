@@ -1,7 +1,7 @@
 #include "Grid.hpp"
 #include <Game/Level.hpp>
 
-inline sf::Vector2f Grid::GetCellSize(Level& level)
+sf::Vector2f Grid::GetCellSize(Level& level)
 {
     return sf::Vector2f {
         (float) level.GetSize().x / level.GetGrid().GetSize().x,
