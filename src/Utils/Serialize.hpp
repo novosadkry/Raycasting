@@ -17,9 +17,11 @@
     template<typename Archive>                          \
     friend void cereal::load(Archive&, TYPE&);          \
 
-class Level;
 class Grid;
 class Cell;
+class Level;
+class Resource;
+
 namespace ECS { class Hierarchy; }
 
 namespace cereal
@@ -47,6 +49,18 @@ namespace cereal
     {
         template<typename Archive>
         static void load_and_construct(Archive&, cereal::construct<Grid>&);
+    };
+
+    // ---- Resource ----
+
+    template<typename Archive>
+    void serialize(Archive&, Resource&);
+
+    template<>
+    struct LoadAndConstruct<Resource>
+    {
+        template<typename Archive>
+        static void load_and_construct(Archive&, cereal::construct<Resource>&);
     };
 
     // ---- Vector ----

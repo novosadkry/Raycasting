@@ -4,6 +4,7 @@
 
 #include <Game/Level.hpp>
 #include <Game/ECS/ECS.hpp>
+#include <Game/Resource.hpp>
 #include <Game/Grid/Grid.hpp>
 
 namespace cereal
@@ -57,6 +58,20 @@ namespace cereal
         ));
 
         construct(size, std::move(cells));
+    }
+
+    // ---- Resource ----
+
+    template<typename Archive>
+    void serialize(Archive& archive, Resource& value)
+    {
+        // TODO
+    }
+
+    template<typename Archive>
+    void LoadAndConstruct<Resource>::load_and_construct(Archive& archive, cereal::construct<Resource>& construct)
+    {
+        // TODO
     }
 
     // ---- SFML ----

@@ -1,6 +1,7 @@
 #pragma once
 #include <Core.hpp>
 
+#include <Game/Resource.hpp>
 #include <Game/Grid/Grid.hpp>
 #include <Game/ECS/System.hpp>
 #include <Game/ECS/Hierarchy.hpp>
@@ -81,6 +82,8 @@ private:
 
     ECS::Hierarchy m_Hierarchy;
     ECS::SystemGroup m_Systems;
+
+    Unique<Resource> m_Resource;
 
     std::string m_Name = "Empty";
 };

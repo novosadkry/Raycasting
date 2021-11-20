@@ -20,21 +20,45 @@ Unique<Level> Level::Empty(sf::Vector2i ls, sf::Vector2i gs)
 
 Unique<Level> Level::From(std::fs::path path)
 {
-    std::ifstream file(path, std::ios_base::binary);
-    cereal::BinaryInputArchive archive(file);
-
     auto level = Level::Empty();
-    archive(*level);
+
+    try
+    {
+        std::ifstream file(path, std::ios_base::binary);
+        if (!file) throw std::exception();
+
+        cereal::BinaryInputArchive archive(file);
+        archive(*level);
+    }
+    catch (std::exception& e)
+	{
+        LOG("Failed to load level data from " << path)
+	}
+
+    path.replace_extension(".res");
+    auto res = Resource::From(path);
+    level->m_Resource = std::move(res);
 
     return level;
 }
 
 void Level::Save(Level& level, std::fs::path path)
 {
-    std::ofstream file(path, std::ios_base::binary);
-    cereal::BinaryOutputArchive archive(file);
+    try
+    {
+        std::ofstream file(path, std::ios_base::binary);
+        if (!file) throw std::exception();
 
-    archive(level);
+        cereal::BinaryOutputArchive archive(file);
+        archive(level);
+    }
+    catch (std::exception& e)
+	{
+        LOG("Failed to save level data to " << path)
+	}
+
+    path.replace_extension(".res");
+    Resource::Save(*level.m_Resource, path);
 }
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
