@@ -1,10 +1,18 @@
 #pragma once
 #include <Core.hpp>
 
+#ifdef _WIN32
+    #define __FILENAME__ strrchr("\\" __FILE__, '\\') + 1
+#elif __linux__
+    #define __FILENAME__ strrchr("/" __FILE__, '/') + 1
+#else
+    #define __FILENAME__ __FILE__
+#endif
+
 #ifdef DEBUG
     #define LOG(x) std::cout    \
-        << "[" << __FILE__      \
-        << ":" << __func__      \
+        << "[" << __FILENAME__  \
+        << ":" << __FUNCTION__  \
         << ":" << __LINE__      \
         << "] " << x            \
         << std::endl;
