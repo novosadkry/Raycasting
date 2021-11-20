@@ -46,6 +46,16 @@ public:
         return m_Size;
     }
 
+    inline const std::string& GetName()
+    {
+        return m_Name;
+    }
+
+    inline void SetName(const std::string& name)
+    {
+        m_Name = name;
+    }
+
     inline ECS::Hierarchy& GetHierarchy()
     {
         return m_Hierarchy;
@@ -71,4 +81,6 @@ private:
 
     ECS::Hierarchy m_Hierarchy;
     ECS::SystemGroup m_Systems;
+
+    std::string m_Name = "Empty";
 };

@@ -27,7 +27,7 @@ namespace cereal
     template<typename Archive>
     void serialize(Archive& archive, Level& value)
     {
-        archive(value.m_Size, value.m_Grid, value.m_Hierarchy);
+        archive(value.m_Name, value.m_Size, value.m_Grid, value.m_Hierarchy);
     }
 
     // ---- Grid ----

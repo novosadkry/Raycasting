@@ -108,7 +108,10 @@ void DebugMenu::HandleNewPopup(float dt)
         ImGui::SetCursorPos(pos);
         if (ImGui::Button("OK", ImVec2(avail.x / 2 - 10, 20)))
         {
-            Game::Get().LoadLevel(Level::Empty(levelSize, gridSize));
+            auto level = Level::Empty(levelSize, gridSize);
+            level->SetName(std::string(name));
+
+            Game::Get().LoadLevel(std::move(level));
             ImGui::CloseCurrentPopup();
         }
 
@@ -212,7 +215,7 @@ void DebugMenu::RenderEntityTree(float dt)
     auto& registry  = hierarchy.GetRegistry();
 
     bool rTreeOpen = ImGui::TreeNodeEx(
-        "Empty",
+        level.GetName().c_str(),
         ImGuiTreeNodeFlags_DefaultOpen |
         ImGuiTreeNodeFlags_AllowItemOverlap
     );
@@ -412,7 +415,7 @@ void DebugMenu::HandleEditMenu(float dt)
         {
             if (ImGui::BeginTabItem("Level"))
             {
-                ImGui::Text("Name: Empty");
+                ImGui::Text("Name: %s", level.GetName().c_str());
                 ImGui::Text("Size: %dx%d", levelSize.x, levelSize.y);
 
                 RenderEntityTree(dt);
