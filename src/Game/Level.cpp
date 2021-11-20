@@ -18,7 +18,7 @@ Unique<Level> Level::Empty(sf::Vector2i ls, sf::Vector2i gs)
     return MakeUnique<Level>(ls, MakeUnique<Grid>(gs));
 }
 
-Unique<Level> Level::From(const char* path)
+Unique<Level> Level::From(std::fs::path path)
 {
     std::ifstream file(path, std::ios_base::binary);
     cereal::BinaryInputArchive archive(file);
@@ -29,7 +29,7 @@ Unique<Level> Level::From(const char* path)
     return level;
 }
 
-void Level::Save(Level& level, const char* path)
+void Level::Save(Level& level, std::fs::path path)
 {
     std::ofstream file(path, std::ios_base::binary);
     cereal::BinaryOutputArchive archive(file);

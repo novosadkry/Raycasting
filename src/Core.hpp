@@ -8,3 +8,5 @@
 #include <Utils/Serialize.hpp>
 
 #include <Input/Input.hpp>
+
+namespace std { namespace fs = std::filesystem; }

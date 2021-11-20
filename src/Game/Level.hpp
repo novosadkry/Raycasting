@@ -11,8 +11,8 @@ public:
     static Unique<Level> Empty();
     static Unique<Level> Empty(sf::Vector2i ls, sf::Vector2i gs);
 
-    static Unique<Level> From(const char* path);
-    static void Save(Level& level, const char* path);
+    static Unique<Level> From(std::fs::path path);
+    static void Save(Level& level, std::fs::path path);
 
 public:
     Level(const Level&) = delete;

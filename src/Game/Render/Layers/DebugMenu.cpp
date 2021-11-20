@@ -4,7 +4,6 @@
 #include <Game/ECS/ECS.hpp>
 
 #define MAX_LAST_OPEN_FILES 5
-namespace fs = std::filesystem;
 
 static uint32_t FlipRGBA(uint32_t value)
 {
@@ -37,7 +36,7 @@ void DebugMenu::RemoveLastOpenFile(std::string path)
 
 void DebugMenu::HandleOpenFile(std::string& path)
 {
-    auto ext = fs::path(path).extension();
+    auto ext = std::fs::path(path).extension();
 
     if (ext.compare(L".lvl") == 0)
         Game::Get().LoadLevel(Level::From(path.c_str()));
