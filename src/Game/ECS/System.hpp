@@ -52,6 +52,6 @@ namespace ECS
 
     private:
         entt::registry* m_Registry;
-        std::list<Unique<System>> m_Systems;
+        std::vector<Unique<System>> m_Systems;
     };
 }
