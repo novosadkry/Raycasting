@@ -83,7 +83,7 @@ private:
     ECS::Hierarchy m_Hierarchy;
     ECS::SystemGroup m_Systems;
 
-    Unique<Resource> m_Resource;
-
     std::string m_Name = "Empty";
+
+    Unique<ResourceMap> m_Resources;
 };

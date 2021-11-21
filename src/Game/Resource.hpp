@@ -6,12 +6,21 @@ class Resource
 public:
     using ID = uint8_t;
 
-    static Unique<Resource> From(std::fs::path path);
-    static void Save(Resource& res, std::fs::path path);
+    friend class ResourceMap;
+};
 
-    sf::Texture& GetTexture(ID id);
-    void SetTexture(ID id, sf::Texture texture);
+class ResourceMap
+{
+public:
+    static Unique<ResourceMap> From(std::fs::path path);
+    static void Save(ResourceMap& res, std::fs::path path);
+
+    template <typename T> requires std::is_base_of_v<Resource, T>
+    T* Get(Resource::ID id);
+
+    Resource* Get(Resource::ID id);
+    void Set(Resource::ID id, Unique<Resource> res);
 
 private:
-    std::unordered_map<ID, sf::Texture> m_Textures;
+    std::unordered_map<Resource::ID, Unique<Resource>> m_Textures;
 };

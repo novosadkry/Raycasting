@@ -63,13 +63,13 @@ namespace cereal
     // ---- Resource ----
 
     template<typename Archive>
-    void serialize(Archive& archive, Resource& value)
+    void serialize(Archive& archive, ResourceMap& value)
     {
         // TODO
     }
 
     template<typename Archive>
-    void LoadAndConstruct<Resource>::load_and_construct(Archive& archive, cereal::construct<Resource>& construct)
+    void LoadAndConstruct<ResourceMap>::load_and_construct(Archive& archive, cereal::construct<ResourceMap>& construct)
     {
         // TODO
     }

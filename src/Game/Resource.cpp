@@ -3,9 +3,9 @@
 #include <Utils/Debug.hpp>
 #include <Utils/Serialize.impl.hpp>
 
-Unique<Resource> Resource::From(std::fs::path path)
+Unique<ResourceMap> ResourceMap::From(std::fs::path path)
 {
-    auto res = MakeUnique<Resource>();
+    auto res = MakeUnique<ResourceMap>();
 
     try
     {
@@ -23,7 +23,7 @@ Unique<Resource> Resource::From(std::fs::path path)
     return res;
 }
 
-void Resource::Save(Resource& res, std::fs::path path)
+void ResourceMap::Save(ResourceMap& res, std::fs::path path)
 {
     try
     {

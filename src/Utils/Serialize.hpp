@@ -20,7 +20,7 @@
 class Grid;
 class Cell;
 class Level;
-class Resource;
+class ResourceMap;
 
 namespace ECS { class Hierarchy; }
 
@@ -54,13 +54,13 @@ namespace cereal
     // ---- Resource ----
 
     template<typename Archive>
-    void serialize(Archive&, Resource&);
+    void serialize(Archive&, ResourceMap&);
 
     template<>
-    struct LoadAndConstruct<Resource>
+    struct LoadAndConstruct<ResourceMap>
     {
         template<typename Archive>
-        static void load_and_construct(Archive&, cereal::construct<Resource>&);
+        static void load_and_construct(Archive&, cereal::construct<ResourceMap>&);
     };
 
     // ---- Vector ----

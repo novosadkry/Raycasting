@@ -36,8 +36,8 @@ Unique<Level> Level::From(std::fs::path path)
 	}
 
     path.replace_extension(".res");
-    auto res = Resource::From(path);
-    level->m_Resource = std::move(res);
+    auto res = ResourceMap::From(path);
+    level->m_Resources = std::move(res);
 
     return level;
 }
@@ -58,7 +58,7 @@ void Level::Save(Level& level, std::fs::path path)
 	}
 
     path.replace_extension(".res");
-    Resource::Save(*level.m_Resource, path);
+    ResourceMap::Save(*level.m_Resources, path);
 }
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
