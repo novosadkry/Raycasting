@@ -22,14 +22,16 @@ public:
         m_Size(size),
         m_Grid(std::move(grid)),
         m_Hierarchy(),
-        m_Systems(&m_Hierarchy.GetRegistry())
+        m_Systems(&m_Hierarchy.GetRegistry()),
+        m_Resources(MakeUnique<ResourceMap>())
     { }
 
     Level(int x, int y, Unique<Grid> grid) :
         m_Size({x, y}),
         m_Grid(std::move(grid)),
         m_Hierarchy(),
-        m_Systems(&m_Hierarchy.GetRegistry())
+        m_Systems(&m_Hierarchy.GetRegistry()),
+        m_Resources(MakeUnique<ResourceMap>())
     { }
 
     inline Grid& GetGrid()
@@ -65,6 +67,11 @@ public:
     inline ECS::SystemGroup& GetSystems()
     {
         return m_Systems;
+    }
+
+    inline ResourceMap& GetResources()
+    {
+        return *m_Resources;
     }
 
     sf::Vector2i GetGridCellFromPos(sf::Vector2f pos);
