@@ -3,6 +3,7 @@
 #include <Game/Game.hpp>
 #include <Game/ECS/ECS.hpp>
 #include <Game/Render/Ray.hpp>
+#include <Game/Render/Texture.hpp>
 
 static sf::Color CalculateLight(Ray& hit, float depth)
 {
@@ -70,7 +71,12 @@ void LevelView::RenderView()
         const auto originalView = window.getView();
 
         // Downscale to desired resolution
-        window.setView(sf::View(sf::FloatRect(0, 0, (float) m_Buffer->getSize().x, (float) m_Buffer->getSize().y)));
+        window.setView(sf::View(
+            sf::FloatRect(0, 0,
+            (float) m_Buffer->getSize().x,
+            (float) m_Buffer->getSize().y)
+        ));
+
         const auto viewSize = window.getView().getSize();
 
         // Clear buffer before use
@@ -85,10 +91,14 @@ void LevelView::RenderView()
             if (!Ray::Cast(level, player.position, angle, hit))
                 continue;
 
-            sf::Color wallColor = CalculateLight(hit, depth);
+            Cell cell = level.GetGrid().Get(
+                level.GetGridCellFromPos(hit.hitPos)
+            );
 
             // Correct the fishbowl effect
             hit.distance *= cos(player.rotation - angle);
+
+            sf::Color wallColor = CalculateLight(hit, depth);
 
             float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
             float floor = viewSize.y - ceiling;
@@ -100,10 +110,33 @@ void LevelView::RenderView()
                 sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), sf::Color(50, 50, 50))
             };
 
+            sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
+            Texture* texture = level.GetResources().Get<Texture>(cell.texture);
+
+            sf::RenderStates states;
+            sf::Vector2f textureCoord;
+
+            if (texture)
+            {
+                if (hit.normal.x)
+                {
+                    textureCoord.y = texture->GetSize().y;
+                    textureCoord.x = (fmod(hit.hitPos.y, cellSize.y) / cellSize.y) * texture->GetSize().x;
+                }
+
+                else
+                {
+                    textureCoord.y = texture->GetSize().y;
+                    textureCoord.x = (fmod(hit.hitPos.x, cellSize.x) / cellSize.x) * texture->GetSize().x;
+                }
+
+                states.texture = &texture->GetHandle();
+            }
+
             sf::Vertex sWall[] =
             {
-                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), wallColor),
-                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), wallColor)
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), wallColor, sf::Vector2f(textureCoord.x, 0)),
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), wallColor, textureCoord)
             };
 
             sf::Vertex sFloor[] =
@@ -112,9 +145,9 @@ void LevelView::RenderView()
                 sf::Vertex(sf::Vector2f(screenX + 0.5f, viewSize.y), wallColor)
             };
 
-            m_Buffer->draw(sCeiling, 2, sf::Lines);
-            m_Buffer->draw(sWall, 2, sf::Lines);
-            m_Buffer->draw(sFloor, 2, sf::Lines);
+            m_Buffer->draw(sCeiling, 2, sf::Lines, states);
+            m_Buffer->draw(sWall, 2, sf::Lines, states);
+            m_Buffer->draw(sFloor, 2, sf::Lines, states);
         }
 
         m_Buffer->display();
