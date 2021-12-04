@@ -3,16 +3,16 @@
 
 struct Canvas
 {
-    static Canvas From(float fov, float distance = 1)
+    static Canvas From(sf::Vector2u size, float fov)
     {
         return Canvas {
             fov,
-            tanf(fov / 2) * distance * 2,
-            distance,
+            size.x / 2.0f / tanf(fov / 2.0f),
+            size
         };
     }
 
     float fov;
-    float size;
     float distance;
+    sf::Vector2u size;
 };

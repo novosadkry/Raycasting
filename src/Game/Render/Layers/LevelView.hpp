@@ -8,12 +8,12 @@
 class LevelView : public Layer
 {
 public:
-    LevelView(sf::Vector2u resolution, Canvas canvas)
+    LevelView(Canvas canvas)
         : m_Canvas(canvas)
     {
         auto buffer = new sf::RenderTexture();
 
-        if (!buffer->create(resolution.x, resolution.y))
+        if (!buffer->create(canvas.size.x, canvas.size.y))
             LOG("Unable to create RenderTexture!");
 
         m_Buffer = Unique<sf::RenderTexture>(buffer);

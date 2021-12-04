@@ -11,10 +11,6 @@ void Input::HandleEvent(Event& event)
         {
             switch (event.key.code)
             {
-                case Keyboard::Escape:
-                    Game::Get().Exit();
-                    break;
-
                 case Keyboard::F1:
                     Game::Get().GetLayers().Get<DebugMenu>()->Toggle();
                     break;

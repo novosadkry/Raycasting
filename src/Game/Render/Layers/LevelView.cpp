@@ -52,8 +52,8 @@ void LevelView::RenderView()
 {
     using namespace ECS::Components;
 
-    const float wallCoeff = 50.0f;
-    const float depth     = 300.0f;
+    const float wallY = 50.0f;
+    const float depth = 300.0f;
 
     auto& window = Game::Get().GetWindow();
     auto& level  = Game::Get().GetCurrentLevel();
@@ -82,10 +82,55 @@ void LevelView::RenderView()
         // Clear buffer before use
         m_Buffer->clear();
 
+        // Render floor
+        for (unsigned int screenY = viewSize.y; screenY > viewSize.y / 2; screenY--)
+        {
+            float canvasC = m_Canvas.size.y / 2.0f;
+            float canvasY = (screenY / viewSize.y) * m_Canvas.size.y;
+
+            for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
+            {
+                float canvasX = (screenX / viewSize.x) * m_Canvas.size.x;
+                float angle = player.rotation + atan((canvasX - m_Canvas.size.x / 2) / m_Canvas.distance);
+
+                float distance = (m_Canvas.distance * wallY) / (canvasY - canvasC);
+
+                // Correct the fishbowl effect
+                distance /= cos(player.rotation - angle);
+
+                auto position = player.position + Math::Angle2Vector(angle) * distance;
+                Cell cell = level.GetGrid().Get(level.GetGridCellFromPos(position));
+
+                sf::Color floorColor = sf::Color::White;
+
+                sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
+                Texture* texture = level.GetResources().Get<Texture>(cell.texture);
+
+                sf::RenderStates states;
+                sf::Vector2f textureCoord;
+
+                if (texture)
+                {
+                    textureCoord.x = (fmod(position.x, cellSize.x) / cellSize.x) * texture->GetSize().x;
+                    textureCoord.y = (fmod(position.y, cellSize.y) / cellSize.y) * texture->GetSize().y;
+
+                    states.texture = &texture->GetHandle();
+                }
+
+                sf::Vertex sFloor[] =
+                {
+                    sf::Vertex(sf::Vector2f(screenX, screenY), floorColor, textureCoord)
+                };
+
+                m_Buffer->draw(sFloor, 1, sf::Points, states);
+            }
+        }
+
+        // Render walls
         for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
         {
-            float canvasX = (screenX / viewSize.x) * m_Canvas.size;
-            float angle = player.rotation + atan((canvasX - m_Canvas.size / 2) / m_Canvas.distance);
+            float canvasX = (screenX / viewSize.x) * m_Canvas.size.x;
+            float angle = player.rotation + atan((canvasX - m_Canvas.size.x / 2) / m_Canvas.distance);
 
             Ray hit;
             if (!Ray::Cast(level, player.position, angle, hit))
@@ -100,15 +145,9 @@ void LevelView::RenderView()
 
             sf::Color wallColor = CalculateLight(hit, depth);
 
-            float ceiling = (viewSize.y / 2.0f) - (viewSize.y * wallCoeff / hit.distance);
+            float ceiling = (viewSize.y / 2.0f) - (m_Canvas.distance * wallY / hit.distance);
             float floor = viewSize.y - ceiling;
             float wall = floor - ceiling;
-
-            sf::Vertex sCeiling[] =
-            {
-                sf::Vertex(sf::Vector2f(screenX + 0.5f, 0), wallColor),
-                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), sf::Color(50, 50, 50))
-            };
 
             sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
             Texture* texture = level.GetResources().Get<Texture>(cell.texture);
@@ -139,15 +178,7 @@ void LevelView::RenderView()
                 sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), wallColor, textureCoord)
             };
 
-            sf::Vertex sFloor[] =
-            {
-                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), sf::Color(50, 50, 50)),
-                sf::Vertex(sf::Vector2f(screenX + 0.5f, viewSize.y), wallColor)
-            };
-
-            m_Buffer->draw(sCeiling, 2, sf::Lines, states);
             m_Buffer->draw(sWall, 2, sf::Lines, states);
-            m_Buffer->draw(sFloor, 2, sf::Lines, states);
         }
 
         m_Buffer->display();

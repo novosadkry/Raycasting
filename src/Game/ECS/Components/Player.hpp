@@ -8,6 +8,7 @@ namespace ECS::Components
     struct Player
     {
         float speed;
+        float height;
     };
 
     template<>
@@ -17,12 +18,13 @@ namespace ECS::Components
 
         entt::meta<Player>()
             .COMP_DATA(&Player::speed, "speed")
+            .COMP_DATA(&Player::height, "height")
             .COMP_TYPE(Player);
     }
 
     template<typename Archive>
     void serialize(Archive& archive, Player& value)
     {
-        archive(value.speed);
+        archive(value.speed, value.height);
     }
 }
