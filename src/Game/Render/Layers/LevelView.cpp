@@ -82,16 +82,34 @@ void LevelView::RenderView()
         // Clear buffer before use
         m_Buffer->clear();
 
-        // Render floor
-        for (unsigned int screenY = viewSize.y; screenY > viewSize.y / 2; screenY--)
+        // Render walls
+        for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
         {
-            float canvasC = m_Canvas.size.y / 2.0f;
-            float canvasY = (screenY / viewSize.y) * m_Canvas.size.y;
+            float canvasX = (screenX / viewSize.x) * m_Canvas.size.x;
+            float angle = player.rotation + atan((canvasX - m_Canvas.size.x / 2) / m_Canvas.distance);
 
-            for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
+            Ray hit;
+            if (!Ray::Cast(level, player.position, angle, hit))
+                continue;
+
+            Cell cell = level.GetGrid().Get(
+                level.GetGridCellFromPos(hit.hitPos)
+            );
+
+            // Correct the fishbowl effect
+            hit.distance *= cos(player.rotation - angle);
+
+            sf::Color wallColor = CalculateLight(hit, depth);
+
+            float ceiling = (viewSize.y / 2.0f) - (m_Canvas.distance * wallY / hit.distance);
+            float floor = viewSize.y - ceiling;
+            float wall = floor - ceiling;
+
+            // Render floor and ceiling
+            for (unsigned int screenY = ceiling + wall; screenY < viewSize.y; screenY++)
             {
-                float canvasX = (screenX / viewSize.x) * m_Canvas.size.x;
-                float angle = player.rotation + atan((canvasX - m_Canvas.size.x / 2) / m_Canvas.distance);
+                float canvasC = m_Canvas.size.y / 2.0f;
+                float canvasY = (screenY / viewSize.y) * m_Canvas.size.y;
 
                 float distance = (m_Canvas.distance * wallY) / (canvasY - canvasC);
 
@@ -119,35 +137,12 @@ void LevelView::RenderView()
 
                 sf::Vertex sFloor[] =
                 {
-                    sf::Vertex(sf::Vector2f(screenX, screenY), floorColor, textureCoord)
+                    sf::Vertex(sf::Vector2f(screenX, screenY), floorColor, textureCoord),
+                    sf::Vertex(sf::Vector2f(screenX, viewSize.y - screenY), floorColor, textureCoord)
                 };
 
-                m_Buffer->draw(sFloor, 1, sf::Points, states);
+                m_Buffer->draw(sFloor, 2, sf::Points, states);
             }
-        }
-
-        // Render walls
-        for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
-        {
-            float canvasX = (screenX / viewSize.x) * m_Canvas.size.x;
-            float angle = player.rotation + atan((canvasX - m_Canvas.size.x / 2) / m_Canvas.distance);
-
-            Ray hit;
-            if (!Ray::Cast(level, player.position, angle, hit))
-                continue;
-
-            Cell cell = level.GetGrid().Get(
-                level.GetGridCellFromPos(hit.hitPos)
-            );
-
-            // Correct the fishbowl effect
-            hit.distance *= cos(player.rotation - angle);
-
-            sf::Color wallColor = CalculateLight(hit, depth);
-
-            float ceiling = (viewSize.y / 2.0f) - (m_Canvas.distance * wallY / hit.distance);
-            float floor = viewSize.y - ceiling;
-            float wall = floor - ceiling;
 
             sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
             Texture* texture = level.GetResources().Get<Texture>(cell.texture);
