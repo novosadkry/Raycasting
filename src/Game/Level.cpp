@@ -63,11 +63,10 @@ void Level::Save(Level& level, std::fs::path path)
 
 sf::Vector2i Level::GetGridCellFromPos(sf::Vector2f pos)
 {
-    float cellWidth =  (float) m_Size.x / m_Grid->GetSize().x;
-    float cellHeight = (float) m_Size.y / m_Grid->GetSize().y;
+    sf::Vector2f cellSize = m_Grid->GetCellSize(*this);
 
-    int cellX = (int) floor(pos.x / cellWidth);
-    int cellY = (int) floor(pos.y / cellHeight);
+    int cellX = (int) floor(pos.x / cellSize.x);
+    int cellY = (int) floor(pos.y / cellSize.y);
 
     return { cellX, cellY };
 }

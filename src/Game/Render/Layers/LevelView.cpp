@@ -83,7 +83,7 @@ void LevelView::RenderView()
         m_Buffer->clear();
 
         // Render walls
-        for (unsigned int screenX = 0; screenX < viewSize.x; screenX++)
+        for (unsigned int screenX = 0; screenX <= viewSize.x; screenX++)
         {
             float canvasX = (screenX / viewSize.x) * m_Canvas.size.x;
             float angle = player.rotation + atan((canvasX - m_Canvas.size.x / 2) / m_Canvas.distance);
@@ -106,7 +106,7 @@ void LevelView::RenderView()
             float wall = floor - ceiling;
 
             // Render floor and ceiling
-            for (unsigned int screenY = ceiling + wall; screenY < viewSize.y; screenY++)
+            for (unsigned int screenY = ceiling + wall; screenY <= viewSize.y; screenY++)
             {
                 float canvasC = m_Canvas.size.y / 2.0f;
                 float canvasY = (screenY / viewSize.y) * m_Canvas.size.y;
