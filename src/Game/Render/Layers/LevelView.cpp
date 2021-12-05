@@ -92,9 +92,7 @@ void LevelView::RenderView()
             if (!Ray::Cast(level, player.position, angle, hit))
                 continue;
 
-            Cell cell = level.GetGrid().Get(
-                level.GetGridCellFromPos(hit.hitPos)
-            );
+            Cell cell = level.GetGrid().Get(hit.cellPos);
 
             // Correct the fishbowl effect
             hit.distance *= cos(player.rotation - angle);
