@@ -22,9 +22,11 @@ public:
     template <typename T> requires std::is_base_of_v<Resource, T>
     T* Get(Resource::ID id)
     {
+        auto& storage = m_Resources[typeid(T)];
+
         try
         {
-            if (T* value = dynamic_cast<T*>(m_Resources.at(id).get()))
+            if (T* value = dynamic_cast<T*>(storage.at(id).get()))
                 return value;
 
             return nullptr;
@@ -35,23 +37,14 @@ public:
         }
     }
 
-    Resource* Get(Resource::ID id)
+    template<typename T> requires std::is_base_of_v<Resource, T>
+    void Set(Resource::ID id, Unique<T> res)
     {
-        try
-        {
-            return m_Resources.at(id).get();
-        }
-        catch (std::exception& e)
-        {
-            return nullptr;
-        }
-    }
-
-    void Set(Resource::ID id, Unique<Resource> res)
-    {
-        m_Resources.insert_or_assign(id, std::move(res));
+        auto& storage = m_Resources[typeid(T)];
+        storage.insert_or_assign(id, std::move(res));
     }
 
 private:
-    std::unordered_map<Resource::ID, Unique<Resource>> m_Resources;
+    using Storage = std::unordered_map<Resource::ID, Unique<Resource>>;
+    std::unordered_map<std::type_index, Storage> m_Resources;
 };
