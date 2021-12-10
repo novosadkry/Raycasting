@@ -5,12 +5,19 @@ class Resource
 {
 public:
     using ID = uint8_t;
+
+    Resource() = default;
+    Resource(const std::fs::path& path)
+        : m_Path(path) { }
+
     virtual ~Resource() = default;
 
     friend class ResourceMap;
 
 protected:
     std::fs::path m_Path;
+
+    SERIALIZE_PRIVATE(Resource)
 };
 
 class ResourceMap
@@ -22,7 +29,8 @@ public:
     template <typename T> requires std::is_base_of_v<Resource, T>
     T* Get(Resource::ID id)
     {
-        auto& storage = m_Resources[typeid(T)];
+        auto type = entt::type_hash<T>::value();
+        auto& storage = m_Resources[type];
 
         try
         {
@@ -40,11 +48,17 @@ public:
     template<typename T> requires std::is_base_of_v<Resource, T>
     void Set(Resource::ID id, Unique<T> res)
     {
-        auto& storage = m_Resources[typeid(T)];
+        auto type = entt::type_hash<T>::value();
+        auto& storage = m_Resources[type];
+
         storage.insert_or_assign(id, std::move(res));
     }
 
 private:
+    using Key = entt::hashed_string::hash_type;
     using Storage = std::unordered_map<Resource::ID, Unique<Resource>>;
-    std::unordered_map<std::type_index, Storage> m_Resources;
+
+    std::unordered_map<Key, Storage> m_Resources;
+
+    SERIALIZE_PRIVATE(ResourceMap)
 };

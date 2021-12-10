@@ -21,6 +21,9 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/types/common.hpp>
 #include <cereal/types/complex.hpp>
+#include <cereal/types/base_class.hpp>
+#include <cereal/types/polymorphic.hpp>
+#include <cereal/types/unordered_map.hpp>
 
 #include <list>
 #include <stack>

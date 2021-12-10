@@ -6,11 +6,25 @@
 class Texture : public Resource
 {
 public:
-    Texture(std::fs::path path)
-        : m_Handle()
+    Texture(const std::fs::path& path)
+        : Resource(path), m_Handle()
     {
         m_Handle.loadFromFile(path.string());
-        m_Path = std::move(path);
+    }
+
+    Texture(const void* data, std::size_t size)
+        : m_Handle()
+    {
+        m_Handle.loadFromMemory(data, size);
+    }
+
+    Texture(sf::Vector2u size, sf::Uint8* pixels)
+        : m_Handle()
+    {
+        sf::Image img;
+        img.create(size.x, size.y, pixels);
+
+        m_Handle.loadFromImage(img);
     }
 
     sf::Vector2u GetSize()
@@ -25,4 +39,6 @@ public:
 
 private:
     sf::Texture m_Handle;
+
+    SERIALIZE_PRIVATE(Texture)
 };

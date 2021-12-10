@@ -20,13 +20,25 @@
 class Grid;
 class Cell;
 class Level;
+
+class Texture;
+class Resource;
 class ResourceMap;
 
 namespace ECS { class Hierarchy; }
 
+namespace std::filesystem
+{
+    template <class Archive>
+    std::string save_minimal(const Archive&, const path&);
+
+    template <class Archive>
+    void load_minimal(const Archive&, path&, const std::string&);
+}
+
 namespace cereal
 {
-    // ---- Generic ----
+    // ---- Binary ----
 
     template<typename T, typename Archive> requires traits::is_text_archive<Archive>::value
     void save(Archive&, const cereal::BinaryData<T*>&);
@@ -56,11 +68,17 @@ namespace cereal
     template<typename Archive>
     void serialize(Archive&, ResourceMap&);
 
+    template<typename Archive>
+    void serialize(Archive&, Resource&);
+
+    template<typename Archive>
+    void serialize(Archive&, Texture&);
+
     template<>
-    struct LoadAndConstruct<ResourceMap>
+    struct LoadAndConstruct<Texture>
     {
         template<typename Archive>
-        static void load_and_construct(Archive&, cereal::construct<ResourceMap>&);
+        static void load_and_construct(Archive&, cereal::construct<Texture>&);
     };
 
     // ---- Vector ----

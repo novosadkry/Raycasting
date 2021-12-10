@@ -6,10 +6,29 @@
 #include <Game/ECS/ECS.hpp>
 #include <Game/Resource.hpp>
 #include <Game/Grid/Grid.hpp>
+#include <Game/Render/Texture.hpp>
+
+CEREAL_REGISTER_TYPE(Texture)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(Resource, Texture)
+
+namespace std::filesystem
+{
+    template <class Archive>
+    std::string save_minimal(const Archive& archive, const path& value)
+    {
+        return value.string();
+    }
+
+    template <class Archive>
+    void load_minimal(const Archive& archive, path& out, const std::string& str)
+    {
+       out = path(str);
+    }
+}
 
 namespace cereal
 {
-    // ---- Generic ----
+    // ---- Binary ----
 
     template<typename T, typename Archive> requires traits::is_text_archive<Archive>::value
     void save(Archive& archive, const cereal::BinaryData<T*>& value)
@@ -54,7 +73,7 @@ namespace cereal
         archive(
             cereal::binary_data(
                 cells.data(),
-                size.x * size.y * sizeof(Cell)
+                cells.size() * sizeof(Cell)
         ));
 
         construct(size, std::move(cells));
@@ -65,13 +84,47 @@ namespace cereal
     template<typename Archive>
     void serialize(Archive& archive, ResourceMap& value)
     {
-        // TODO
+        archive(value.m_Resources);
     }
 
     template<typename Archive>
-    void LoadAndConstruct<ResourceMap>::load_and_construct(Archive& archive, cereal::construct<ResourceMap>& construct)
+    void serialize(Archive& archive, Resource& value)
     {
-        // TODO
+        archive(value.m_Path);
+    }
+
+    template<typename Archive>
+    void serialize(Archive& archive, Texture& value)
+    {
+        archive(cereal::base_class<Resource>(&value));
+
+        sf::Image img = value.m_Handle.copyToImage();
+
+        archive(img.getSize());
+        archive(
+            cereal::binary_data(
+                img.getPixelsPtr(),
+                img.getSize().x * img.getSize().y * 4
+        ));
+    }
+
+    template<typename Archive>
+    void LoadAndConstruct<Texture>::load_and_construct(Archive& archive, cereal::construct<Texture>& construct)
+    {
+        Resource res;
+        archive(cereal::base_class<Resource>(&res));
+
+        sf::Vector2u size;
+        archive(size);
+
+        std::vector<sf::Uint8> pixels(size.x * size.y * 4);
+        archive(
+            cereal::binary_data(
+                pixels.data(),
+                pixels.size()
+        ));
+
+        construct(size, pixels.data());
     }
 
     // ---- SFML ----
