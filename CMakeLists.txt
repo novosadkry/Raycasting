@@ -35,6 +35,7 @@ set(SFML_COMPONENTS sfml-graphics sfml-system sfml-audio)
 add_subdirectory(${SFML_DIR})
 
 # Find OpenGL
+set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(OpenGL REQUIRED)
 
 # Compile ImGui

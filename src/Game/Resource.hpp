@@ -12,6 +12,11 @@ public:
 
     virtual ~Resource() = default;
 
+    inline const std::fs::path& GetPath()
+    {
+        return m_Path;
+    }
+
     friend class ResourceMap;
 
 protected:
@@ -32,17 +37,13 @@ public:
         auto type = entt::type_hash<T>::value();
         auto& storage = m_Resources[type];
 
-        try
+        if (storage.contains(id))
         {
             if (T* value = dynamic_cast<T*>(storage.at(id).get()))
                 return value;
+        }
 
-            return nullptr;
-        }
-        catch (std::exception& e)
-        {
-            return nullptr;
-        }
+        return nullptr;
     }
 
     template<typename T> requires std::is_base_of_v<Resource, T>

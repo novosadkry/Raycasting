@@ -98,14 +98,17 @@ namespace cereal
     {
         archive(cereal::base_class<Resource>(&value));
 
-        sf::Image img = value.m_Handle.copyToImage();
+        if (value.m_Path.empty())
+        {
+            sf::Image img = value.m_Handle.copyToImage();
 
-        archive(img.getSize());
-        archive(
-            cereal::binary_data(
-                img.getPixelsPtr(),
-                img.getSize().x * img.getSize().y * 4
-        ));
+            archive(img.getSize());
+            archive(
+                cereal::binary_data(
+                    img.getPixelsPtr(),
+                    img.getSize().x * img.getSize().y * 4
+            ));
+        }
     }
 
     template<typename Archive>
@@ -114,17 +117,23 @@ namespace cereal
         Resource res;
         archive(cereal::base_class<Resource>(&res));
 
-        sf::Vector2u size;
-        archive(size);
+        if (res.GetPath().empty())
+        {
+            sf::Vector2u size;
+            archive(size);
 
-        std::vector<sf::Uint8> pixels(size.x * size.y * 4);
-        archive(
-            cereal::binary_data(
-                pixels.data(),
-                pixels.size()
-        ));
+            std::vector<sf::Uint8> pixels(size.x * size.y * 4);
+            archive(
+                cereal::binary_data(
+                    pixels.data(),
+                    pixels.size()
+            ));
 
-        construct(size, pixels.data());
+            construct(size, pixels.data());
+        }
+
+        else
+            construct(res.GetPath());
     }
 
     // ---- SFML ----
