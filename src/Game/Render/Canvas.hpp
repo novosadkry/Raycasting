@@ -16,3 +16,9 @@ struct Canvas
     float distance;
     sf::Vector2u size;
 };
+
+template<typename Archive>
+void serialize(Archive& archive, Canvas& value)
+{
+    archive(value.fov, value.distance, value.size);
+}

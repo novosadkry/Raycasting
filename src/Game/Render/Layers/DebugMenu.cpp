@@ -5,6 +5,9 @@
 
 #define MAX_LAST_OPEN_FILES 5
 
+static const ImColor ColorRed   = ImColor(255,   0,   0);
+static const ImColor ColorWhite = ImColor(255, 255, 255);
+
 static uint32_t FlipRGBA(uint32_t value)
 {
     return (
@@ -39,7 +42,7 @@ void DebugMenu::HandleOpenFile(std::string& path)
     auto ext = std::fs::path(path).extension();
 
     if (ext.compare(L".lvl") == 0)
-        Game::Get().LoadLevel(Level::From(path.c_str()));
+        Game::Get().LoadLevel(Level::From(path));
 }
 
 void DebugMenu::HandleOpenMenu(float dt)
@@ -207,6 +210,67 @@ void DebugMenu::HandleDebugMenu(float dt)
     ImGui::End();
 }
 
+void DebugMenu::RenderAnyValue(auto& meta, auto& any)
+{
+    using namespace entt::literals;
+
+    entt::meta_any value = meta.get(any);
+    const char* name = meta.prop("name"_hs)
+        .value()
+        .template cast<const char*>();
+
+    if (auto* v = value.try_cast<std::string>())
+        ImGui::InputText(name, v);
+
+    else if (auto* v = value.try_cast<int>())
+        ImGui::DragInt(name, v);
+
+    else if (auto* v = value.try_cast<float>())
+        ImGui::DragFloat(name, v, .15f);
+
+    else if (auto* v = value.try_cast<sf::Vector2u>())
+        ImGui::DragScalarN(name, ImGuiDataType_U32, &v->x, 2, .15f);
+
+    else if (auto* v = value.try_cast<sf::Vector2f>())
+        ImGui::DragScalarN(name, ImGuiDataType_Float, &v->x, 2, .15f);
+
+    else if (auto* v = value.try_cast<sf::Color>())
+    {
+        ImU32 hex = v->toInteger();
+        hex = FlipRGBA(hex);
+
+        ImVec4 rgba = ImGui::ColorConvertU32ToFloat4(hex);
+        ImGui::ColorEdit4(name, &rgba.x);
+
+        hex = ImGui::ColorConvertFloat4ToU32(rgba);
+        hex = FlipRGBA(hex);
+
+        *v = sf::Color(hex);
+    }
+
+    else
+    {
+        bool treeOpen = ImGui::TreeNodeEx(
+            name,
+            ImGuiTreeNodeFlags_DefaultOpen
+        );
+
+        if (treeOpen)
+        {
+            if (auto type = entt::resolve(meta.type().id()))
+            {
+                for (auto data : type.data())
+                    RenderAnyValue(data, value);
+            }
+
+            else
+                ImGui::TextColored(ColorRed, "Unsupported value");
+
+            ImGui::TreePop();
+        }
+    }
+}
+
 void DebugMenu::RenderEntityTree(float dt)
 {
     auto& level     = Game::Get().GetCurrentLevel();
@@ -267,8 +331,7 @@ void DebugMenu::RenderEntityTree(float dt)
 
             if (ImGui::BeginPopup("Delete"))
             {
-                const ImVec4 red = ImVec4(1.0, 0.0, 0.0, 1.0);
-                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, red);
+                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)ColorRed);
 
                 if (ImGui::MenuItem("Delete?"))
                     hierarchy.DestroyEntity(entity);
@@ -310,17 +373,17 @@ void DebugMenu::RenderEntityTree(float dt)
             {
                 entity.Each([&](auto type, auto& any)
                 {
-                    const char* cName = type.prop("name"_hs)
+                    const char* name = type.prop("name"_hs)
                         .value()
                         .template cast<const char*>();
 
-                    bool cTreeOpen = ImGui::TreeNodeEx(
-                        cName,
+                    bool treeOpen = ImGui::TreeNodeEx(
+                        name,
                         ImGuiTreeNodeFlags_DefaultOpen
                     );
 
-                    if (!cTreeOpen)
-                        ImGui::PushID(cName);
+                    if (!treeOpen)
+                        ImGui::PushID(name);
 
                     if (ImGui::IsItemHovered())
                     {
@@ -336,8 +399,7 @@ void DebugMenu::RenderEntityTree(float dt)
 
                     if (ImGui::BeginPopup("Delete"))
                     {
-                        const ImVec4 red = ImVec4(1.0, 0.0, 0.0, 1.0);
-                        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, red);
+                        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)ColorRed);
 
                         if (ImGui::MenuItem("Delete?"))
                         {
@@ -349,44 +411,13 @@ void DebugMenu::RenderEntityTree(float dt)
                         ImGui::EndPopup();
                     }
 
-                    if (!cTreeOpen)
+                    if (!treeOpen)
                         ImGui::PopID();
 
-                    if (cTreeOpen)
+                    if (treeOpen)
                     {
                         for (auto data : type.data())
-                        {
-                            entt::meta_any dValue = data.get(any);
-                            const char* dName = data.prop("name"_hs)
-                                .value()
-                                .template cast<const char*>();
-
-                            if (auto* str = dValue.try_cast<std::string>())
-                                ImGui::InputText(dName, str);
-
-                            else if (auto* i = dValue.try_cast<int>())
-                                ImGui::DragInt(dName, i);
-
-                            else if (auto* flt = dValue.try_cast<float>())
-                                ImGui::DragFloat(dName, flt, .15f);
-
-                            else if (auto* vec2f = dValue.try_cast<sf::Vector2f>())
-                                ImGui::DragFloat2(dName, &vec2f->x, .15f);
-
-                            else if (auto* clr = dValue.try_cast<sf::Color>())
-                            {
-                                ImU32 hex = clr->toInteger();
-                                hex = FlipRGBA(hex);
-
-                                ImVec4 rgba = ImGui::ColorConvertU32ToFloat4(hex);
-                                ImGui::ColorEdit4(dName, &rgba.x);
-
-                                hex = ImGui::ColorConvertFloat4ToU32(rgba);
-                                hex = FlipRGBA(hex);
-
-                                *clr = sf::Color(hex);
-                            }
-                        }
+                            RenderAnyValue(data, any);
 
                         ImGui::TreePop();
                     }
@@ -487,13 +518,10 @@ void DebugMenu::HandleEditMenu(float dt)
                             const ImVec2 min = ImVec2(p.x + x * (w + s),     p.y + y * (h + s));
                             const ImVec2 max = ImVec2(p.x + x * (w + s) + w, p.y + y * (h + s) + h);
 
-                            const ImColor red   = ImColor(255,   0,   0);
-                            const ImColor white = ImColor(255, 255, 255);
-
                             if (grid.Get(x, y).type == Cell::Wall)
-                                drawList->AddRectFilled(min, max, white);
+                                drawList->AddRectFilled(min, max, ColorWhite);
                             else
-                                drawList->AddRect(min, max, white);
+                                drawList->AddRect(min, max, ColorWhite);
 
                             bool isCellHovered =
                                 mouse.x > min.x && mouse.x < max.x &&
@@ -522,7 +550,7 @@ void DebugMenu::HandleEditMenu(float dt)
                                         drawList->AddRect(
                                             ImVec2(min.x - s / 2, min.y - s / 2),
                                             ImVec2(max.x + s / 2, max.y + s / 2),
-                                            red, 0, 0, s
+                                            ColorRed, 0, 0, s
                                         );
                                     }
                                 } break;

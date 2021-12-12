@@ -1,7 +1,10 @@
 #include "Game.hpp"
 
 #include <Game/ECS/ECS.hpp>
+
 #include <Game/Render/Layers/DebugMenu.hpp>
+#include <Game/Render/Layers/MiniMap.hpp>
+#include <Game/Render/Layers/LevelView.hpp>
 
 #include <Input/Input.hpp>
 
@@ -14,7 +17,10 @@ Game::Game(Unique<sf::RenderWindow> window)
 {
     ImGui::SFML::Init(*m_Window);
     ECS::Init(ECS::AllComponents{});
+
     m_Layers.Emplace<DebugMenu, true>();
+    m_Layers.Emplace<LevelView, true>();
+    m_Layers.Emplace<MiniMap,   true>(sf::Vector2i(200, 200));
 }
 
 void Game::PollEvents()

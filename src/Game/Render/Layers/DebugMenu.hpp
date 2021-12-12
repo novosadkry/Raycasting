@@ -20,6 +20,7 @@ private:
     void HandleEditMenu(float dt);
     void HandleDebugMenu(float dt);
     void RenderEntityTree(float dt);
+    void RenderAnyValue(auto& meta, auto& any);
 
     bool m_Active;
     bool m_ShowEditWindow;

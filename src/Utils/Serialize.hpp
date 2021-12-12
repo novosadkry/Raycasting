@@ -18,8 +18,8 @@
     friend void cereal::load(Archive&, TYPE&);          \
 
 class Grid;
-class Cell;
 class Level;
+struct Cell;
 
 class Texture;
 class Resource;

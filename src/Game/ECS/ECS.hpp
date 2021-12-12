@@ -10,6 +10,7 @@
 
 #include "Components/Tag.hpp"
 #include "Components/Light.hpp"
+#include "Components/Camera.hpp"
 #include "Components/Player.hpp"
 #include "Components/Collider.hpp"
 #include "Components/Transform.hpp"
@@ -23,6 +24,7 @@ namespace ECS
     <
         Components::Tag,
         Components::Light,
+        Components::Camera,
         Components::Player,
         Components::Collider,
         Components::Transform

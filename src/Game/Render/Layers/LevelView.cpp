@@ -61,11 +61,20 @@ void LevelView::RenderView()
     auto view = level
         .GetHierarchy()
         .GetRegistry()
-        .view<Player, Transform>();
+        .view<Camera, Transform>();
 
     for (auto e : view)
     {
-        auto& player = view.get<Transform>(e);
+        auto& cam = view.get<Transform>(e);
+        auto& canvas = view.get<Camera>(e).canvas;
+
+        if (!m_Buffer || canvas.size != m_Buffer->getSize())
+        {
+            m_Buffer = MakeUnique<sf::RenderTexture>();
+
+            if (!m_Buffer->create(canvas.size.x, canvas.size.y))
+                LOG("Unable to create RenderTexture!");
+        }
 
         // Keep original resolution before downscaling
         const auto originalView = window.getView();
@@ -85,36 +94,36 @@ void LevelView::RenderView()
         // Render walls
         for (unsigned int screenX = 0; screenX <= viewSize.x; screenX++)
         {
-            float canvasX = (screenX / viewSize.x) * m_Canvas.size.x;
-            float angle = player.rotation + atan((canvasX - m_Canvas.size.x / 2) / m_Canvas.distance);
+            float canvasX = (screenX / viewSize.x) * canvas.size.x;
+            float angle = cam.rotation + atan((canvasX - canvas.size.x / 2) / canvas.distance);
 
             Ray hit;
-            if (!Ray::Cast(level, player.position, angle, hit))
+            if (!Ray::Cast(level, cam.position, angle, hit))
                 continue;
 
             Cell cell = level.GetGrid().Get(hit.cellPos);
 
             // Correct the fishbowl effect
-            hit.distance *= cos(player.rotation - angle);
+            hit.distance *= cos(cam.rotation - angle);
 
             sf::Color wallColor = CalculateLight(hit, depth);
 
-            float ceiling = (viewSize.y / 2.0f) - (m_Canvas.distance * wallY / hit.distance);
+            float ceiling = (viewSize.y / 2.0f) - (canvas.distance * wallY / hit.distance);
             float floor = viewSize.y - ceiling;
             float wall = floor - ceiling;
 
             // Render floor and ceiling
             for (unsigned int screenY = ceiling + wall; screenY <= viewSize.y; screenY++)
             {
-                float canvasC = m_Canvas.size.y / 2.0f;
-                float canvasY = (screenY / viewSize.y) * m_Canvas.size.y;
+                float canvasC = canvas.size.y / 2.0f;
+                float canvasY = (screenY / viewSize.y) * canvas.size.y;
 
-                float distance = (m_Canvas.distance * wallY) / (canvasY - canvasC);
+                float distance = (canvas.distance * wallY) / (canvasY - canvasC);
 
                 // Correct the fishbowl effect
-                distance /= cos(player.rotation - angle);
+                distance /= cos(cam.rotation - angle);
 
-                auto position = player.position + Math::Angle2Vector(angle) * distance;
+                auto position = cam.position + Math::Angle2Vector(angle) * distance;
                 Cell cell = level.GetGrid().Get(level.GetGridCellFromPos(position));
 
                 sf::Color floorColor = sf::Color::White;

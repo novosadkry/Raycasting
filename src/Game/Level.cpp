@@ -3,9 +3,6 @@
 #include <Game/Game.hpp>
 #include <Game/ECS/ECS.hpp>
 
-#include <Game/Render/Layers/MiniMap.hpp>
-#include <Game/Render/Layers/LevelView.hpp>
-
 #include <Utils/Serialize.impl.hpp>
 
 Unique<Level> Level::Empty()
@@ -80,14 +77,9 @@ void Level::OnLoad()
 {
     m_Systems.Add<ECS::Systems::Controller>();
     m_Systems.Add<ECS::Systems::Collision>();
-
-    auto& layers = Game::Get().GetLayers();
-    layers.Emplace<LevelView, true>(Canvas::From(sf::Vector2u(300, 200), 100.0f * Math::Deg2Rad));
-    layers.Emplace<MiniMap, true>(sf::Vector2i(200, 200));
 }
 
 void Level::OnUnload()
 {
-    auto& layers = Game::Get().GetLayers();
-    layers.Drop<LevelView, MiniMap>();
+
 }
