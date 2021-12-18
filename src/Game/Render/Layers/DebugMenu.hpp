@@ -12,9 +12,9 @@ public:
     inline void Toggle() { m_Active = !m_Active; }
 
 private:
-    void InsertLastOpenFile(std::string path);
-    void RemoveLastOpenFile(std::string path);
-    void HandleOpenFile(std::string& path);
+    void InsertLastOpenFile(const std::fs::path& path);
+    void RemoveLastOpenFile(const std::fs::path& path);
+    void HandleOpenFile(const std::fs::path& path);
     void HandleOpenMenu(float dt);
     void HandleNewPopup(float dt);
     void HandleEditMenu(float dt);
@@ -27,7 +27,6 @@ private:
     bool m_ShowDebugWindow;
 
     float m_ShowOpenFailTime;
-    char m_OpenNameBuffer[255] = {0};
     std::deque<std::string> m_LastOpenFiles;
 
     enum GridMode { SELECT, EDIT };

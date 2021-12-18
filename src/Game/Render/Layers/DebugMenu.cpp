@@ -2,6 +2,7 @@
 
 #include <Game/Game.hpp>
 #include <Game/ECS/ECS.hpp>
+#include <Game/Render/Texture.hpp>
 
 #define MAX_LAST_OPEN_FILES 5
 
@@ -18,31 +19,34 @@ static uint32_t FlipRGBA(uint32_t value)
     );
 }
 
-void DebugMenu::InsertLastOpenFile(std::string path)
+void DebugMenu::InsertLastOpenFile(const std::fs::path& path)
 {
     auto& deque = m_LastOpenFiles;
     RemoveLastOpenFile(path);
-    deque.push_back(path);
+    deque.push_back(path.string());
 }
 
-void DebugMenu::RemoveLastOpenFile(std::string path)
+void DebugMenu::RemoveLastOpenFile(const std::fs::path& path)
 {
     auto& deque = m_LastOpenFiles;
     for (auto it = deque.begin(); it != deque.end(); )
     {
-        if (it->compare(path) == 0)
+        if (it->compare(path.string()) == 0)
             it = deque.erase(it);
         else
             it++;
     }
 }
 
-void DebugMenu::HandleOpenFile(std::string& path)
+void DebugMenu::HandleOpenFile(const std::fs::path& path)
 {
-    auto ext = std::fs::path(path).extension();
+    auto ext = path.extension();
 
     if (ext.compare(L".lvl") == 0)
         Game::Get().LoadLevel(Level::From(path));
+
+    else if (ext.compare(L".png") == 0)
+        Game::Get().GetCurrentLevel().GetResources().Add(MakeUnique<Texture>(path));
 }
 
 void DebugMenu::HandleOpenMenu(float dt)
@@ -64,13 +68,13 @@ void DebugMenu::HandleOpenMenu(float dt)
 
     if (ImGui::BeginMenu("Open..."))
     {
+        static std::string path;
+
         ImGui::PushItemWidth(100.0f);
-        ImGui::InputText("Name", m_OpenNameBuffer, 255);
+        ImGui::InputText("Name", &path);
 
         if (ImGui::Button("Open", ImVec2(130, 20)))
         {
-            auto path = std::string(m_OpenNameBuffer);
-
             try
             {
                 HandleOpenFile(path);
@@ -94,13 +98,13 @@ void DebugMenu::HandleNewPopup(float dt)
 {
     if (ImGui::BeginPopupModal("New Level"))
     {
-        static char name[255] = {0};
+        static std::string name = "Empty";
         static sf::Vector2i levelSize{500, 500};
         static sf::Vector2i gridSize{10, 10};
 
         auto avail = ImGui::GetContentRegionAvail();
 
-        ImGui::InputText("Name", name, sizeof(name));
+        ImGui::InputText("Name", &name);
         ImGui::InputInt2("Level Size", &levelSize.x);
         ImGui::InputInt2("Grid Size", &gridSize.x);
 
@@ -448,7 +452,39 @@ void DebugMenu::HandleEditMenu(float dt)
                 ImGui::Text("Name: %s", level.GetName().c_str());
                 ImGui::Text("Size: %dx%d", levelSize.x, levelSize.y);
 
-                RenderEntityTree(dt);
+                ImGui::Spacing();
+                ImGui::Text("Resources");
+                ImGui::Separator(); ImGui::Spacing();
+
+                level.GetResources().Each<Texture>([](auto id, Texture& texture)
+                {
+                    bool treeOpen = ImGui::TreeNodeEx(
+                        (void*)id,
+                        ImGuiTreeNodeFlags_Bullet,
+                        "ID: %u (%s)",
+                        id, texture.GetPath().string().c_str()
+                    );
+
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+
+                        sf::Vector2u size = texture.GetHandle().getSize();
+                        ImGui::Text("Size: %ux%u", size.x, size.y);
+
+                        ImGui::Separator();
+                        ImGui::Image(texture.GetHandle());
+
+                        ImGui::EndTooltip();
+                    }
+
+                    if (treeOpen)
+                    {
+                        ImGui::Image(texture.GetHandle());
+
+                        ImGui::TreePop();
+                    }
+                });
 
                 ImGui::EndTabItem();
             }
@@ -575,6 +611,14 @@ void DebugMenu::HandleEditMenu(float dt)
                     ImGui::SetCursorScreenPos(ImVec2(p.x + avail.x, p.y + avail.y));
                     ImGui::Spacing(); ImGui::Separator();
                 }
+
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("ECS"))
+            {
+                RenderEntityTree(dt);
+                // TODO: Render system tree
 
                 ImGui::EndTabItem();
             }
