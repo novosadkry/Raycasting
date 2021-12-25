@@ -69,7 +69,7 @@ public:
         auto& storage = m_Resources[type];
 
         Resource::ID id = !storage.empty()
-            ? id = storage.rbegin()->first + 1
+            ? storage.rbegin()->first + 1
             : 0;
 
         storage.insert_or_assign(id, std::move(res));
