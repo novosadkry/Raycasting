@@ -6,7 +6,9 @@
 struct Ray
 {
 public:
-    static bool Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit);
+    using RayPass = std::pair<sf::Vector2f, sf::Vector2f>;
+    static bool Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit) { return Cast(level, position, angle, hit, nullptr); }
+    static bool Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit, std::vector<RayPass>* passes);
 
 public:
     Ray() = default;

@@ -1,7 +1,7 @@
 #include "Ray.hpp"
 #include <Utils/Math.hpp>
 
-bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit)
+bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit, std::vector<RayPass>* passes)
 {
     sf::Vector2i cell = level.GetGridCellFromPos(position);
     sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
@@ -45,7 +45,10 @@ bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit
 
     for (int i = 0; i < 128; i++)
     {
+        RayPass pass;
+
         distance = std::min(ray.x, ray.y);
+        pass.first = distance * dir + position;
 
         if (ray.x < ray.y)
         {
@@ -66,6 +69,11 @@ bool Ray::Cast(Level& level, const sf::Vector2f& position, float angle, Ray& hit
                 ? sf::Vector2f( 0,  1 )
                 : sf::Vector2f( 0, -1 );
         }
+
+        pass.second = std::min(ray.x, ray.y) * dir + position;
+
+        if (passes)
+            passes->push_back(pass);
 
         if (level.GetGrid().Get(cell).type == Cell::Wall)
         {

@@ -97,8 +97,8 @@ void LevelView::RenderView()
             float canvasX = (screenX / viewSize.x) * canvas.size.x;
             float angle = cam.rotation + atan((canvasX - canvas.size.x / 2) / canvas.distance);
 
-            Ray hit;
-            if (!Ray::Cast(level, cam.position, angle, hit))
+            Ray hit; std::vector<Ray::RayPass> passes;
+            if (!Ray::Cast(level, cam.position, angle, hit, &passes))
                 continue;
 
             Cell cell = level.GetGrid().Get(hit.cellPos);
@@ -112,6 +112,68 @@ void LevelView::RenderView()
             float floor = viewSize.y - ceiling;
             float wall = floor - ceiling;
 
+            // Render floor and ceiling
+            for (auto it = passes.begin(); it != passes.end() - 1; it++) {
+                auto pass = *it;
+                float canvasC = canvas.size.y / 2.0f;
+
+                float distance[2] = {
+                    Math::Distance(cam.position, pass.first),
+                    Math::Distance(cam.position, pass.second)
+                };
+
+                // Correct the fishbowl effect
+                distance[0] *= cos(cam.rotation - angle);
+                distance[1] *= cos(cam.rotation - angle);
+
+                float canvasY[2] = {
+                    (canvas.distance * wallY) / distance[0] + canvasC,
+                    (canvas.distance * wallY) / distance[1] + canvasC,
+                };
+
+                float screenY[2] = {
+                    (viewSize.y * canvasY[0]) / canvas.size.y,
+                    (viewSize.y * canvasY[1]) / canvas.size.y,
+                };
+
+                Cell cell = level.GetGrid().Get(level.GetGridCellFromPos(pass.first));
+
+                sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
+                Texture* texture = level.GetResources().Get<Texture>(cell.texture);
+
+                sf::Color floorColor = sf::Color::White;
+
+                sf::RenderStates states;
+                sf::Vector2f tx[2];
+
+                if (texture)
+                {
+                    tx[0].x = (fmod(pass.first.x, cellSize.x) / cellSize.x) * texture->GetSize().x;
+                    tx[0].y = (fmod(pass.first.y, cellSize.y) / cellSize.y) * texture->GetSize().y;
+
+                    tx[1].x = (fmod(pass.second.x, cellSize.x) / cellSize.x) * texture->GetSize().x;
+                    tx[1].y = (fmod(pass.second.y, cellSize.y) / cellSize.y) * texture->GetSize().y;
+
+                    states.texture = &texture->GetHandle();
+                }
+
+                sf::Vertex sFloor[] =
+                {
+                    sf::Vertex(sf::Vector2f(screenX, screenY[0]), floorColor, tx[0]),
+                    sf::Vertex(sf::Vector2f(screenX, screenY[1]), floorColor, tx[1])
+                };
+
+                sf::Vertex sCeil[] =
+                {
+                    sf::Vertex(sf::Vector2f(screenX, viewSize.y - screenY[0]), floorColor, tx[0]),
+                    sf::Vertex(sf::Vector2f(screenX, viewSize.y - screenY[1]), floorColor, tx[1])
+                };
+
+                m_Buffer->draw(sFloor, 2, sf::Lines, states);
+                m_Buffer->draw(sCeil, 2, sf::Lines, states);
+            }
+
+            /* old code
             // Render floor and ceiling
             for (unsigned int screenY = ceiling + wall; screenY <= viewSize.y; screenY++)
             {
@@ -150,6 +212,7 @@ void LevelView::RenderView()
 
                 m_Buffer->draw(sFloor, 2, sf::Points, states);
             }
+            */
 
             sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
             Texture* texture = level.GetResources().Get<Texture>(cell.texture);
