@@ -112,45 +112,6 @@ void LevelView::RenderView()
             float floor = viewSize.y - ceiling;
             float wall = floor - ceiling;
 
-            // Render floor and ceiling
-            for (unsigned int screenY = ceiling + wall; screenY <= viewSize.y; screenY++)
-            {
-                float canvasC = canvas.size.y / 2.0f;
-                float canvasY = (screenY / viewSize.y) * canvas.size.y;
-
-                float distance = (canvas.distance * wallY) / (canvasY - canvasC);
-
-                // Correct the fishbowl effect
-                distance /= cos(cam.rotation - angle);
-
-                auto position = cam.position + Math::Angle2Vector(angle) * distance;
-                Cell cell = level.GetGrid().Get(level.GetGridCellFromPos(position));
-
-                sf::Color floorColor = sf::Color::White;
-
-                sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
-                Texture* texture = level.GetResources().Get<Texture>(cell.texture);
-
-                sf::RenderStates states;
-                sf::Vector2f textureCoord;
-
-                if (texture)
-                {
-                    textureCoord.x = (fmod(position.x, cellSize.x) / cellSize.x) * texture->GetSize().x;
-                    textureCoord.y = (fmod(position.y, cellSize.y) / cellSize.y) * texture->GetSize().y;
-
-                    states.texture = &texture->GetHandle();
-                }
-
-                sf::Vertex sFloor[] =
-                {
-                    sf::Vertex(sf::Vector2f(screenX, screenY), floorColor, textureCoord),
-                    sf::Vertex(sf::Vector2f(screenX, viewSize.y - screenY), floorColor, textureCoord)
-                };
-
-                m_Buffer->draw(sFloor, 2, sf::Points, states);
-            }
-
             sf::Vector2f cellSize = level.GetGrid().GetCellSize(level);
             Texture* texture = level.GetResources().Get<Texture>(cell.texture);
 
@@ -174,13 +135,27 @@ void LevelView::RenderView()
                 states.texture = &texture->GetHandle();
             }
 
+            sf::Vertex sCeiling[] =
+            {
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, 0), wallColor),
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), sf::Color(50, 50, 50))
+            };
+
             sf::Vertex sWall[] =
             {
                 sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling), wallColor, sf::Vector2f(textureCoord.x, 0)),
                 sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), wallColor, textureCoord)
             };
 
+            sf::Vertex sFloor[] =
+            {
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, ceiling + wall), sf::Color(50, 50, 50)),
+                sf::Vertex(sf::Vector2f(screenX + 0.5f, viewSize.y), wallColor)
+            };
+
+            m_Buffer->draw(sCeiling, 2, sf::Lines, states);
             m_Buffer->draw(sWall, 2, sf::Lines, states);
+            m_Buffer->draw(sFloor, 2, sf::Lines, states);
         }
 
         m_Buffer->display();
